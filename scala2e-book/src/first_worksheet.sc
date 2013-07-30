@@ -20,7 +20,7 @@ object Fall {
   val ie754 = math.IEEEremainder(11.0, 4.0)       //> ie754  : Double = -1.0
   val not = !(1 > 2)                              //> not  : Boolean = true
   
-
+  // chapter 6 - Functional Objects
   val aux = new Rational(223)                     //> aux  : scala2e.chapter6.Rational = 223
 
   val r = new Rational(1, 2)                      //> r  : scala2e.chapter6.Rational = 1/2
@@ -37,20 +37,46 @@ object Fall {
   val twoThirds = new Rational(2, 3)              //> twoThirds  : scala2e.chapter6.Rational = 2/3
   val result = (oneHalf / 7) + (1 - twoThirds)    //> result  : scala2e.chapter6.Rational = 17/42
   
-  val n = 1                                       //> n  : Int = 1
+  val n = 8                                       //> n  : Int = 8
   val half =
     if (n % 2 == 0)
       n / 2
     else
-      throw new RuntimeException("n must be even")//> java.lang.RuntimeException: n must be even
-                                                  //| 	at scala2e.chapter4.Fall$$anonfun$main$1.apply$mcV$sp(scala2e.chapter4.F
-                                                  //| all.scala:42)
-                                                  //| 	at org.scalaide.worksheet.runtime.library.WorksheetSupport$$anonfun$$exe
-                                                  //| cute$1.apply$mcV$sp(WorksheetSupport.scala:76)
-                                                  //| 	at org.scalaide.worksheet.runtime.library.WorksheetSupport$.redirected(W
-                                                  //| orksheetSupport.scala:65)
-                                                  //| 	at org.scalaide.worksheet.runtime.library.WorksheetSupport$.$execute(Wor
-                                                  //| ksheetSupport.scala:75)
-                                                  //| 	at scala2e.chapter4.Fall$.main(scala2e.chapter4.Fall.scala:7)
-                                                  //| 	at scala2e.chapter4.Fall.main(scala2e.chapter4.Fall.scala)
+      throw new RuntimeException("n must be even")//> half  : Int = 4
+      
+  // chapter 8 - Functions and Closures
+  val randomNums = List(2, 5, -2, -43, 72)        //> randomNums  : List[Int] = List(2, 5, -2, -43, 72)
+  randomNums.foreach((x: Int) => println(x))      //> 2
+                                                  //| 5
+                                                  //| -2
+                                                  //| -43
+                                                  //| 72
+  
+  val rn = randomNums.filter((x: Int) => x % 2 == 0)
+                                                  //> rn  : List[Int] = List(2, -2, 72)
+  rn.foreach((x: Int) => println(x))              //> 2
+                                                  //| -2
+                                                  //| 72
+  
+  
+  val f = (_: Int) + (_: Int)                     //> f  : (Int, Int) => Int = <function2>
+  f(5, 10)                                        //> res1: Int = 15
+  
+  rn.foreach(println)                             //> 2
+                                                  //| -2
+                                                  //| 72
+                                                  
+val someNumbers = List(-11, -10, -5, 0, 5, 10)    //> someNumbers  : List[Int] = List(-11, -10, -5, 0, 5, 10)
+var sum = 0                                       //> sum  : Int = 0
+someNumbers.foreach(sum += _)
+sum                                               //> res2: Int = -11
+
+
+
+
+
+
+
+
+
 }
