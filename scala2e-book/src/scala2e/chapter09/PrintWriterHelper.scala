@@ -1,4 +1,4 @@
-package scala2e.chapter9
+package scala2e.chapter09
 
 import java.io.File
 

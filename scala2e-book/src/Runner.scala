@@ -1,6 +1,6 @@
 //import scala2e.chapter4.ChecksumAccumulator
 //import scala2e.chapter6.Rational
-import scala2e.chapter7.GeneratorsAndFilters
+import scala2e.chapter07.GeneratorsAndFilters
 
 object Runner extends App {
   /*

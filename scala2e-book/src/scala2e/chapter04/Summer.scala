@@ -1,4 +1,4 @@
-package scala2e.chapter4
+package scala2e.chapter04
 import ChecksumAccumulator.calculate
 
 object Summer {

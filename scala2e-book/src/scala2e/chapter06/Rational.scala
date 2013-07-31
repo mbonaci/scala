@@ -1,4 +1,4 @@
-package scala2e.chapter6
+package scala2e.chapter06
 
 class Rational(n: Int, d: Int){
   require(d != 0)

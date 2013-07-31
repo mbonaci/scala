@@ -1,4 +1,4 @@
-package scala2e.chapter7
+package scala2e.chapter07
 
 object FunctionalFactorTableApp extends App {
   
