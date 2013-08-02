@@ -7,7 +7,8 @@ Java developer's Scala cheat sheet
 * 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. Simply, if the function you’re calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 * 127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
 * 127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
-* 135 - Operator precedence
+* 135 - Operator precedence:
+
 >  `(all other special characters)`  
 >  `*` `/` `%`  
 >  `+` `-`  
@@ -331,6 +332,7 @@ override def toString = contents mkString "\n"
 
 * 250 - In Scala hierarchy, **Null** and **Nothing** are the subclasses of every class, just as **Any** is the superclass of every other class
 * 250 - `Any` contains methods:
+
 > `==`..........`final`, same as `equals` (except for Java boxed numeric types)  
 > `!=`..........`final`, same as `!equals`  
 > `equals`....used by the subclasses to override equality  
@@ -339,6 +341,7 @@ override def toString = contents mkString "\n"
 > `toString`  
 
 * 251 - Class `Any` has two subclasses:
+
 > `AnyVal`      the parent class of every built-in **value class** in Scala  
 > `AnyRef`
 > 
