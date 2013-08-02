@@ -1,3 +1,6 @@
+* 252 - Scala type hierarchy:
+![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala-class-hierarchy_zpsfc2e1b03.jpg)
+
 * 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. Simply, if the function you’re calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 * 127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
 * 127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
@@ -27,6 +30,7 @@
 * 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier. For example, `unary_+`. They are used to support *properties* 
 * 153 - A **literal identifier** is an arbitrary string enclosed in back ticks
 * 156 - **Implicit conversion** definition:
+
 ```scala
 implicit def intToRational(x: Int) = new Rational(x)
 ```
@@ -341,5 +345,3 @@ override def toString = contents mkString "\n"
 >  - the instances of these classes are all written as literals (e.g. `5` is `Int`) 
 >  - `Unit` corresponds to Java's `void` and has a single instance value, `()`
 
-* 252 - Scala type hierarchy:
-![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala-class-hierarchy_zpsfc2e1b03.jpg)
