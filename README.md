@@ -36,6 +36,7 @@ for an implicit conversion to work, it needs to be in scope. If you place the im
 * 164 - In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value
 * 164 - The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`
 * 166 - **filter**: `for (file <- files if file.getName.endsWith(".scala"))`. Multiple filters example:
+
 ```scala
   for (
     file <- filesHere
@@ -45,6 +46,7 @@ for an implicit conversion to work, it needs to be in scope. If you place the im
 ```
 
 * 167 - **Nested loops** and **mid-stream variable binding** example with generators and filters. *Curly braces are used because the Scala compiler will not infer semicolons inside parentheses*
+
 ```scala
   def grep(pattern: String) =
     for {
@@ -54,10 +56,11 @@ for an implicit conversion to work, it needs to be in scope. If you place the im
       if trimmed.matches(pattern)
     } println(file + ": " + trimmed)
     
-```
+```  
 
 * 168 - **yield** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body* 
 * 174 - **match case** example:
+
 ```scala
 val target = firstArg match {  // firstArg is a previously initialized val
   case "salt" => println("pepper")
@@ -80,12 +83,14 @@ Unlike Java's `select case`, there is no fall through, `break` is implicit. `cas
 * 190 - **Target typing** - Scala infers type by examining the way the expression is used, e.g. `filter` example can be written: `someNums.filter(x => x > 0)`
 * 191 - **Placeholder** allow you to write: `someNums.filter(_ > 0)`, but only if each function parameter appears in function literal only once (one underscore for each param, sequentialy).
 Sometimes the compiler might not have enough info to infer missing param types:
+
 ```scala
 val f = _ + _  // error: missing parameter type for expanded function...
 val f = (_: Int) + (_: Int)  // OK: f(5, 10) = 15
 ```
 
 * 192 - **Partially applied function (PAF)** is an expression in which you don’t supply all of the arguments needed by the function. Instead, you supply some, or none:
+
 ```scala
 someNums.foreach(println _)  
 // is equivalent to:
@@ -93,6 +98,7 @@ someNums.foreach(x => println(x))
 // if a function value is required in that place you can ommit the placeholder:
 someNums.foreach(println)
 ```
+
 ```scala
 scala> def sum(a: Int, b: Int, c: Int) = a + b + c
 
@@ -110,6 +116,7 @@ res0: Int = 6
 To pass in an `Array[String]` instead of `String*` you need to append the arg with a colon and an `_*` symbol: `echo(arr: _*)`
 * 200 - **Named arguments** allow you to pass args to a function in a different order. The syntax is to precede each argument with a param name and an equals sign: `speed(distance = 100, time = 10)`. It is also possible to mix positional and named args, in which case the positional arguments, understandably, must come first
 * 201 - **Default parameter values** allows you to omit such a param when calling a function, in which case the param will be filled with its default value:
+
 ```scala
 def printTime(out: java.io.PrintStream = Console.out) = 
   out.println("time = " +  System.currentTimeMillis())
@@ -122,6 +129,7 @@ printTime(Console.err)
 
 * 202 - **Tail recursion** (**Tail call optimization**) If the recursive call is the last action in the function body, compiler is able to replace the call with a jump back to the beginning of the function, after updating param values.  
 Because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
+
 ```scala
 val funValue = nestedFun _
 def nestedFun(x: Int) {
@@ -130,6 +138,7 @@ def nestedFun(x: Int) {
 ```
 
 * 207 - **Higher order functions** - functions that take functions as params:
+
 ```scala
 /** 
  * refactoring imperative code:
@@ -169,6 +178,7 @@ def filesRegex(query: String) =
 ```
 
 * 213 - **Currying**: A curried function is applied to multiple argument lists, instead of just one:
+
 ```scala
 scala> def curriedSum(x: Int)(y: Int) = x + y
 curriedSum: (x: Int)(y: Int)Int
@@ -205,6 +215,7 @@ did need space for 'println _'
 ```
 
 * 215 - Another example of higher order function. `twice` repeats an operation two times and returns the result:
+
 ```scala
 scala> def twice(op: Double => Double, x: Double) = op(op(x))
 scala> twice(_ + 1, 5)  // f(f(x)) = x + 1 + 1, where x = 5
@@ -212,6 +223,7 @@ res2: Double = 7.0
 ```
 
 * 216 - When some control abstraction function, such as `withPrintWriter` bellow, opens a resource and *loans* it to a function, we call that the **Loan pattern**:
+
 ```scala
 def withPrintWriter(file: File, op: PrintWriter => Unit) {
   val writer = new PrintWriter(file)
@@ -229,10 +241,12 @@ withPrintWriter(
 ```
 In any method invocation in which you're passing in 'exactly one argument', you can opt to use curly braces instead of parentheses to surround the argument
 Using *currying*, you can redefine `withPrintWriter` signature like this:
+
 ```scala
 def withPrintWriter(file: File)(op: PrintWriter => Unit)
 ```
 which now enables you to call the function with a more pleasing syntax:
+
 ```scala
 val file = new File("date.txt")
 withPrintWriter(file) { // this curly brace is the second parameter
@@ -241,6 +255,7 @@ withPrintWriter(file) { // this curly brace is the second parameter
 ```
 
 * 218 - **By-name parameters** Typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function. But if you need to write a function that accepts as a parameter an expression that you don't want evaluated until it's called within your function? For this circumstance, Scala offers **call-by-name parameters**. A *call-by-name* mechanism passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
+
 ```scala
 var assertionsEnabled = true
 def myAssert(predicate: () => Boolean) =  // without by-name parameter
@@ -268,6 +283,7 @@ field to override a parameterless method, but it forbids defining a field and a 
           **values** (fields, methods, packages and sigleton objects)
           **types** (classes and traits)
 * 231 - **Parametric field** is a shorthand definition for *parameter* and *field*, where *field* gets assigned a *parameter's* value (the parametric field's name mustn't clash with an existing element in the same namespace, like field or method):
+
 ```scala
 class ArrayElement(
   val contents: Array[String]  // could be: 'var', 'private', 'protected', 'override'
@@ -275,6 +291,7 @@ class ArrayElement(
 ```
 
 * 232 - You pass an argument to the superconstructor by placing it in parentheses following the name of the superclass:
+
 ```scala
 class LineElement(s: String) extends ArrayElement(Array(s)) {
   override def width = s.length  // 'override' mandatory for overrides of concrete members
@@ -285,6 +302,7 @@ class LineElement(s: String) extends ArrayElement(Array(s)) {
 * 238 - If you want to disallow for a method to be overriden or for a class to be subclassed, use the keyword **final** (e.g. `final class ...` or `final def ...`)
 * 240 - **++** operator is used to concatenate two arrays
 * 241 - **zip** is used to pair two arrays (make `Tuple2`s), dropping the elements from the longer array that don't have corresponding elements in the shorter array, so:
+
 ```scala
 Array(1, 2, 3) zip Array("a", "b") // will evaluate to
 Array((1, "a"), (2, "b"))
@@ -299,6 +317,7 @@ def beside(that: Element): Element =
 ```
 
 * 242 - **mkString** is defined for all sequences (including arrays). `toString` is called on each element of the sequence. Separator is inserted between every two elems:
+
 ```scala
 override def toString = contents mkString "\n"
 ```
