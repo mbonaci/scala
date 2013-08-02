@@ -1,3 +1,6 @@
+Java developer's Scala cheat sheet
+-----
+
 * 252 - Scala type hierarchy:
 ![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala-class-hierarchy_zpsfc2e1b03.jpg)
 
