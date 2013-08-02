@@ -1,13 +1,17 @@
 package scala2e.chapter10
 
-import Element.elem
+import Spiral.spiral
 
 object App extends App {
-  val uniform = elem('u', 5, 1)
+  /*
+  val uniform = elem('u', 8, 1)
   val array = elem(Array("array1"))
   val line = elem("line")
-
-  println(uniform beside uniform above array above line)
-
+  
+  println(uniform above array above line)
+  *
+  */
+  
+  println(spiral(14, 0))
 
 }
