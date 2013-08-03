@@ -1,6 +1,6 @@
 package scala2e.chapter06
 
-class Rational(n: Int, d: Int){
+class Rational(n: Int, d: Int) extends Ordered[Rational]{
   require(d != 0)
   private val g = gcd(n.abs, d.abs)
   val numer: Int = n / g
@@ -80,4 +80,8 @@ class Rational(n: Int, d: Int){
   def max(that: Rational): Rational = {
     if(this.lessThan(that)) that else this
   }
+  
+  def compare(that: Rational) = 
+    (numer * that.denom) - (denom * that.numer)
+  
 }
