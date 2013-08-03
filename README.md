@@ -391,4 +391,7 @@ class Frog extends Animal with Philosophical with HasLegs {
 
 > - traits cannot have *class parameters*
 > - traits have dynamically bound `super` (unlike statically bound `super` in classes)
-> - 
+>   - the implementation to invoke is determined each time the trait is mixed into class
+>   - key to allowing traits to work as **stackable modifications**
+
+* 266 - **Ordered trait** allows you to implement all comparison operations on your class by defining only the method `compare`
