@@ -4,12 +4,12 @@ Java developer's Scala cheat sheet
 * 252 - Scala type hierarchy:
 ![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala-class-hierarchy_zpsfc2e1b03.jpg)
 
-* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. Simply, if the function you’re calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
+* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. Simply, if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 * 127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
 * 127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
 * 135 - Operator precedence:
 
->  `(all other special characters)`  
+>  `(all other special characters)` 
 >  `*` `/` `%`  
 >  `+` `-`  
 >  `:`  
@@ -30,7 +30,7 @@ Java developer's Scala cheat sheet
 * 146 - **Auxiliary constructors** - constructors other than the primary constructor
 * 147 - Every *auxiliary constructor* must invoke another constructor **of the same class** (like Java, only Java can also call superclass's constructor instead) as its first action. That other constructor must textually come before the calling constructor
 * 152 - The convention is to use camel case for constants, such as `XOffset`
-* 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you’d need to use this internal representation.
+* 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation.
 * 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier. For example, `unary_+`. They are used to support *properties* 
 * 153 - A **literal identifier** is an arbitrary string enclosed in back ticks
 * 156 - **Implicit conversion** definition:
@@ -38,7 +38,7 @@ Java developer's Scala cheat sheet
 ```scala
 implicit def intToRational(x: Int) = new Rational(x)
 ```
-for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class Rational, it won’t be in scope in the interpreter
+for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class Rational, it won't be in scope in the interpreter
 
 * 163 - **Assignment** always results in the **unit value**, `()`
 * 164 - In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value
@@ -89,7 +89,7 @@ Unlike Java's `select case`, there is no fall through, `break` is implicit. `cas
 * 189 - **foreach** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it on all elements
 * 190 - **filter** method takes a function that maps each element to true or false, e.g. `someNums.filter((x: Int) => x > 0)`
 * 190 - **Target typing** - Scala infers type by examining the way the expression is used, e.g. `filter` example can be written: `someNums.filter(x => x > 0)`
-* 191 - **Placeholder** allow you to write: `someNums.filter(_ > 0)`, but only if each function parameter appears in function literal only once (one underscore for each param, sequentialy).
+* 191 - **Placeholder** allow you to write: `someNums.filter(_ > 0)`, but only if each function parameter appears in function literal only once (one underscore for each param, sequentially).
 Sometimes the compiler might not have enough info to infer missing param types:
 
 ```scala
@@ -97,13 +97,13 @@ val f = _ + _  // error: missing parameter type for expanded function...
 val f = (_: Int) + (_: Int)  // OK: f(5, 10) = 15
 ```
 
-* 192 - **Partially applied function (PAF)** is an expression in which you don’t supply all of the arguments needed by the function. Instead, you supply some, or none:
+* 192 - **Partially applied function (PAF)** is an expression in which you don't supply all of the arguments needed by the function. Instead, you supply some, or none:
 
 ```scala
 someNums.foreach(println _)  
 // is equivalent to:
 someNums.foreach(x => println(x))
-// if a function value is required in that place you can ommit the placeholder:
+// if a function value is required in that place you can omit the placeholder:
 someNums.foreach(println)
 ```
 
@@ -283,12 +283,12 @@ def myAssert(predicate: => Boolean) =     // with by-name parameter
 * 222 - **Composition** means one class holds a reference to another
 * 224 - A method is **abstract** if it does not have an implementation (i.e., no equals sign or body). Unlike Java, no abstract modifier is allowed on method declarations. Methods that do have an implementation are called **concrete**.
 * 224 - Class is said to **declare an abstract method** and that it **defines a concrete method** (i.e. *declaration* is *abstract*, *definition* is *concrete*)
-* 225 - Methods with empty parentheses are called **empty-paren methods**. This convention (see bullet 127 on top) supports the *uniform access principle*, which says that the client code should not be affected by a decision to implement an attribute as a field or as a method (from the client code perspective, it should be irrelevant whether `val` or `def` is accessed. The only difference is speed, since fields are pre-computed when the class is initialized)
+* 225 - Methods with empty parentheses are called **empty-paren methods**. This convention (see bullet 127 on top) supports the *uniform access principle*, which says that the client code should not be affected by a decision to implement an attribute as a field or as a method (from the client code perspective, it should be irrelevant whether `val` or `def` is accessed. The only difference is speed, since fields are precomputed when the class is initialized)
 * 229 - Fields and methods belong to the same *namespace*, which makes possible for a
 field to override a parameterless method, but it forbids defining a field and a method with the same name 
 * 230 - *Java* has four namespaces: fields, methods, types and packages
         *Scala* has two namespaces:
-          **values** (fields, methods, packages and sigleton objects)
+          **values** (fields, methods, packages and singleton objects)
           **types** (classes and traits)
 * 231 - **Parametric field** is a shorthand definition for *parameter* and *field*, where *field* gets assigned a *parameter's* value (the parametric field's name mustn't clash with an existing element in the same namespace, like field or method):
 
@@ -307,7 +307,7 @@ class LineElement(s: String) extends ArrayElement(Array(s)) {
 }
 ```
 
-* 238 - If you want to disallow for a method to be overriden or for a class to be subclassed, use the keyword **final** (e.g. `final class ...` or `final def ...`)
+* 238 - If you want to disallow for a method to be overridden or for a class to be subclassed, use the keyword **final** (e.g. `final class ...` or `final def ...`)
 * 240 - **++** operator is used to concatenate two arrays
 * 241 - **zip** is used to pair two arrays (make `Tuple2`s), dropping the elements from the longer array that don't have corresponding elements in the shorter array, so:
 
@@ -330,7 +330,7 @@ def beside(that: Element): Element =
 override def toString = contents mkString "\n"
 ```
 
-* 250 - In Scala hierarchy, **Null** and **Nothing** are the subclasses of every class, just as **Any** is the superclass of every other class
+* 250 - In Scala hierarchy, **scala.Null** and **scala.Nothing** are the subclasses of every class (thus the name **bottom classes**), just as **Any** is the superclass of every other class
 * 250 - `Any` contains methods:
 
 > `==`..........`final`, same as `equals` (except for Java boxed numeric types)  
@@ -343,11 +343,52 @@ override def toString = contents mkString "\n"
 * 251 - Class `Any` has two subclasses:
 
 > `AnyVal`      the parent class of every built-in **value class** in Scala  
-> `AnyRef`
+> `AnyRef`      the base class of all **reference classes** in Scala
 > 
 > Built-in **value classes**: `Byte`, `Short`, `Char`, `Int`, `Long`, `Float`, `Double`, `Boolean` and `Unit`
 >  - represented (except `Unit`) as Java primitives at runtime
 >  - both `abstract` and `final`, so you cannot instantiate them with `new`
 >  - the instances of these classes are all written as literals (e.g. `5` is `Int`) 
 >  - `Unit` corresponds to Java's `void` and has a single instance value, `()`
+>  - Implicit conversion from `Int` to `RichInt` happens when a method that only exists in `RichInt` is called on `Int`. Similar **Booster classes** exist for other value types
+>  
+> All **reference classes** inherit from a special marker trait called `ScalaObject`
 
+* 254 - Scala stores integers the same way as Java, as 32-bit words, but it uses the *backup* class `java.lang.Integer` to be used whenever an int has to be seen as object
+* 256 - For **reference equality**, `AnyRef` class has `eq` method, which cannot be overridden (behaves like `==` in Java for reference types). Opposite of `eq` is `ne`
+* 256 - *Null* is a subclass of every reference class (i.e. class that inherits from `AnyRef`). It's not compatible with *value types* (`val i: Int = Null // type mismatch`)
+* *Nothing* is a subtype of every other type (of *Null* also). There are no values of this type, it's used primarily to signal abnormal termination:
+
+```scala
+def error(message: String): Nothing =
+  throw new RuntimeException(message)
+
+// because of its position in type hierarchy, you can use it like this:
+def divide(x: Int, y: Int): Int =     // must return 'Int'
+  if(y != 0) x / y                    // Returns 'Int'
+  else error("can't divide by zero")  // 'Nothing' is a subtype of 'Int'
+```
+
+* 258 - **Trait** encapsulates method and field definitions, which can then be reused by mixing them into classes
+
+> - *Trait* can be mixed in using keywords `extends` or `with`. The difference is that, by using `extends`, you implicitly inherit the trait's superclass (`AnyRef` if a trait has no explicit superclass)
+> - *Trait* also defines a type which can be used as a regular class
+> - If you want to mix a trait into a class that explicitly extends a superclass, use `extends` to indicate the superclass and `with` to mix in the trait:
+> - To mix in multiple traits using `with`:
+> - A class can override trait's members (polymorphism works the same way as with regular classes):
+
+```scala
+class Animal
+class Frog extends Animal with Philosophical with HasLegs {
+  override def toString = "green"
+  override def philosophize() {
+    println("It ain't easy being " + toString)
+  }
+}
+```
+
+* 261 - *Traits* can declare fields and maintain state (unlike Java interfaces). You can do anything in a trait definition that you can do with a class definition, with two exceptions:
+
+> - traits cannot have *class parameters*
+> - traits have dynamically bound `super` (unlike statically bound `super` in classes)
+> - 
