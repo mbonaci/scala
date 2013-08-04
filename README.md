@@ -429,7 +429,7 @@ res14: Int = 20
 <center>![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
 ![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)</center>
 
-* 275 - When to use *trait* and when an *abstract class*
+* 275 - **When to use _trait_ and when an _abstract class_**
 
 > - if the behavior will not be reused make a concrete class
 > - if it might be used in multiple, unrelated classes, use a trait
