@@ -4,7 +4,11 @@ Java developer's Scala cheat sheet
 * 252 - Scala type hierarchy:
 ![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala-class-hierarchy_zpsfc2e1b03.jpg)
 
-* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. Simply, if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
+* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 
+
+> - 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. 
+>   - if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
+
 * 127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
 * 127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
 * 135 - Operator precedence:
@@ -28,10 +32,12 @@ Java developer's Scala cheat sheet
 * 143 - A **precondition** is a constraint on values passed into a method or constructor (E.g. `require(d != 0)` in the class body will throw `IllegalArgumentException: requirement failed` when `0` is passed as `d`)
 * 144 - If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them
 * 146 - **Auxiliary constructors** - constructors other than the primary constructor
-* 147 - Every *auxiliary constructor* must invoke another constructor **of the same class** (like Java, only Java can also call superclass's constructor instead) as its first action. That other constructor must textually come before the calling constructor
+
+> - Every *auxiliary constructor* must invoke another constructor **of the same class** (like Java, only Java can also call superclass's constructor instead) as its first action. That other constructor must textually come before the calling constructor
+
 * 152 - The convention is to use camel case for constants, such as `XOffset`
-* 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation.
-* 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier. For example, `unary_+`. They are used to support *properties* 
+* 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation
+* 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier, e.g. `unary_+` (used to support *properties*)
 * 153 - A **literal identifier** is an arbitrary string enclosed in back ticks
 * 156 - **Implicit conversion** definition:
 
@@ -136,7 +142,8 @@ printTime(Console.err)
 ```
 
 * 202 - **Tail recursion** (**Tail call optimization**) If the recursive call is the last action in the function body, compiler is able to replace the call with a jump back to the beginning of the function, after updating param values.  
-Because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
+
+> - Because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
 
 ```scala
 val funValue = nestedFun _
@@ -262,7 +269,7 @@ withPrintWriter(file) { // this curly brace is the second parameter
 }
 ```
 
-* 218 - **By-name parameters** Typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function. But if you need to write a function that accepts as a parameter an expression that you don't want evaluated until it's called within your function? For this circumstance, Scala offers **call-by-name parameters**. A *call-by-name* mechanism passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
+* 218 - **By-name parameters** Typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function. What if you need to write a function that accepts as a parameter an expression that you don't want evaluated until it's called within your function? For this circumstance, Scala offers **call-by-name parameters**. A *call-by-name* mechanism passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
 
 ```scala
 var assertionsEnabled = true
@@ -405,7 +412,7 @@ class Frog extends Animal with Philosophical with HasLegs {
 > - traits let you modify the methods of a class in a way that allows you to stack those modifications together, by mixing in multiple traits
 > - when a trait extends a superclass, it means that the trait can only be mixed in in classes that also extend the same superclass
 > - traits can have `abstract override` methods because of dynamically bound `super` (the call works if the trait is mixed in after another trait or class has already given a concrete definition to that method)
-> - when you instantiate a class with `new` Scala takes the class and all of its inherited classes and traits and puts them in a single, *linear* order, thus this behavior is called **linearization**. Then, when you call `super` inside one of those classes, the invoked method is simply the next one up the chain
+> - when you instantiate a class with `new` Scala takes the class and all of its inherited classes and traits and puts them in a single, *linear* order, thus this behavior is called **linearization**. Then, when you call `super` inside one of those classes, the invoked method is the first implementation up the chain (right in the image)
 > - the **order of mixins** is significant. Traits further to the right take effect first
 
 ```scala
@@ -419,5 +426,15 @@ scala> queue.get()
 res14: Int = 20
 ```
 
-![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
-![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)
+<center>![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
+![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)</center>
+
+* 275 - When to use *trait* and when an *abstract class*
+
+> - if the behavior will not be reused make a concrete class
+> - if it might be used in multiple, unrelated classes, use a trait
+> - if you want to inherit from it in Java code, use an abstract class
+>   - a trait with only abstract members translates to Java `interface`
+> - if you plan to distribute it in compiled form and you expect others to write classes that inherit from your code, use an abstract class (when a trait gains or loses a member, any class that inherit from it must be recompiled)
+> - if efficiency is very important use a class (in Java, a virtual method invocation of a class member is faster than an interface method invocation)
+> - if none of the above fits your case, use trait
