@@ -403,4 +403,5 @@ class Frog extends Animal with Philosophical with HasLegs {
 * 267 - **Stackable modifications**
 
 > - traits let you modify the methods of a class in a way that allows you to stack those modifications together, by mixing in multiple traits
-> - 
+> - when a trait extends a superclass, it means that the trait can only be mixed in in classes that also extend the same superclass
+> - traits can have `abstract override` methods because of dynamically bound `super` (the call works if the trait is mixed in after another trait or class has already given a concrete definition to that method)
