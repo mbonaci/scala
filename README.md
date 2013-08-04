@@ -405,3 +405,19 @@ class Frog extends Animal with Philosophical with HasLegs {
 > - traits let you modify the methods of a class in a way that allows you to stack those modifications together, by mixing in multiple traits
 > - when a trait extends a superclass, it means that the trait can only be mixed in in classes that also extend the same superclass
 > - traits can have `abstract override` methods because of dynamically bound `super` (the call works if the trait is mixed in after another trait or class has already given a concrete definition to that method)
+> - when you instantiate a class with `new` Scala takes the class and all of its inherited classes and traits and puts them in a single, *linear* order, thus this behavior is called **linearization**. Then, when you call `super` inside one of those classes, the invoked method is simply the next one up the chain
+> - the **order of mixins** is significant. Traits further to the right take effect first
+
+```scala
+# // mixing in a trait when instantiating with 'new' (no need to create a new class)
+scala> val queue = new BasicIntQueue with Doubling with Filtering  // filtering is applied first
+queue: BasicIntQueue with Doubling with Filtering = $anon$1@5fa12d
+
+scala> queue.put(10)  // passes the Filtering and then gets doubled with Doubling trait
+scala> queue.put(-1)  // not placed in the queue (negative number filter trait applied)
+scala> queue.get()
+res14: Int = 20
+```
+
+![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
+![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)
