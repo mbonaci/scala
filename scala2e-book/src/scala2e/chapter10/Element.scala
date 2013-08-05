@@ -88,6 +88,8 @@ object Element {
   def elem(s: String): Element =
     new LineElement(s)
   
-  def elem(ch: Char, width: Int, height: Int): Element =
+  def elem(ch: Char, width: Int, height: Int): Element = {
+    require(width > 0)
     new UniformElement(ch, width, height)
+  }
 }
