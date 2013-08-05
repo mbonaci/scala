@@ -554,6 +554,7 @@ def widen(w: Int): Element =
                             // predicate function that returns 'Boolean'
 // if predicate evaluates to 'true', 'ensuring' results with 'Element' on which it was invoked
 // since this is the last expression of the method, 'widen' returns the 'Element'
+// throws AssertionError if predicate returns 'false'
 ```
 
 * 297 - **Unit testing**
@@ -585,7 +586,20 @@ class ElementSuite extends FunSuite {
   }
 }
 
-// triple equals, if assert fails returns convenient error msg. e.g. "3 did not equal 2"
+// triple equals, if assert fails, returns nice error msg. e.g. "3 did not equal 2":
+assert(e.width === 2)
+
+// alternatively, 'expect' can be used:
+expect(2) {  // yields "expected 2, but got 3" in the test failure report
+  e.width
+}
+
+// if you want to check whether a method throws expected exception use 'intercept'
+// if the code does not throw expected exception or doesn't throw at all
+// 'TestFailedException' is thrown, along with a helpful error msg
+intercept[IllegalArgumentException] {  // returns caught exception
+  elem('x', -2, 3)
+}
 ```
 
 >   - although ScalaTest includes Runner application, you can also run Suite directly from the Scala interpreter by invoking `execute` on it (trait Suite's `execute` method uses reflection to discover its test methods and invoke them):
@@ -596,4 +610,26 @@ Test Starting - ElementSuite.testUniformElement
 Test Succeeded - ElementSuite.testUniformElement
 ```
 
->   - 
+>   - in **BDD**, the emphasis is on writing human-readable specifications of the expected code behavior, along with the accompanying tests that verify that behavior
+>   - for that purpose, ScalaTest includes several traits: Spec, WordSpec, FlatSpec and FeatureSpec
+
+```scala
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldMatchers
+import Element.elem
+
+class ElementSpec extends FlatSpec with ShouldMatchers {
+  "A UniformElement" should "have a width equal to the passed value" in {
+    val e = elem('x', 2, 3)
+    e.width should be (2)
+  }
+  it should "have a height equal to the passed value" in {
+    val e = elem('x', 2, 3)
+    e.height should be (3)
+  }
+  it should "throw an IAE if passed a negative width" in {
+    evaluating {
+      elem('x', -2, 3)
+    } should produce [IllegalArgumentException]
+  }
+}
