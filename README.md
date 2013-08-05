@@ -569,8 +569,8 @@ import Element.elem
 
 class ElementSuite extends Suite {
   def testUniformElement() {
-    val ele = elem('x', 2, 3)
-    assert(ele.width == 2)
+    val e = elem('x', 2, 3)
+    assert(e.width == 2)
   }
 }
 
@@ -580,8 +580,8 @@ class ElementSuite extends FunSuite {
   // test is a method in FunSuite which is invoked by ElementSuite's primary constructor
   test("elem result should have passed width") {  // name of test
     // curly - function passed as by-name param to 'test', which registers it for later execution
-    val ele = elem('x', 2, 3)
-    assert(ele.width == 2)  // if fails you see error message with line number
+    val e = elem('x', 2, 3)
+    assert(e.width == 2)  // if fails you see error message with line number
   }
 }
 
