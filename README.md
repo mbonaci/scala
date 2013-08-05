@@ -464,7 +464,7 @@ import one.{two}
 import one.two.three._  // could also be written as `import one.two.three.{_}`
 
 // to use import with objects and classes
-def showOne(one: One) {  // imports all members of its parameter `one: One`
+def showOne(one: One) {  // imports all members of its parameter `one` of class `One`
   import one._  // use imports wherever you like
   println(name + "s are the best")
 }
@@ -513,23 +513,22 @@ import Predef._
 
 ```scala
 // in file 'one/package.scala'
-package object Primus {
-  def showOne(one: One) {
-    import one._
+package object one {
+  def showSomeone(someone: Someone) {
+    import someone._
     println(name + ", I am")
   }
 }
 // in file View.scala
 package view
-import one.One  // class defined in package 'one'
-import one.showOne
+import one.Someone  // class defined in package 'one'
+import one.showSomeone
 object ViewDialog {
   def main(args: Array[String]) {
-    for(one <- One.dialog) {
-      showOne(one)
+    for(someone <- Someone.dialog) {
+      showSomeone(someone)
     }
   }
 }
 ```
-
 
