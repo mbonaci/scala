@@ -588,7 +588,7 @@ class ElementSuite extends FunSuite {
 // triple equals, if assert fails returns convenient error msg. e.g. "3 did not equal 2"
 ```
 
->   - although ScalaTest includes Runner application, you can also run Suite directly from the Scala interpreter by invoking `execute` on it (Suite trait's `execute` method uses reflection to discover its test methods and invoke them):
+>   - although ScalaTest includes Runner application, you can also run Suite directly from the Scala interpreter by invoking `execute` on it (trait Suite's `execute` method uses reflection to discover its test methods and invoke them):
 
 ```scala
 scala> (new ElementSuite).execute()
