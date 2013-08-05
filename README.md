@@ -436,7 +436,7 @@ res14: Int = 20
 > - if you want to inherit from it in Java code, use an abstract class
 >   - a trait with only abstract members translates to Java `interface`
 > - if you plan to distribute it in compiled form and you expect others to write classes that inherit from your code, use an abstract class (when a trait gains or loses a member, any class that inherit from it must be recompiled)
-> - if efficiency is very important use a class (in Java, a virtual method invocation of a class member is faster than an interface method invocation)
+> - if efficiency is very, very important, use a class (in Java, a virtual method invocation of a class member is faster than an interface method invocation)
 > - if none of the above fits your case, use trait
 
 * 278 - **Packages** can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
@@ -493,3 +493,43 @@ import Predef._
 > - Java allows access to `protected` members to classes in the same package even if they don't inherit from the class that declares protected members. Scala don't
 
 * 289 - **Access qualifiers**
+
+> - a modifier in the form `private[X]` or `protected[X]` means that access is applied "up to X", where `X` designates some enclosing package, class or a singleton
+> - **object-private** `private[this]` means that access is allowed only from within the the object that contains definition itself, not its instances (`ObjName.privMember` will fail in this case)
+
+* 291 - **Companion objects** or **Singletons**
+
+> - a class shares all its access rights with its companion object and vice versa
+> - `protected` modifier makes no sense since *Companion objects* cannot be subclassed
+
+* 292 - **Package objects**
+
+> - any kind of definition you can put in a class can go in a *package object*
+> - each package is allowed to have one *package object*
+> - frequently used to hold package-wide *type aliases* and *implicit conversions*
+> - the top level `scala` package has a package object, which is available to all Scala code
+> - they are compiled to `package.class` file in that package's directory
+> - access is the same as for any other package element:
+
+```scala
+// in file 'one/package.scala'
+package object Primus {
+  def showOne(one: One) {
+    import one._
+    println(name + ", I am")
+  }
+}
+// in file View.scala
+package view
+import one.One  // class defined in package 'one'
+import one.showOne
+object ViewDialog {
+  def main(args: Array[String]) {
+    for(one <- One.dialog) {
+      showOne(one)
+    }
+  }
+}
+```
+
+
