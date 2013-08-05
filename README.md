@@ -532,4 +532,67 @@ object ViewDialog {
 }
 ```
 
+* - **Assertions**
+
+> - written as calls of a predefined method `assert` (defined in the `Predef` singleton)
+> - assertions and ensuring checks can be enabled/disabled with JVM's `-ea`/`-da` flags
+> - `assert` methods and `ensuring` convenience methods:
+
+```scala
+assert(condition) // throws AssertionError
+assert(condition, explanation: Any) // AssertionError contains explanation.toString
+
+// 'ensuring' example
+def widen(w: Int): Element =
+  if(w <= width) this
+  else {
+    val left = elem(' ', (w - width) / 2, height)
+    val right = elem(' ', w - width - left.width, height)
+    left beside this beside right
+  } ensuring(w <= _.width)  // takes a predicate function
+                            // when invoked, it passes return type ('Element') to the 
+                            // predicate function that returns 'Boolean'
+// if predicate evaluates to 'true', 'ensuring' results with 'Element' on which it was invoked
+// since this is the last expression of the method, 'widen' returns the 'Element'
+```
+
+* 297 - **Unit testing**
+
+> - there are many options for unit testing in Scala, e.g. Java `JUnit` and `TestNG` tools or tools written in Scala, e.g. `ScalaTest`, `specs` and `ScalaCheck`  
+
+> - [ScalaTest](http://www.scalatest.org)
+>   - the simplest way to test with *ScalaTest* is to extend `org.scalatest.Suite` and define test methods in those classes. Methods start with `test`:
+
+```scala
+import org.scalatest.Suite
+import Element.elem
+
+class ElementSuite extends Suite {
+  def testUniformElement() {
+    val ele = elem('x', 2, 3)
+    assert(ele.width == 2)
+  }
+}
+
+// ScalaTest offers a trait 'FunSuite', which overrides 'execute'
+// so you can define tests as function values, rather than methods
+class ElementSuite extends FunSuite {
+  // test is a method in FunSuite which is invoked by ElementSuite's primary constructor
+  test("elem result should have passed width") {  // name of test
+    // curly - function passed as by-name param to 'test', which registers it for later execution
+    val ele = elem('x', 2, 3)
+    assert(ele.width == 2)  // if fails you see error message with line number
+  }
+}
+
+// triple equals, if assert fails returns convenient error msg. e.g. "3 did not equal 2"
+```
+
+>   - although ScalaTest includes Runner application, you can also run Suite directly from the Scala interpreter by invoking `execute` on it (Suite trait's `execute` method uses reflection to discover its test methods and invoke them):
+
+```scala
+scala> (new ElementSuite).execute()
+Test Starting - ElementSuite.testUniformElement
+Test Succeeded - ElementSuite.testUniformElement
+```
 
