@@ -426,10 +426,10 @@ scala> queue.get()
 res14: Int = 20
 ```
 
-<center>![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
-![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)</center>
+![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
+![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)
 
-* 275 - **When to use _trait_ and when an _abstract class_**
+* 275 - **When to use a _trait_ and when an _abstract class_**
 
 > - if the behavior will not be reused make a concrete class
 > - if it might be used in multiple, unrelated classes, use a trait
@@ -438,3 +438,58 @@ res14: Int = 20
 > - if you plan to distribute it in compiled form and you expect others to write classes that inherit from your code, use an abstract class (when a trait gains or loses a member, any class that inherit from it must be recompiled)
 > - if efficiency is very important use a class (in Java, a virtual method invocation of a class member is faster than an interface method invocation)
 > - if none of the above fits your case, use trait
+
+* 278 - **Packages** can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
+
+> - a package represents a scope, whose contents is accessed relative to current location
+> - a top level package that's outside all packages user can write is called `_root_`
+> - all names accessible outside packages can be access from inside the package the same way
+> - if you stick with one package per file then Java package rules apply
+
+```scala
+// this
+package one
+package two
+// is syntactic sugar for this
+package one {
+  package two {
+
+// to import the package (not a specific package member)
+import one.two  // and then use objects like this: `two.Two.method`
+
+// which is a shorthand for 'Import selector' syntax:
+import one.{two}
+
+// to access all members of a package (underscore instead of Java's star)
+import one.two.three._  // could also be written as `import one.two.three.{_}`
+
+// to use import with objects and classes
+def showOne(one: One) {  // imports all members of its parameter `one: One`
+  import one._  // use imports wherever you like
+  println(name + "s are the best")
+}
+
+// to import more than one specific package member use 'Import selectors'
+import one.{One1, One2}
+
+// to rename import
+import one.{One1 => First, One2}  // `One1` is accessed as `First` (or `one.One1`)
+
+// to import all members and rename one of them
+import one.two.{Two => Second, _}  // catch-all must come last in the list
+
+// to import all members except one (useful for ambiguities)
+import one.two.{Two => _, _}  // excludes `Two`
+
+// implicit imports (later imports overshadow earlier ones)
+import java.lang._
+import scala._
+import Predef._
+```
+
+* 288 - **Access modifiers** available in Scala: `Private` and `Protected`
+
+> - outer class's access to `private` members of its inner class is forbidden
+> - Java allows access to `protected` members to classes in the same package even if they don't inherit from the class that declares protected members. Scala don't
+
+* 289 - **Access qualifiers**
