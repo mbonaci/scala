@@ -640,3 +640,19 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 > - for classes with `case` modifier, Scala compiler adds some syntactic sugar:
 >   - a factory method with the same name as the class, which allows you to create new object without keyword `new` (`val m = MyCls("x")`)
 >   - all class parameters implicitly get a `val` prefix, so they are made into fields
+>   - compiler adds "natural" implementations of methods `toString`, `hashCode` and `equals`, which will print, hash and compare a whole tree of the class and its arguments
+>   - `copy` method is added to the class (used to create modified copies). To use it, you specify the changes by using *named parameters* and for any param you don't specify, the original value is used:
+
+```scala
+// copy method example
+scala> abstract class Expr
+scala> case class Var(name: String) extends Expr
+scala> case class Number(num: Double) extends Expr
+scala> case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
+scala> val op = BinOp("+", Number(1), Var("x"))
+op: BinOp = BinOp(+,Number(1.0),Var(x))
+
+scala> op.copy(operator = "-")
+res0: BinOp = BinOp(-,Number(1.0),Var(x))
+```
+
