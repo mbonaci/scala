@@ -28,7 +28,7 @@ Java developer's Scala cheat sheet
 * 136 - The **operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`
 * 136 - **Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`
 * 137 - `a ::: b ::: c` is treated as `a ::: (b ::: c)`
-* 141 - **Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*
+* 141 - **Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*. When declaring a class you can drop empty `{}`
 * 143 - A **precondition** is a constraint on values passed into a method or constructor (E.g. `require(d != 0)` in the class body will throw `IllegalArgumentException: requirement failed` when `0` is passed as `d`)
 * 144 - If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them
 * 146 - **Auxiliary constructors** - constructors other than the primary constructor
@@ -66,11 +66,11 @@ for an implicit conversion to work, it needs to be in scope. If you place the im
     for {
       file <- files if file.getName.endsWith(".scala")  // semicolons inferred
       line <- fileLines(file)
-      trimmed = line.trim
+      trimmed = line.trim  // mid-stream variable
       if trimmed.matches(pattern)
     } println(file + ": " + trimmed)
     
-```  
+```
 
 * 168 - **yield** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body* 
 * 174 - **match case** example:
@@ -623,13 +623,20 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
     val e = elem('x', 2, 3)
     e.width should be (2)
   }
-  it should "have a height equal to the passed value" in {
+  it should "have a height equal to the passed value" in {  // 'specifier clause'
     val e = elem('x', 2, 3)
     e.height should be (3)
   }
-  it should "throw an IAE if passed a negative width" in {
+  it should "throw an IAE if passed a negative width" in {  // or 'must' or 'can'
     evaluating {
       elem('x', -2, 3)
     } should produce [IllegalArgumentException]
   }
 }
+```
+
+* 310 - **Case classes**
+
+> - for classes with `case` modifier, Scala compiler adds some syntactic sugar:
+>   - a factory method with the same name as the class, which allows you to create new object without keyword `new` (`val m = MyCls("x")`)
+>   - all class parameters implicitly get a `val` prefix, so they are made into fields
