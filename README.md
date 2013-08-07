@@ -4,9 +4,9 @@ Java developer's Scala cheat sheet
 * 252 - Scala type hierarchy:
 ![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/Scala-class-hierarchy_zps124c49e1.png)
 
-* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 
+* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects
 
-> - 226 - **Pure methods** are methods that don't have any side effects and don't depend on mutable state. 
+> - **Pure methods** are methods that don't have any side effects and don't depend on mutable state (226) 
 >   - if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 
 * 127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
