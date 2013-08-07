@@ -648,6 +648,7 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 scala> abstract class Expr
 scala> case class Var(name: String) extends Expr
 scala> case class Number(num: Double) extends Expr
+scala> case class UnOp(operator: String, arg: Expr) extends Expr
 scala> case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
 scala> val op = BinOp("+", Number(1), Var("x"))
 op: BinOp = BinOp(+,Number(1.0),Var(x))
@@ -656,3 +657,25 @@ scala> op.copy(operator = "-")
 res0: BinOp = BinOp(-,Number(1.0),Var(x))
 ```
 
+* 312 - **Pattern matching**
+
+> - the biggest advantage of *case classes* is that they support *pattern matching*
+
+```scala
+// written in the form of 'selector match {alternatives}'
+def simplifyTop(expr: Expr): Expr = expr match {
+  case UnOp("-", UnOp("-", e))  => e
+  case BinOp("+", e, Number(0)) => e
+  case BinOp("*", e, Number(1)) => e
+  case _ => expr
+}
+```
+
+> - `match` expression is evaluated by trying each of the patterns in the order they are written. The first pattern that matches is selected and the part following the fat arrow is executed
+> - a **constant pattern** like `"+"` or `1` matches values that are equal to the constant when compared with `==`
+> - a **variable pattern** like `e` matches every value and variable than refers to that value in the right hand side of the case clause
+> - the **wildcard pattern** `_` matches every value, but it doesn't result with variable
+> - a **constructor pattern** `UnOp("-", e)` matches any value of type `UnOp` whose first argument matches `"-"` and second argument matches `e`. Argument to the constructor is itself a pattern (pattern nesting)
+> - `match` _is an expression_ in Scala (always results in a value)
+> - there is _no *fall through*_ behavior into the next case
+> - _if none of the patterns match_, an exception `MatchError` is thrown
