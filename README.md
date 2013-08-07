@@ -2,7 +2,7 @@ Java developer's Scala cheat sheet
 -----
 
 * 252 - Scala type hierarchy:
-![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala-class-hierarchy_zpsfc2e1b03.jpg)
+![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/Scala-class-hierarchy_zps124c49e1.png)
 
 * 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects. 
 
