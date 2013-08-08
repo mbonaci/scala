@@ -1,5 +1,10 @@
 Java developer's Scala cheat sheet
 -----
+Shamelessly ripped of from [Programming in Scala, second edition](http://www.artima.com/shop/programming_in_scala_2ed).
+(I did ask for permission).  
+Basically, while I'm going through the book, I'm taking notes here, so I can later use it as a quick reference.
+If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean).  
+Thank you.
 
 ### 252 - Scala type hierarchy
 ![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/Scala-class-hierarchy_zps124c49e1.png)
