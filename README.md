@@ -46,7 +46,7 @@ Thank you.
 * 152 - The convention is to use camel case for constants, such as `XOffset`
 * 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation
 * 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier, e.g. `unary_+` (used to support *properties*)
-* 153 - A **literal identifier** is an arbitrary string enclosed in back ticks
+* 153 - A **literal identifier** is an arbitrary string enclosed in back ticks. Used to tell Scala to treat a keyword as an ordinary identifier, e.g., writing `Thread.\`yield\`()` treats `yield` as an identifier rather than a keyword.
 * 156 - **Implicit conversion** definition:
 
 ```scala
@@ -715,8 +715,7 @@ expr match {
 * 315 - **Constant patterns**
 
 > - matches only itself (comparison is done using `==`)
-> - any literal may be used as a constant
-> - any `val` or singleton object can be used as a constant
+> - any literal, `val` or singleton object can be used as a constant
 
 ```scala
 def describe(x: Any) = x match {
@@ -732,3 +731,25 @@ def describe(x: Any) = x match {
 
 > - matches any object, like wildcard
 > - unlike the wildcard, Scala binds the variable to whatever the object is
+
+```scala
+import math.{E, Pi}
+
+val pi = math.Pi
+
+E match {
+  case 0 => "zero"
+  case Pi => "strange! " + E + " cannot be " + Pi
+  case `pi` => "strange? Pi = " + pi  // will be treated as constant ('val pi')
+  case pi => "That could be anything: " + pi  // not constant pattern ('val pi'). Variable pattern!
+  case _ => "What?"  // Compiler reports "Unreachable code" error
+}
+/*
+ * How does Scala know whether 'Pi' is a constant from 'scala.math' and not a variable?
+ * A simple lexical rule is used:
+ *   - If a name starts with a lowercase letter Scala treats it as a variable pattern.
+ *   - All other references are treated as constants
+ *   - With exception of fields: 'this.pi' and 'obj.pi', and lowercase names in back ticks
+ */
+```
+
