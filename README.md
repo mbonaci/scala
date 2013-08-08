@@ -657,7 +657,6 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 >   - `copy` method is added to the class (used to create modified copies). To use it, you specify the changes by using *named parameters* and for any param you don't specify, the original value is used:
 
 ```scala
-// copy method example
 scala> abstract class Expr
 scala> case class Var(name: String) extends Expr
 scala> case class Number(num: Double) extends Expr
@@ -666,6 +665,7 @@ scala> case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
 scala> val op = BinOp("+", Number(1), Var("x"))
 op: BinOp = BinOp(+,Number(1.0),Var(x))
 
+// copy method example
 scala> op.copy(operator = "-")
 res0: BinOp = BinOp(-,Number(1.0),Var(x))
 ```
@@ -682,6 +682,9 @@ def simplifyTop(expr: Expr): Expr = expr match {
   case BinOp("*", e, Number(1)) => e
   case _ => expr
 }
+
+// the right hand side can be empty (the result is 'Unit'):
+case _ =>
 ```
 
 > - `match` expression is evaluated by trying each of the patterns in the order they are written. The first pattern that matches is selected and the part following the fat arrow is executed
@@ -692,3 +695,35 @@ def simplifyTop(expr: Expr): Expr = expr match {
 > - `match` _is an expression_ in Scala (always results in a value)
 > - there is _no *fall through*_ behavior into the next case
 > - _if none of the patterns match_, an exception `MatchError` is thrown
+
+* 314 - **Wildcard patterns**
+
+```scala
+// in this example, since we don't care about elements of a binary operation
+// only whether it's a binary operation or not, we can use wildcard pattern:
+expr match {
+  case BinOp(_, _, _) => println(expr + "is a binary operation")
+  case _ => println("It's something entirely different")
+}
+```
+
+* 315 - **Constant patterns**
+
+> - matches only itself (comparison is done using `==`)
+> - any literal may be used as a constant
+> - any `val` or singleton object can be used as a constant
+
+```scala
+def describe(x: Any) = x match {
+  case 5 => "five"
+  case true => "truth"
+  case "hello" => "hi"
+  case Nil => "the empty list"  // built-in singleton
+  case _ => "something unexpected"
+}
+```
+
+* 316 - **Variable patterns**
+
+> - matches any object, like wildcard
+> - unlike the wildcard, Scala binds the variable to whatever the object is
