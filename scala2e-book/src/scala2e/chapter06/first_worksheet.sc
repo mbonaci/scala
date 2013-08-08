@@ -1,15 +1,15 @@
 package scala2e.chapter4
 
-import ChecksumAccumulator.calculate
-import scala2e.chapter6.Rational
+import scala2e.chapter04.ChecksumAccumulator.calculate
+import scala2e.chapter06.Rational
 
 
 object Fall {
 
-  implicit def intToRational(i: Int) = new Rational(i)
-                                                  //> intToRational: (i: Int)scala2e.chapter6.Rational
   calculate("s")                                  //> res0: Int = -115
 
+  implicit def intToRational(i: Int) = new Rational(i)
+                                                  //> intToRational: (i: Int)scala2e.chapter06.Rational
   println("""|Welcome to Ultamix 3000.
              |Type "HELP" for help.""".stripMargin)
                                                   //> Welcome to Ultamix 3000.
@@ -21,21 +21,21 @@ object Fall {
   val not = !(1 > 2)                              //> not  : Boolean = true
   
   // chapter 6 - Functional Objects
-  val aux = new Rational(223)                     //> aux  : scala2e.chapter6.Rational = 223
+  val aux = new Rational(223)                     //> aux  : scala2e.chapter06.Rational = 223
 
-  val r = new Rational(1, 2)                      //> r  : scala2e.chapter6.Rational = 1/2
-  val o = new Rational(2, 3)                      //> o  : scala2e.chapter6.Rational = 2/3
+  val r = new Rational(1, 2)                      //> r  : scala2e.chapter06.Rational = 1/2
+  val o = new Rational(2, 3)                      //> o  : scala2e.chapter06.Rational = 2/3
   
-  val add = r + o                                 //> add  : scala2e.chapter6.Rational = 7/6
-  val mul = r * o                                 //> mul  : scala2e.chapter6.Rational = 1/3
-  val dev = r / o                                 //> dev  : scala2e.chapter6.Rational = 3/4
-  val sub = r - o                                 //> sub  : scala2e.chapter6.Rational = -1/6
+  val add = r + o                                 //> add  : scala2e.chapter06.Rational = 7/6
+  val mul = r * o                                 //> mul  : scala2e.chapter06.Rational = 1/3
+  val dev = r / o                                 //> dev  : scala2e.chapter06.Rational = 3/4
+  val sub = r - o                                 //> sub  : scala2e.chapter06.Rational = -1/6
 
-  val impl = 2 * r                                //> impl  : scala2e.chapter6.Rational = 1
+  val impl = 2 * r                                //> impl  : scala2e.chapter06.Rational = 1
 
-  val oneHalf = new Rational(1, 2)                //> oneHalf  : scala2e.chapter6.Rational = 1/2
-  val twoThirds = new Rational(2, 3)              //> twoThirds  : scala2e.chapter6.Rational = 2/3
-  val result = (oneHalf / 7) + (1 - twoThirds)    //> result  : scala2e.chapter6.Rational = 17/42
+  val oneHalf = new Rational(1, 2)                //> oneHalf  : scala2e.chapter06.Rational = 1/2
+  val twoThirds = new Rational(2, 3)              //> twoThirds  : scala2e.chapter06.Rational = 2/3
+  val result = (oneHalf / 7) + (1 - twoThirds)    //> result  : scala2e.chapter06.Rational = 17/42
   
   val n = 8                                       //> n  : Int = 8
   val half =
