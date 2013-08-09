@@ -19,7 +19,7 @@ Thank you.
 * 127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
 * 135 - Operator precedence:
 
->  `(all other special characters)` 
+>  `(all other special characters)`  
 >  `*` `/` `%`  
 >  `+` `-`  
 >  `:`  
