@@ -46,7 +46,7 @@ Thank you.
 * 152 - The convention is to use camel case for constants, such as `XOffset`
 * 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation
 * 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier, e.g. `unary_+` (used to support *properties*)
-* 153 - A **literal identifier** is an arbitrary string enclosed in back ticks. Used to tell Scala to treat a keyword as an ordinary identifier, e.g., writing `Thread.\`yield\`()` treats `yield` as an identifier rather than a keyword.
+* 153 - A **literal identifier** is an arbitrary string enclosed in back ticks. Used to tell Scala to treat a keyword as an ordinary identifier, e.g., writing `Thread.'yield'()` treats `yield` as an identifier rather than a keyword.
 * 156 - **Implicit conversion** definition:
 
 ```scala
@@ -138,7 +138,7 @@ res0: Int = 6
 
 * 197 - **Closures** see the changes to **free variables** and vice versa, changes to the *free variable* made by *closure* are seen outside of *closure*
 * 199 - **Repeated parameters** Scala allows you to indicate that the last param to a function may be repeated. Syntax: `def echo(args: String*) = for(arg <- args) println(arg)`. Now `echo` may be called with zero or more params.  
-To pass in an `Array[String]` instead of `String*` you need to append the arg with a colon and an `_*` symbol: `echo(arr: _*)`
+To pass in an `Array[String]` instead, you need to append the arg with a colon and an `_*` symbol: `echo(Array("arr", "of", "strings"): _*)`
 * 200 - **Named arguments** allow you to pass args to a function in a different order. The syntax is to precede each argument with a param name and an equals sign: `speed(distance = 100, time = 10)`. It is also possible to mix positional and named args, in which case the positional arguments, understandably, must come first
 * 201 - **Default parameter values** allows you to omit such a param when calling a function, in which case the param will be filled with its default value:
 
@@ -753,3 +753,8 @@ E match {
  */
 ```
 
+* 318 - **Constructor patterns**
+ 
+> - Scala first checks whether the object is a member of the named *case class* and then checks that the constructor params of the object match the patterns in parentheses
+
+```scala
