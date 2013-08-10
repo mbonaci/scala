@@ -693,24 +693,9 @@ case _ =>
 ```
 
 > - `match` expression is evaluated by trying each of the patterns in the order they are written. The first pattern that matches is selected and the part following the fat arrow is executed
-> - a **constant pattern** like `"+"` or `1` matches values that are equal to the constant when compared with `==`
-> - a **variable pattern** like `e` matches every value and variable than refers to that value in the right hand side of the case clause
-> - the **wildcard pattern** `_` matches every value, but it doesn't result with variable
-> - a **constructor pattern** `UnOp("-", e)` matches any value of type `UnOp` whose first argument matches `"-"` and second argument matches `e`. Argument to the constructor is itself a pattern (pattern nesting)
 > - `match` _is an expression_ in Scala (always results in a value)
 > - there is _no *fall through*_ behavior into the next case
-> - _if none of the patterns match_, an exception `MatchError` is thrown
-
-* 314 - **Wildcard patterns**
-
-```scala
-// in this example, since we don't care about elements of a binary operation
-// only whether it's a binary operation or not, we can use wildcard pattern:
-expr match {
-  case BinOp(_, _, _) => println(expr + "is a binary operation")
-  case _ => println("It's something entirely different")
-}
-```
+> - if _none of the patterns match_, an exception `MatchError` is thrown
 
 * 315 - **Constant patterns**
 
@@ -730,7 +715,7 @@ def describe(x: Any) = x match {
 * 316 - **Variable patterns**
 
 > - matches any object, like wildcard
-> - unlike the wildcard, Scala binds the variable to whatever the object is
+> - unlike the wildcard, Scala binds the variable to whatever the object is and then a variable refers to that value in the right hand side of the `case` clause
 
 ```scala
 import math.{E, Pi}
@@ -746,14 +731,61 @@ E match {
 }
 /*
  * How does Scala know whether 'Pi' is a constant from 'scala.math' and not a variable?
- * A simple lexical rule is used:
+ * A simple lexical rule is applied:
  *   - If a name starts with a lowercase letter Scala treats it as a variable pattern.
  *   - All other references are treated as constants
  *   - With exception of fields: 'this.pi' and 'obj.pi', and lowercase names in back ticks
  */
 ```
 
+* 314 - **Wildcard patterns**
+
+> - `_` matches every value, but it doesn't result with a variable
+
+```scala
+// in this example, since we don't care about elements of a binary operation
+// only whether it's a binary operation or not, we can use wildcard pattern:
+expr match {
+  case BinOp(_, _, _) => println(expr + "is a binary operation")
+  case _ => println("It's something entirely different")
+}
+```
+
 * 318 - **Constructor patterns**
  
 > - Scala first checks whether the object is a member of the named *case class* and then checks that the constructor params of the object match the patterns in parentheses
+> - **Deep matching** means that it looks for patterns arbitrarily deep
 
+```scala
+// first checks that the top level object is a 'BinOp', then whether the third constructor param is a 'Number' and finally that the value of that number is '0'
+expr match {
+  case BinOp("+", e, Number(0)) => println("a deep match")  // checks 3 levels deep
+  case _ =>
+}
+```
+
+* 318 - **Sequence patterns**
+ 
+> - `List` and `Array` can be matched against, just like *case classes*
+
+```scala
+// checks for 3 element list that starts with zero:
+expr match {
+  case List(0, _, _) => println("zero starting list of three elements")
+}
+
+// to check against the sequence without specifying how long it can be:
+expr match {
+  case List(0, _*) => println("zero starting list")
+  case List(_*) => println("any list")
+}
+```
+
+* 319 - **Tuple patterns**
+
+```scala
+def tupleMatch(expr: Any) =
+  expr match {
+    case (a, b, c) => println("matched " + a + b + c)
+    case _ =>
+  }
