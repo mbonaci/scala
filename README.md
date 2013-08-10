@@ -7,7 +7,7 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 Thank you.
 
 ### 252 - Scala type hierarchy
-![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/Scala-class-hierarchy_zps124c49e1.png)
+![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Scala-class-hierarchy_zps124c49e1.png)
 
 ### 117 Basic Types and Operations
 * 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects
@@ -62,7 +62,7 @@ for an implicit conversion to work, it needs to be in scope. If you place the im
 
 ```scala
   for (
-    file <- filesHere
+    file <- files  // files is a previously defined method that returns array of files
     if file.isFile
     if file.getName.endsWith(".scala")
   ) println(file)
@@ -441,8 +441,8 @@ scala> queue.get()
 res14: Int = 20
 ```
 
-![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-demonstration-image_zps07e8485d.jpg)
-![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/Linearization-order-image_zps229e88da.jpg)
+![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Linearization-demonstration-image_zps07e8485d.jpg)
+![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Linearization-order-image_zps229e88da.jpg)
 
 * 275 - **When to use a _trait_ and when an _abstract class_**
 
@@ -757,4 +757,3 @@ E match {
  
 > - Scala first checks whether the object is a member of the named *case class* and then checks that the constructor params of the object match the patterns in parentheses
 
-```scala
