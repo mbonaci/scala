@@ -784,8 +784,9 @@ expr match {
 * 319 - **Tuple patterns**
 
 ```scala
-def tupleMatch(expr: Any) =
-  expr match {
+("a ", 3, "-tuple") match {
     case (a, b, c) => println("matched " + a + b + c)
     case _ =>
-  }
+  }                                               //> matched a 3-tuple
+```
+
