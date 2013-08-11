@@ -7,5 +7,9 @@ case class UnOp(operator: String, arg: Expr) extends Expr
 case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
 
 object Chapter15 extends App {
-  val op = BinOp("+", Number(1), Var("x"))
+  
+  def simplifyBad(expr: Expr): Expr = expr match {
+	  case UnOp(op, e) => UnOp(op, simplifyBad(e))
+	  case UnOp("-", UnOp("-", e)) => e
+  }     
 }
