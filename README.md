@@ -757,7 +757,8 @@ expr match {
 > - **Deep matching** means that it looks for patterns arbitrarily deep
 
 ```scala
-// first checks that the top level object is a 'BinOp', then whether the third constructor param is a 'Number' and finally that the value of that number is '0'
+// first checks that the top level object is a 'BinOp', then whether the third
+// constructor param is a 'Number' and finally that the value of that number is '0'
 expr match {
   case BinOp("+", e, Number(0)) => println("a deep match")  // checks 3 levels deep
   case _ =>
@@ -904,5 +905,35 @@ simplifyAll(allMul)   //> res9: Expr = Number(24.0)
 * 326 - **Sealed classes**
 
 > - how can you be sure you covered all the cases when using pattern matching, since a new `case class` may be created in any time, in another compilation unit?
-> - you make the _superclass_ of your _case class_ `sealed`
-> - a _sealed_ class cannot have any new subclasses added except the ones in the same file
+> - you make the _superclass_ of your _case class_ `sealed`, which then means that a class cannot have any new subclasses added except the ones in the same file
+> - this way, when using pattern matching, you only need to worry about the subclasses you know of
+> - also, when you match against subclasses of a sealed class, you get the compiler support, which will flag missing combinations of patterns with a warning message:
+
+```scala
+// if you make 'Expr' class sealed
+sealed abstract class Expr
+
+// and leave out some patterns when matching
+def describe(e: Expr): String = e match {
+  case Number(_) => "a num"
+  case Var(_) => "a var"
+}
+
+// you'll get a compiler warning:
+/* warning: match is not exhaustive
+ * missing combination       UnOp
+ * missing combination      BinOp
+ */
+
+// which is telling you that you might get 'MatchError'
+// because some possible patterns are not handled
+
+// to get rid of the warning, in situations where you're sure that no such pattern will ever appear, throw in the last catch-all case:
+case _ => throw new RuntimeException  // should never happen
+
+// the same problem can be solved with more elegant solution, without any dead code:
+def describe(e: Expr): String = (e: @unchecked) match {
+  case Number(_) ...
+}
+```
+
