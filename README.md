@@ -937,3 +937,39 @@ def describe(e: Expr): String = (e: @unchecked) match {
 }
 ```
 
+* 328 - **The Option type**
+
+> - `Option` is type for optional values, which can be of two forms:
+>   - `Some(x)`, where `x` is the actual value
+>   - `None` object, which represents non-existent value
+> - optional values are produced by some of the standard operations on collections, e.g. the `Map`'s `get` method produces `Some(value)` or `None` if there was no given key
+> - the common way to distinguish between optional objects is through pattern matching:
+
+```scala
+def show(x: Option[String]) = x match {
+  case Some(s) => s
+  case None => "?"
+}
+```
+
+* 330 - **Patterns in variable definitions**
+
+> - patterns could be used for `Tuple` destructuring:
+
+```scala
+val myTuple = (123, "abc")
+val (number, string) = myTuple  // multiple variables in one assignment
+```
+
+> - you can deconstruct a _case class_ with a pattern:
+
+```scala
+val exp = new BinOp("*", Number(5), Number(10))
+val BinOp(op, left, right) = exp
+/*
+ * op: String = *
+ * left: Expr = Number(5.0)
+ * right: Expr = Number(10.0)
+*/
+```
+
