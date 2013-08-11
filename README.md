@@ -861,11 +861,48 @@ def simplifyAdd(e: Expr) = e match {
     // matches only a binary expression with two equal operands
     case BinOp("+", x, y) if x == y => BinOp("*", x, Number(2))
     case _ => e
-  }           //> simplifyAdd: (e: scala2e.chapter15.Expr)scala2e.chapter15.Expr
+  }                     //> simplifyAdd: (e: Expr)Expr
 
   val add = BinOp("+", Number(24), Number(24))
-              //> add  : scala2e.chapter15.BinOp = BinOp(+,Number(24.0),Number(24.0))
+                        //> add  : BinOp = BinOp(+,Number(24.0),Number(24.0))
   val timesTwo = simplifyAdd(add)
-              //> timesTwo  : scala2e.chapter15.Expr = BinOp(*,Number(24.0),Number(2.0))
+                        //> timesTwo  : Expr = BinOp(*,Number(24.0),Number(2.0))
 ```
 
+* 325 - **Pattern overlaps**
+
+> - patterns are tried in the order in which they are written
+
+```scala
+// recursively call itself until no more simplifications are possible
+def simplifyAll(expr: Expr): Expr = expr match {
+  case UnOp("-", UnOp("-", e)) =>
+    simplifyAll(e) // '-' is its own inverse
+  case BinOp("+", e, Number(0)) =>
+    simplifyAll(e) // '0' is a neutral element for '+'
+  case BinOp("*", e, Number(1)) =>
+    simplifyAll(e) // '1' is a neutral element for '*'
+  case UnOp(op, e) =>
+    UnOp(op, simplifyAll(e))
+  case BinOp(op, l, r) =>
+    BinOp(op, simplifyAll(l), simplifyAll(r))
+  case _ => expr
+}
+
+implicit def intToNumber(x: Int) = new Number(x)
+implicit def numberToInt(x: Number) = x.num.toInt
+
+val allMin = UnOp("-", UnOp("-", 4))
+val allAdd = BinOp("+", 244, 0 + Number(0))
+val allMul = BinOp("*", 24, 1)
+
+simplifyAll(allMin)   //> res7: Expr = Number(4.0)
+simplifyAll(allAdd)   //> res8: Expr = Number(244.0)
+simplifyAll(allMul)   //> res9: Expr = Number(24.0)
+```
+
+* 326 - **Sealed classes**
+
+> - how can you be sure you covered all the cases when using pattern matching, since a new `case class` may be created in any time, in another compilation unit?
+> - you make the _superclass_ of your _case class_ `sealed`
+> - a _sealed_ class cannot have any new subclasses added except the ones in the same file
