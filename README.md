@@ -973,3 +973,90 @@ val BinOp(op, left, right) = exp
 */
 ```
 
+* 331 - **Case sequences as partial functions**
+
+> - a sequence of cases can be used anywhere a function literal can
+> - essentially, a case sequence is a function literal, only more general
+> - instead of having a single entry point and list of params, a case sequence has multiple entry points, each with their own list of params
+
+```scala
+val withDefault: Option[Int] => Int = {
+  case Some(x) => x
+  case None => 0
+}
+```
+
+> - a sequence of cases gives you a *partial function*
+> - 
+
+```scala
+// this will work for list of 3 elements, but not for empty list
+val second: List[Int] => Int = {
+  case x :: y :: _ => y
+}  // warning: match is not exhaustive! missing combination     Nil
+
+second(List(1, 2, 3))  // returns 2
+second(List())         // throws MatchError
+
+/*
+ * type 'List[Int] => Int' includes all functions from list of integers to integers
+ * type 'PartialFunction[List[Int], Int]' includes only partial functions
+ */
+
+// to tell the compiler that you know you're working with partial functions:
+val second: PartialFunction[List[Int], Int] = {
+  case x :: y :: _ => y
+}
+
+// partial functions have a method 'isDefinedAt':
+second.isDefinedAt(List(5, 6, 7))  // true
+second.isDefinedAt(List())  // false
+
+/* 
+ * these expressions above get translated by the compiler to a partial function
+ * by translating the patterns twice, once for the implementation of the real function
+ * and once to test whether the function is defined or not
+ */
+
+// e.g. the function literal
+{ case x :: y :: _ => y }
+
+// gets translated to the following partial function value:
+new PartialFunction[List[Int], Int] {
+  def apply(xs: List[Int]) = xs match {
+    case x :: y :: _ => y
+  }
+  def isDefinedAt(xs: List[Int]) = xs match {
+    case x :: y :: _ => true
+    case _ => false
+  }
+}
+
+// the translation takes place whenever the declared type of a function literal is 'PartialFunction'
+// if the declared type is just 'Function1', or is missing, the function literal gets 
+// translated to a complete function
+
+// if you can, use a complete function, because partial functions allow for runtime errors
+// that the compiler cannot spot
+
+// if you happen to e.g. use a framework that expects partial function, you should
+// always check 'isDefinedAt' before calling the function
+```
+
+* 334 - **Patterns in `for` expressions**
+
+```scala
+for((country, city) <- capitals)
+  println("The capital of " + country + " is " + city)
+
+// in the above example, 'for' retrieves all key/value pairs from the map
+// each pair is then matched against the pattern '(country, city)'
+
+// to pick elements from a list that match a pattern:
+val results = List(Some("apple"), None, Some("orange"))
+for(Some(fruit) <- results) println(fruit)
+// apple
+// orange
+
+// 'None' does not match pattern 'Some(fruit)'
+
