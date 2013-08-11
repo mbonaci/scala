@@ -1050,7 +1050,7 @@ for((country, city) <- capitals)
   println("The capital of " + country + " is " + city)
 
 // in the above example, 'for' retrieves all key/value pairs from the map
-// each pair is then matched against the pattern '(country, city)'
+// each pair is then matched against the '(country, city)' pattern
 
 // to pick elements from a list that match a pattern:
 val results = List(Some("apple"), None, Some("orange"))
