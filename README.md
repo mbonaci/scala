@@ -774,7 +774,7 @@ expr match {
   case List(0, _, _) => println("zero starting list of three elements")
 }
 
-// to check against the sequence without specifying how long it can be:
+// to check against the sequence without specifying how long it must be:
 expr match {
   case List(0, _*) => println("zero starting list")
   case List(_*) => println("any list")
@@ -785,8 +785,87 @@ expr match {
 
 ```scala
 ("a ", 3, "-tuple") match {
-    case (a, b, c) => println("matched " + a + b + c)
+    case (a, b, c) => println("matched " + a + b + c)  // matched a 3-tuple
     case _ =>
-  }                                               //> matched a 3-tuple
+  }
+```
+
+* 319 - **Typed patterns**
+
+> - used for convenient type checks and type casts
+
+```scala
+  def generalSize(x: Any) = x match {
+    case s: String => s.length  // type check + type cast - 's' can only be a 'String'
+    case m: Map[_, _] => m.size
+    case _ => -1
+  }                                               //> generalSize: (x: Any)Int
+
+  generalSize("aeiou")                            //> res0: Int = 5
+  generalSize(Map(1 -> 'a', 2 -> 'b'))            //> res1: Int = 2
+  generalSize(math.Pi)                            //> res2: Int = -1
+
+// generally, to test whether expression is an instance of a type:
+expr.isInstanceOf[String]  // member of class 'Any'
+// to cast
+expr.asInstanceOf[String]  // member of class 'Any'
+
+def isIntToIntMap(x: Any) = x match {
+  case m: Map[Int, Int] => true  // non-variable type Int is unchecked since it's eliminated by erasure
+  case _ => false
+}
+
+isIntToIntMap(Map(1 -> 2, 2 -> 3))              //> res3: Boolean = true
+isIntToIntMap(Map("aei" -> "aei"))              //> res4: Boolean = true !!!
+
+// the same thing works fine with arrays since their type is preserved with their value
+```
+
+> - **Type erasure**
+>   - erasure model of generics, like in Java, means that no information about type arguments is maintained at runtime. Consequently, there is no way to determine at runtime whether a given Map object has been created with two Int arguments, rather than with arguments of different types. All the system can do is determine that a value is a Map of some arbitrary type parameters.
+
+* 323 - **Variable binding**
+
+> - allows you to, if the pattern matches, assign a variable to a matched object
+> - the syntax is `var_name @ some_pattern'
+
+```scala
+case UnOp("abs", e @ UnOp("abs", _)) => e  // if matched, 'e' will be 'UnOp("abs", _)'
+```
+
+* 324 - **Pattern guards**
+
+> - in some circumstances, syntactic pattern matching is not precise enough
+> - a pattern guard comes after a pattern and starts with an `if`
+> - can be arbitrary boolean expression and typically refers to pattern variables
+> - the pattern matches only if the guard evaluates to `true`
+
+```scala
+// match only positive integers
+case n: Int if 0 < n => n + " is positive"
+// match only strings starting with the letter ‘a’
+case s: String if s(0) == 'a' => s + " starts with letter 'a'"
+```
+
+> - e.g. if you'd like to transform `x + x` to `2 * x` with patterns:
+
+```scala
+// this won't work, since a pattern variable may only appear once in a pattern:
+def simplifyAdd(e: Expr) = e match {
+    case BinOp("+", x, x) => BinOp("*", x, Number(2))  // x is already defined as value x
+    case _ => e
+}
+
+// so instead:
+  def simplifyAdd(e: Expr) = e match {
+    // matches only a binary expression with two equal operands
+    case BinOp("+", x, y) if x == y => BinOp("*", x, Number(2))
+    case _ => e
+  }           //> simplifyAdd: (e: scala2e.chapter15.Expr)scala2e.chapter15.Expr
+
+  val add = BinOp("+", Number(24), Number(24))
+              //> add  : scala2e.chapter15.BinOp = BinOp(+,Number(24.0),Number(24.0))
+  val timesTwo = simplifyAdd(add)
+              //> timesTwo  : scala2e.chapter15.Expr = BinOp(*,Number(24.0),Number(2.0))
 ```
 
