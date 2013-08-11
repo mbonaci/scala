@@ -81,36 +81,32 @@ object WChapter15 {
 
 
 
-def simplifyAll(expr: Expr): Expr = expr match {
-  case UnOp("-", UnOp("-", e)) =>
-    simplifyAll(e) // '-' is its own inverse
-  case BinOp("+", e, Number(0)) =>
-    simplifyAll(e) // '0' is a neutral element for '+'
-  case BinOp("*", e, Number(1)) =>
-    simplifyAll(e) // '1' is a neutral element for '*'
-  case UnOp(op, e) =>
-    UnOp(op, simplifyAll(e))
-  case BinOp(op, l, r) =>
-    BinOp(op, simplifyAll(l), simplifyAll(r))
-  case _ => expr
-}                                                 //> simplifyAll: (expr: scala2e.chapter15.Expr)scala2e.chapter15.Expr
-
-  implicit def intToNumber(x: Int) = new Number(x)//> intToNumber: (x: Int)scala2e.chapter15.Number
-  implicit def numberToInt(x: Number) = x.num.toInt
+	def simplifyAll(expr: Expr): Expr = expr match {
+	  case UnOp("-", UnOp("-", e)) =>
+	    simplifyAll(e) // '-' is its own inverse
+	  case BinOp("+", e, Number(0)) =>
+	    simplifyAll(e) // '0' is a neutral element for '+'
+	  case BinOp("*", e, Number(1)) =>
+	    simplifyAll(e) // '1' is a neutral element for '*'
+	  case UnOp(op, e) =>
+	    UnOp(op, simplifyAll(e))
+	  case BinOp(op, l, r) =>
+	    BinOp(op, simplifyAll(l), simplifyAll(r))
+	  case _ => expr
+	}                                         //> simplifyAll: (expr: scala2e.chapter15.Expr)scala2e.chapter15.Expr
+	
+	implicit def intToNumber(x: Int) = new Number(x)
+                                                  //> intToNumber: (x: Int)scala2e.chapter15.Number
+	implicit def numberToInt(x: Number) = x.num.toInt
                                                   //> numberToInt: (x: scala2e.chapter15.Number)Int
-  
-  val allMin = UnOp("-", UnOp("-", 4))            //> allMin  : scala2e.chapter15.UnOp = UnOp(-,UnOp(-,Number(4.0)))
-  val allAdd = BinOp("+", 244, 0 + Number(0))     //> allAdd  : scala2e.chapter15.BinOp = BinOp(+,Number(244.0),Number(0.0))
-  val allMul = BinOp("*", 24, 1)                  //> allMul  : scala2e.chapter15.BinOp = BinOp(*,Number(24.0),Number(1.0))
-  simplifyAll(allMin)                             //> res7: scala2e.chapter15.Expr = Number(4.0)
-  simplifyAll(allAdd)                             //> res8: scala2e.chapter15.Expr = Number(244.0)
-  simplifyAll(allMul)                             //> res9: scala2e.chapter15.Expr = Number(24.0)
+	  
+	val allMin = UnOp("-", UnOp("-", 4))      //> allMin  : scala2e.chapter15.UnOp = UnOp(-,UnOp(-,Number(4.0)))
+	val allAdd = BinOp("+", 244, 0 + Number(0))
+                                                  //> allAdd  : scala2e.chapter15.BinOp = BinOp(+,Number(244.0),Number(0.0))
+	val allMul = BinOp("*", 24, 1)            //> allMul  : scala2e.chapter15.BinOp = BinOp(*,Number(24.0),Number(1.0))
+	simplifyAll(allMin)                       //> res7: scala2e.chapter15.Expr = Number(4.0)
+	simplifyAll(allAdd)                       //> res8: scala2e.chapter15.Expr = Number(244.0)
+	simplifyAll(allMul)                       //> res9: scala2e.chapter15.Expr = Number(24.0)
+	
 
-
-def simplifyBad(expr: Expr): Expr = expr match {
-case UnOp(op, e) => UnOp(op, simplifyBad(e))
-case UnOp("",
-UnOp("",
-e)) => e
-}                                                 //> simplifyBad: (expr: scala2e.chapter15.Expr)scala2e.chapter15.Expr
 }
