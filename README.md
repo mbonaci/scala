@@ -987,7 +987,6 @@ val withDefault: Option[Int] => Int = {
 ```
 
 > - a sequence of cases gives you a *partial function*
-> - 
 
 ```scala
 // this will work for list of 3 elements, but not for empty list
@@ -1091,3 +1090,6 @@ def insert(x: Int, xs: List[Int]): List[Int] =
   else xs.head :: insert(x, xs.tail)
 ```
 
+* 347 - **List patterns**
+
+> - 
