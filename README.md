@@ -1073,3 +1073,21 @@ for(Some(fruit) <- results) println(fruit)
 
 `val nums = 1 :: 2 :: 3 :: 4 :: Nil  // `
 
+* 346 - **Basic operations on lists**
+
+> - all operations on lists can be expressed in terms of the following three methods:
+>   - `head`    - returns the first list element (defined for non-empty lists)
+>   - `tail`    - returns the last list element (defined for non-empty lists)
+>   - `isEmpty` - returns `true` if the list is empty
+
+```scala
+// insertion sort implementation:
+def isort(xs: List[Int]): List[Int] =
+  if (xs.isEmpty) Nil
+  else insert(xs.head, isort(xs.tail))
+
+def insert(x: Int, xs: List[Int]): List[Int] =
+  if (xs.isEmpty || x <= xs.head) x :: xs
+  else xs.head :: insert(x, xs.tail)
+```
+
