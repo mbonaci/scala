@@ -1,5 +1,7 @@
 package scala2e.chapter15
 
+import scala2e.chapter15.expressions.ExprFormatter
+
 object WChapter15 {
 
   val exa = "a"                                   //> exa  : String = a
@@ -97,6 +99,8 @@ object WChapter15 {
 	
 	implicit def intToNumber(x: Int) = new Number(x)
                                                   //> intToNumber: (x: Int)scala2e.chapter15.Number
+	implicit def floatToNumber(x: Float) = new Number(x)
+                                                  //> floatToNumber: (x: Float)scala2e.chapter15.Number
 	implicit def numberToInt(x: Number) = x.num.toInt
                                                   //> numberToInt: (x: scala2e.chapter15.Number)Int
 	  
@@ -109,4 +113,37 @@ object WChapter15 {
 	simplifyAll(allMul)                       //> res9: scala2e.chapter15.Expr = Number(24.0)
 	
 
+  val f = new ExprFormatter                       //> f  : scala2e.chapter15.expressions.ExprFormatter = scala2e.chapter15.expres
+                                                  //| sions.ExprFormatter@27c4b997
+  val e1 = BinOp("*", BinOp("/", 1, 2),
+                      BinOp("+", Var("x"), 1))    //> e1  : scala2e.chapter15.BinOp = BinOp(*,BinOp(/,Number(1.0),Number(2.0)),Bi
+                                                  //| nOp(+,Var(x),Number(1.0)))
+  val e2 = BinOp("+", BinOp("/", Var("x"), 2),
+                      BinOp("/", Number(1.5), Var("x")))
+                                                  //> e2  : scala2e.chapter15.BinOp = BinOp(+,BinOp(/,Var(x),Number(2.0)),BinOp(/
+                                                  //| ,Number(1.5),Var(x)))
+  val e3 = BinOp("/", e1, e2)                     //> e3  : scala2e.chapter15.BinOp = BinOp(/,BinOp(*,BinOp(/,Number(1.0),Number(
+                                                  //| 2.0)),BinOp(+,Var(x),Number(1.0))),BinOp(+,BinOp(/,Var(x),Number(2.0)),BinO
+                                                  //| p(/,Number(1.5),Var(x))))
+  
+  def show(e: Expr) = println(f.format(e)+ "\n\n")//> show: (e: scala2e.chapter15.Expr)Unit
+    for (e <- Array(e1, e2, e3)) show(e)          //> 1          
+                                                  //| - * (x + 1)
+                                                  //| 2          
+                                                  //| 
+                                                  //| 
+                                                  //| x   1.5
+                                                  //| - + ---
+                                                  //| 2    x 
+                                                  //| 
+                                                  //| 
+                                                  //| 1          
+                                                  //| - * (x + 1)
+                                                  //| 2          
+                                                  //| -----------
+                                                  //|   x   1.5  
+                                                  //|   - + ---  
+                                                  //|   2    x   
+                                                  //| 
+                                                  //| 
 }
