@@ -1059,4 +1059,17 @@ for(Some(fruit) <- results) println(fruit)
 // orange
 
 // 'None' does not match pattern 'Some(fruit)'
+```
+
+### 344 Working with Lists
+* 344 - **List literals**
+
+> - lists are _immutable_ (list elements cannot be changed by assignment)
+> - lists are _homogeneous_ (all list elements have the same type)
+> - list type is _covariant_ (if `S` is subtype of `T`, then `List[S]` is a subtype of `List[T]`)
+>   - `List[Nothing]` is a subtype of any other `List[T]`
+>   - that is why it's possible to write `val xs: List[String] = List()`
+> - they have two fundamental building blocks, `Nil` and `::` (cons), where `Nil` represents the empty list
+
+`val nums = 1 :: 2 :: 3 :: 4 :: Nil  // `
 
