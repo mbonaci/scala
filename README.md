@@ -1068,9 +1068,9 @@ for(Some(fruit) <- results) println(fruit)
 > - list type is _covariant_ (if `S` is subtype of `T`, then `List[S]` is a subtype of `List[T]`)
 >   - `List[Nothing]` is a subtype of any other `List[T]`
 >   - that is why it's possible to write `val xs: List[String] = List()`
-> - they have two fundamental building blocks, `Nil` and `::` (cons), where `Nil` represents the empty list
+> - they have two fundamental building blocks, `Nil` and `::` (cons), where `Nil` represents an empty list
 
-`val nums = 1 :: 2 :: 3 :: 4 :: Nil  // `
+```val nums = 1 :: 2 :: 3 :: 4 :: Nil```
 
 * 346 - **Basic operations on lists**
 
@@ -1092,4 +1092,42 @@ def insert(x: Int, xs: List[Int]): List[Int] =
 
 * 347 - **List patterns**
 
-> - 
+> - lists can be deconstructed with pattern matching, instead of with `head`, `tail` and `isEmpty`
+
+```scala
+val fruit = "apples" :: "oranges" :: "pears"
+val List(a, b, c) = fruit  // matches any list of 3, and binds them to pattern elements
+// a: String = apples
+// b: String = oranges
+// c: String = pears
+
+// if you don't know the number of list elements:
+val a :: b :: rest = fruit  // matches list with 2 or more elements
+// a: String = apples
+// b: String = oranges
+// rest: List[String] = List(pears)
+
+// pattern that matches any list:
+List(...)  // instance of library-defined 'extractor' pattern
+```
+
+> - normally, infix notation (e.g. `x :: y`) is equivalent to a method call, but with patterns, rules are different. When seen as a pattern, an infix operator is treated as a constructor:
+>   - `x :: y` is equivalent to `::(x, y)` (not `x.::(y)`)
+>   - there is a class named `::`, `scala.::` (builds non-empty lists)
+>   - there is also a method `::` in class `List` (instantiates class `scala.::`)
+
+```scala
+// insertion sort implementation, written using pattern matching:
+def isort(xs: List[Int]): List[Int] = xs match {
+  case List() => List()
+  case x :: xs1 => insert(x, isort(xs1))
+}
+
+def insert(x: Int, xs: List[Int]): List[Int] = xs match {
+  case List() => List(x)
+  case y :: ys =>
+    if(x <= y) x :: xs
+    else y :: insert(x, ys)
+}
+```
+
