@@ -20,5 +20,20 @@ object Chapter15 extends App {
           8),
         3),
     11))
+    
+    
+  val f = new ExprFormatter
+
+  val e1 = BinOp("*", BinOp("/", 1, 2),
+                      BinOp("+", Var("x"), 1))
+
+  val e2 = BinOp("+", BinOp("/", Var("x"), 2),
+                      BinOp("/", Number(1.5), Var("x")))
+                                                  
+
+  val e3 = BinOp("/", e1, e2)
+
+  def show(e: Expr) = println(f.format(e)+ "\n\n")
+    for (e <- Array(e1, e2, e3)) show(e)
   
 }

@@ -68,7 +68,7 @@ class ExprFormatter {
         if(enclPrec != fractionPrecedence) frac
       	else elem(" ") beside frac beside elem(" ")
       	  
-      case BinOp(op, left	, right) =>
+      case BinOp(op, left, right) =>
         val opPrec = precedence(op)
         val l = format(left, opPrec)
         val r = format(right, opPrec + 1)
