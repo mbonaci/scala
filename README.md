@@ -1076,8 +1076,9 @@ for(Some(fruit) <- results) println(fruit)
 
 > - all operations on lists can be expressed in terms of the following three methods:
 >   - `head`    - returns the first list element (defined for non-empty lists)
->   - `tail`    - returns the last list element (defined for non-empty lists)
+>   - `tail`    - returns all elements except the first one (defined for non-empty lists)
 >   - `isEmpty` - returns `true` if the list is empty
+> - these operations take constant time, `O(1)`
 
 ```scala
 // insertion sort implementation:
@@ -1129,5 +1130,90 @@ def insert(x: Int, xs: List[Int]): List[Int] = xs match {
     if(x <= y) x :: xs
     else y :: insert(x, ys)
 }
+```
+
+* 349 - **First-order methods on class List**
+
+> - a method is _first order_ if it doesn't take any functions as arguments
+> - **concatenating two lists**
+>   - `xs ::: ys` returns a new list that contains all the elements of `xs`, followed by all the elements of `ys`
+>   - `:::` is implemented as a method in class `List`
+>   - like `cons`, list concatenation associates to the right:
+
+```scala
+// expression like this:
+xs ::: ys ::: zs
+// is interpreted as:
+xs ::: (ys ::: zs)
+```
+
+> - **Divide and Conquer principle**
+>   - design recursive list manipulation algorithms by pattern matching and deconstruction:
+
+```scala
+// my implementation of list concatenation
+def append[T](xs: List[T], ys: List[T]): List[T] = xs match {
+  case List() => ys
+  case x :: rest => x :: append(rest, ys)
+}
+```
+
+> - **List length**
+>   - `length` on lists is a relatively expensive operation, when compared to arrays (`O(n)`)
+
+> - **Accessing the end: `init` and `last`**
+>   - `last` returns the last element of a list
+>   - `init` returns a list consisting of all elements but the last one
+>   - same as `head` and `tail`, they throw an exception when invoked on an empty list
+>   - slow when compared to `head` and `tail` since they take linear time, `O(n)`
+
+> - **Reversing lists: `reverse`**
+>   - it's better to organize your data structure so that most accesses are at the head of a list
+>   - if an algorithm demands frequent access to the end of a list, it's better to reverse the list first
+
+```scala
+// 'reverse' implemented using concatenation
+def rev[T](xs: List[T]): List[T] = xs match {
+  case List() => xs
+  case x :: rest => rev(rest) ::: List(x)  // slow: n-1 recursive calls to concatenation 
+  // alt. with my concatenation
+  // case x :: rest => append(rev(rest), List(x))
+}
+```
+
+> - **Prefixes and suffixes: `drop`, `take` and `splitAt`**
+>   - `xs take n` returns the first `n` elements of the list `xs` (if `n > xs.length` the whole `xs` is returned)
+>   - `xs drop n` returns all elements of the list `xs` except the first `n` ones (if `n > xs.length` the empty list is returned)
+>   - `xs splitAt n` will return two lists, the same as `(xs take n, xs drop n)`, only it traverses the list just once
+
+> - **Element selection: `apply` and `indices`**
+>   - `xs apply n` returns _n-th_ element
+>     - as for all other types, `apply` is implicitly inserted when an object appears in the function position in a method call, so the example from the line above can be written as `xs(n)`
+>     - `apply` is implemented as `(xs drop n).head`, thus it's slow (`O(n)`) and rarely used on lists, unlike with arrays
+>   - `List(1, 2, 3).indices` returns `scala.collection.immutable.Range(0, 1, 2)`
+
+> - **Flattening a list of lists: `flatten`**
+>   - takes a list of lists and flattens it out to a single list
+>   - it can only be used on lists whose elements are all lists (compilation error otherwise)
+
+```scala
+fruit.map(_.toCharArray).flatten
+// List(a, p, p, l, e, s, o, r, a, n, g, e, s, p, e, a, r, s)
+```
+
+> - **Zipping lists: `zip` and `unzip`**
+>   - `zip` takes two lists and pairs the elements together, dropping any unmatched elements
+>   - a useful method is also `zipWithIndex`, which pairs every element with its index
+>   - `unzip` converts list of tuples to tuple of lists
+
+```scala
+List('a', 'b') zip List(1, 2, 3)
+// List[(Char, Int)] = List((a,1), (b,2))
+
+val zipped = List('a', 'b').zipWithIndex
+// zipped: List[(Char, Int)] = List((a,0), (b,1))
+
+zipped.unzip
+// (List[Char], List[Int]) = (List(a, b), List(1, 2))
 ```
 
