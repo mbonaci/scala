@@ -1222,7 +1222,8 @@ zipped.unzip
 
 ```scala
 // 'toString' returns canonical representation of a list:
-List("a", "b", "c").toString
+val abc = List("a", "b", "c")
+abc.toString
 res0: String = List(a, b, c)
 
 // 'mkString' is more suitable for human consumption:
@@ -1235,7 +1236,28 @@ xs mkString("", sep, "")  // also, you can omit all arguments (default to empty 
 
 // a variant of 'mkString' which appends string to a 'scala.StringBuilder' object:
 val buf = new StringBuilder
-List("a", "b", "c") addString(buf, "(", "; ", ")")
+abc addString(buf, "(", "; ", ")")
 res2: StringBuilder = (a; b; c)
 ```
+
+> - **Converting lists: `iterator`, `toArray` and `copyToArray`**
+>   - `toArray` converts a list to an array and `toList` does the opposite
+
+```scala
+val arr = abc.toArray  // Array(a, b, c)
+val xs = arr.toList  // List(a, b, c)
+
+// to copy all elements of the list to an array, beginning with position 'start':
+xs copyToArray (arr, start)
+
+// before copying, you must ensure that the array is large enough:
+val arr2 = new Array[String](7)
+xs copyToArray (arr2, 3)  // produces 'Array(null, null, null, a, b, c, null)'
+
+// to use an iterator to access list elements:
+val it = abc.iterator  // it: Iterator[String] = non-empty iterator
+it.next  // String = "a"
+it.next  // String = "b"
+```
+
 
