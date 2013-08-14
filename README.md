@@ -1217,3 +1217,25 @@ zipped.unzip
 // (List[Char], List[Int]) = (List(a, b), List(1, 2))
 ```
 
+> - **Displaying lists: `toString` and `mkString`**
+>   - members of the `Traversable` trait, which makes them applicable to all other collections
+
+```scala
+// 'toString' returns canonical representation of a list:
+List("a", "b", "c").toString
+res0: String = List(a, b, c)
+
+// 'mkString' is more suitable for human consumption:
+mkString(pre, sep, post)  // returns:
+pre + xs(0) + sep + xs(1) + sep + ... + sep + xs(xs.length - 1) + post
+
+// also:
+xs mkString sep  // equals
+xs mkString("", sep, "")  // also, you can omit all arguments (default to empty string)
+
+// a variant of 'mkString' which appends string to a 'scala.StringBuilder' object:
+val buf = new StringBuilder
+List("a", "b", "c") addString(buf, "(", "; ", ")")
+res2: StringBuilder = (a; b; c)
+```
+
