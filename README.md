@@ -1306,7 +1306,25 @@ reverseIntSort(9 :: 1 :: 8 :: 3 :: 2 :: Nil)
 List(1, 2, 3) map (_ + 1)  // returns 'List(2, 3, 4)'
 
 val words = List("the", "quick", "brown", "fox")
-words map (_.length)  // returns 'List(3, 5, 5, 3)'
-words map (_.toList.reverse.mkString) // returns 'List(eht, kciuq, nworb, xof)'
+words map (_.length)  // 'List(3, 5, 5, 3)'
+words map (_.toList.reverse.mkString) // 'List(eht, kciuq, nworb, xof)'
+
+// 'flatMap' takes a function returning a list of elements as its right operand,
+// which it then applies to each list element and flattens the function results
+words flatMap (_.toList)  // 'List(t, h, e, q, u, i, c, k, b, r, o, w, n, f, o, x)'
+
+// 'map' and 'flatMap' together:
+List.range(1, 5) flatMap (i => List.range(1, i) map (j => (i, j)))
+// List[(Int, Int)] = List((2,1), (3,1), (3,2), (4,1), (4,2), (4,3))
+// 'range' creates a list of all integers in some range, excluding second operand
+
+// equivalent to:
+for(i <- List.range(1, 5);
+    j <- List.range(1, i)) yield (i, j)
+
+// 'foreach' takes a procedure (a function resulting with Unit) as its right operand,
+// and applies the procedure to each list element. The result is Unit, not a new list
+var sum = 0
+List(1, 2, 3, 4, 5) foreach (sum += _) // sum: Int = 15
 ```
 
