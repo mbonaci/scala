@@ -1295,3 +1295,18 @@ val reverseIntSort = msort((x: Int, y: Int) => x > y) _
 reverseIntSort(9 :: 1 :: 8 :: 3 :: 2 :: Nil)
 ```
 
+* 361 - **Higher-order methods on class List**
+
+> - allow you to express useful list operation patterns in a more concise way
+
+> - **Mapping over lists: `map`, `flatMap` and `foreach`**
+>   - `xs map f`, where `xs` is some `List[T]` and `f` is a function of type `T => U`, applies the function `f` to each list element and returns the resulting list
+
+```scala
+List(1, 2, 3) map (_ + 1)  // returns 'List(2, 3, 4)'
+
+val words = List("the", "quick", "brown", "fox")
+words map (_.length)  // returns 'List(3, 5, 5, 3)'
+words map (_.toList.reverse.mkString) // returns 'List(eht, kciuq, nworb, xof)'
+```
+
