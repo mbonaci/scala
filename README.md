@@ -1356,3 +1356,19 @@ ys dropWhile (_ <= 3)  // List(4, 3, 2)
 ys span (_ <= 3)  // (List(1, 2, 3), List(4, 3, 2))
 ```
 
+> - **Predicates over lists: `forall` and `exists`**
+
+```scala
+// 'forall' takes a list and a predicate and returns 'true' if all elements satisfy the predicate
+// 'exists' is similar to 'forall', but it returns 'true' if there's at least one element
+// that satisfies the predicate
+def hasZeroRow(m: List[List[Int]]) =
+  m exists (row => row forall (_ == 0))
+
+val y = List(0, -1)
+val z = List(0, 0, 0)
+val zz = List(y, y, z)  //> List(List(0, -1), List(0, -1), List(0, 0, 0))
+  
+hasZeroRow(zz)          //> res5: Boolean = true
+```
+
