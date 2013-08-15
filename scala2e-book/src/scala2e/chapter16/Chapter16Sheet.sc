@@ -36,8 +36,12 @@ object Chapter16Sheet {
     
   val y = List(0, -1)                             //> y  : List[Int] = List(0, -1)
   val z = List(0, 0, 0)                           //> z  : List[Int] = List(0, 0, 0)
-  val zz = List(y, y, z)                          //> zz  : List[List[Int]] = List(List(0, -1), List(0, -1), List(0, 0, 0))
+  val k = List()                                  //> k  : List[Nothing] = List()
+  val zz = List(y, k, z)                          //> zz  : List[List[Int]] = List(List(0, -1), List(), List(0, 0, 0))
   
-  hasZeroRow(zz)                                  //> res5: Boolean = true
+  k forall (_ != 0)                               //> res5: Boolean = true
+  zz exists (_ == Nil)                            //> res6: Boolean = true
+  
+  hasZeroRow(zz)                                  //> res7: Boolean = true
 
 }

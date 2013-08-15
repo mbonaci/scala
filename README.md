@@ -41,7 +41,7 @@ Thank you.
 * 144 - If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them
 * 146 - **Auxiliary constructors** - constructors other than the primary constructor
 
-> - Every *auxiliary constructor* must invoke another constructor **of the same class** (like Java, only Java can also call superclass's constructor instead) as its first action. That other constructor must textually come before the calling constructor
+> - every *auxiliary constructor* must invoke another constructor **of the same class** (like Java, only Java can also call superclass's constructor instead) as its first action. That other constructor must textually come before the calling constructor
 
 * 152 - The convention is to use camel case for constants, such as `XOffset`
 * 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation
@@ -83,7 +83,10 @@ def grep(pattern: String) =
 ```
 
 * 168 - **yield** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body* 
-* 174 - **match case** example:
+* 174 - **match case**
+
+> - unlike Java's `select case`, there is no fall through, `break` is implicit and `case` expression can contain any type of value
+> - `_` is a placeholder for *completely unknown value*
 
 ```scala
 val target = firstArg match {  // firstArg is a previously initialized val
@@ -94,9 +97,6 @@ val target = firstArg match {  // firstArg is a previously initialized val
 }
 ```
 
-Unlike Java's `select case`, there is no fall through, `break` is implicit. `case` expression can contain any type of value
-`_` is a placeholder for *completely unknown value*
-
 * 175 - In Scala, there's no `break` nor `continue` statements
 * 180 - Unlike Java, Scala supports *inner scope variable shadowing*
 
@@ -104,11 +104,13 @@ Unlike Java's `select case`, there is no fall through, `break` is implicit. `cas
 * 186 - **Local functions** are functions inside other functions. They are visible only in their enclosing block
 * 188 - **Function literal** example: `(x: Int) => x + 1`
 * 188 - Every function value is an instance of some class that extends one of `FunctionN` traits that has an `apply` method used to invoke the function (`Function0` for functions with no params, `Function1` for functions with 1 param, ...)
-* 189 - **foreach** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it on all elements
+* 189 - **foreach** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it to all elements
 * 190 - **filter** method takes a function that maps each element to true or false, e.g. `someNums.filter((x: Int) => x > 0)`
 * 190 - **Target typing** - Scala infers type by examining the way the expression is used, e.g. `filter` example can be written: `someNums.filter(x => x > 0)`
-* 191 - **Placeholder** allow you to write: `someNums.filter(_ > 0)`, but only if each function parameter appears in function literal only once (one underscore for each param, sequentially).
-Sometimes the compiler might not have enough info to infer missing param types:
+* 191 - **Placeholder** allows you to write: `someNums.filter(_ > 0)`
+
+> - only if each function parameter appears in function literal only once (one placeholder for each param, sequentially)
+> - sometimes the compiler might not have enough info to infer missing param types:
 
 ```scala
 val f = _ + _  // error: missing parameter type for expanded function...
@@ -137,10 +139,28 @@ scala> b(2)
 res0: Int = 6
 ```
 
-* 197 - **Closures** see the changes to **free variables** and vice versa, changes to the *free variable* made by *closure* are seen outside of *closure*
-* 199 - **Repeated parameters** Scala allows you to indicate that the last param to a function may be repeated. Syntax: `def echo(args: String*) = for(arg <- args) println(arg)`. Now `echo` may be called with zero or more params.  
-To pass in an `Array[String]` instead, you need to append the arg with a colon and an `_*` symbol: `echo(Array("arr", "of", "strings"): _*)`
-* 200 - **Named arguments** allow you to pass args to a function in a different order. The syntax is to precede each argument with a param name and an equals sign: `speed(distance = 100, time = 10)`. It is also possible to mix positional and named args, in which case the positional arguments, understandably, must come first
+* 197 - **Closures** see the changes to **free variables** and _vice versa_, changes to *free variables* made by *closure* are seen outside of *closure*
+* 199 - **Repeated parameters** Scala allows you to indicate that the last param to a function may be repeated:
+
+```scala
+def echo(args: String*) = for(arg <- args) println(arg)
+// Now `echo` may be called with zero or more params
+
+// To pass in an `Array[String]` instead, you need to
+// append the arg with a colon and an `_*` symbol:
+echo(Array("arr", "of", "strings"): _*)
+```
+
+* 200 - **Named arguments** allow you to pass args to a function in a different order:
+
+```scala
+// The syntax is to precede each argument with a param name and an equals sign:
+speed(distance = 100, time = 10)
+
+// It is also possible to mix positional and named args
+// in which case the positional arguments, understandably, must come first
+```
+
 * 201 - **Default parameter values** allows you to omit such a param when calling a function, in which case the param will be filled with its default value:
 
 ```scala
@@ -153,9 +173,10 @@ printTime()
 printTime(Console.err)
 ```
 
-* 202 - **Tail recursion** (**Tail call optimization**) If the recursive call is the last action in the function body, compiler is able to replace the call with a jump back to the beginning of the function, after updating param values.  
+* 202 - **Tail recursion** (**Tail call optimization**)
 
-> - Because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
+> - if the recursive call is the last action in the function body, compiler is able to replace the call with a jump back to the beginning of the function, after updating param values
+> - because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
 
 ```scala
 val funValue = nestedFun _
@@ -172,12 +193,11 @@ def nestedFun(x: Int) {
  * refactoring imperative code:
  * demonstrates control abstraction (higher order function)
  * that reduces code duplication and significantly simplifies the code
- *
- * the function receives a String and a function that maps (String, String) => Boolean
 */
+// function receives a String and a function that maps (String, String) => Boolean
 def filesMatching(query: String, matcher: (String, String) => Boolean) = {
   for (
-    file <- filesHere;  // filesHere is a function that returns Array of files
+    file <- filesHere;  // filesHere is a function that returns an Array of files
     if matcher(file.getName, query)
   ) yield file
 }
@@ -189,7 +209,7 @@ def filesContaining(query: String) =
   filesMatching(query, (fileName, query) => fileName.contains(query)) // OK to omit types
 
 def filesRegex(query: String) =
-  filesMatching(query, _.matches(_))  // since each param is used only once
+  filesMatching(query, _.matches(_))  // since each 'matcher' param is used only once
 
 
 // Since the query is unnecessarily passed around,

@@ -58,7 +58,7 @@ object ControlAbstraction {
       filesMatching(query, _.contains(_))
       
     def filesRegex(query: String) =
-      filesMatching(query, _.matches(_))
+      filesMatching(_: String, _.matches(_))
   }
   
   object FileMatcherRefactored2 {
