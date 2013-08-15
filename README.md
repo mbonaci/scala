@@ -1413,3 +1413,20 @@ val zz = List(y, y, z)  //> List(List(0, -1), List(0, -1), List(0, 0, 0))
 hasZeroRow(zz)          //> res5: Boolean = true
 ```
 
+> - **Folding lists: `/:` and `:\`**
+>   - _folding_ combines the elements of a list with some operator
+
+```scala
+sum(List(1, 2, 3))  // equals 0 + 1 + 2 + 3
+// which is a special instance of a fold operation:
+def sum(xs: List[Int]): Int = (0 /: xs) (_ + _)
+
+def product(xs: List[Int]): Int = (1 /: xs) (_ * _)  // equals 1 * el1 * el2 * ...
+```
+
+>   - **fold left** operation `(z /: xs)(op)` involves 3 objects:
+>     - start value `z`
+>     - list `xs`
+>     - binary operation `op`
+
+![List fold left image](https://github.com/mbonaci/scala/blob/master/resources/Scala%20list%20folding.png)
