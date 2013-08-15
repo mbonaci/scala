@@ -33,7 +33,7 @@ Thank you.
 
 * 136 - The **operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`
 * 136 - **Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`
-* 137 - `a ::: b ::: c` is treated as `a ::: (b ::: c)`
+* 137 - `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
 
 ### 139 Functional Objects
 * 141 - **Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*. When declaring a class you can drop empty `{}`
@@ -52,7 +52,7 @@ Thank you.
 ```scala
 implicit def intToRational(x: Int) = new Rational(x)
 ```
-for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class Rational, it won't be in scope in the interpreter
+> - for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class Rational, it won't be in scope in the interpreter
 
 ### 159 Built-in Control Structures
 * 163 - **Assignment** always results in the **unit value**, `()`
