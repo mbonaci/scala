@@ -61,7 +61,7 @@ implicit def intToRational(x: Int) = new Rational(x)
 * 166 - **filter**: `for (file <- files if file.getName.endsWith(".scala"))`
 
 ```scala
-// Multiple filters example:
+// multiple filters example:
 for (
   file <- files  // files is a previously defined method that returns array of files
   if file.isFile
@@ -72,7 +72,7 @@ for (
 * 167 - **Nested loops** and **mid-stream variable binding** example with _generators_ and _filters_
 
 ```scala
-// Curly braces are used because the Scala compiler will not infer semicolons inside parentheses
+// curly braces are used because the Scala compiler will not infer semicolons inside parentheses
 def grep(pattern: String) =
   for {
     file <- files if file.getName.endsWith(".scala")  // semicolons inferred
@@ -133,7 +133,7 @@ scala> def sum(a: Int, b: Int, c: Int) = a + b + c
 scala> val a = sum _  // '_' is a placeholder for the entire param list
 a: (Int, Int, Int) => Int = <function3>
 
-// They are called partially applied functions because you can do this:
+// they are called partially applied functions because you can do this:
 scala> val b = sum(1, _: Int, 3)
 scala> b(2)
 res0: Int = 6
@@ -146,7 +146,7 @@ res0: Int = 6
 def echo(args: String*) = for(arg <- args) println(arg)
 // Now `echo` may be called with zero or more params
 
-// To pass in an `Array[String]` instead, you need to
+// to pass in an `Array[String]` instead, you need to
 // append the arg with a colon and an `_*` symbol:
 echo(Array("arr", "of", "strings"): _*)
 ```
@@ -157,7 +157,7 @@ echo(Array("arr", "of", "strings"): _*)
 // The syntax is to precede each argument with a param name and an equals sign:
 speed(distance = 100, time = 10)
 
-// It is also possible to mix positional and named args
+// it is also possible to mix positional and named args
 // in which case the positional arguments, understandably, must come first
 ```
 
@@ -167,7 +167,7 @@ speed(distance = 100, time = 10)
 def printTime(out: java.io.PrintStream = Console.out) = 
   out.println("time = " +  System.currentTimeMillis())
 
-// Now, you can call the function like this: 
+// now, you can call the function like this: 
 printTime()
 // or like this: 
 printTime(Console.err)
@@ -212,7 +212,7 @@ def filesRegex(query: String) =
   filesMatching(query, _.matches(_))  // since each 'matcher' param is used only once
 
 
-// Since the query is unnecessarily passed around,
+// since the query is unnecessarily passed around,
 // we can further simplify the code by introducing a closure
 def filesMatching(matcher: String => Boolean) = {
   for(
@@ -229,52 +229,53 @@ def filesRegex(query: String) =
 
 ```scala
 scala> def curriedSum(x: Int)(y: Int) = x + y
-curriedSum: (x: Int)(y: Int)Int
+// curriedSum: (x: Int)(y: Int)Int
 
 scala> curriedSum(1)(2)
-res0 Int = 3
+// Int = 3
 
 /*
-Curried fn produces two traditional function invocations. The first function invocation
-takes a single 'Int' parameter named 'x', and returns a function value for the second
-function, which takes the 'Int' parameter 'y'
+ * Curried f produces two traditional function invocations. The first function invocation
+ * takes a single 'Int' parameter named 'x', and returns a function value for the second
+ * function, which takes the 'Int' parameter 'y'
 */
+
 // This is what the first function actually does:
 scala> def first(x: Int) = (y: Int) => x + y  // returns function value
-first: (x: Int)Int => Int
+// (x: Int)Int => Int
 
 scala> val second = first(1)  // applying 1 to the first fn yields the second fn
-first: (x: Int)Int => Int
+// (x: Int)Int => Int
 
 scala> second(2)  // applying 2 to the second fn yields the final result
-res1: Int = 3
+// Int = 3
 
 /*
-You can use the placeholder notation to use curriedSum in a partially applied function
-expression which returns the second function:
+ * You can use the placeholder notation to use curriedSum in a partially applied function
+ * expression which returns the second function:
 */
-scala> val onePlus = curriedSum(1)_  // '_' is a placeholder for the second param list
-onePlus: (Int) => Int = <function1>  // 'onePlus' does the same thing as 'second'
+val onePlus = curriedSum(1)_  // '_' is a placeholder for the second param list
+// onePlus: (Int) => Int = <function1>  // 'onePlus' does the same thing as 'second'
+
 /*
 when using placeholder notation with Scala identifiers you need to put a space between
 identifier and underscore, which is why we didn't need space in 'curriedSum(1)_' and we
 did need space for 'println _'
 */
-```
 
-* 215 - Another example of higher order function. `twice` repeats an operation two times and returns the result:
-
-```scala
-scala> def twice(op: Double => Double, x: Double) = op(op(x))
-scala> twice(_ + 1, 5)  // f(f(x)) = x + 1 + 1, where x = 5
-res2: Double = 7.0
+// another example of higher order function, that repeats an operation two times
+// and returns the result:
+def twice(op: Double => Double, x: Double) = op(op(x))
+twice(_ + 1, 5)  // f(f(x)) = x + 1 + 1, where x = 5
+// res2: Double = 7.0
 ```
 
 * 216 - **Loan pattern**
 
-> - when some control abstraction function (such as `withPrintWriter` bellow) opens a resource and *loans* it to a function:
+> - some control abstraction function opens a resource and *loans* it to a function:
 
 ```scala
+// opening a resource and loaning it to 'op'
 def withPrintWriter(file: File, op: PrintWriter => Unit) {
   val writer = new PrintWriter(file)
   try {
@@ -294,7 +295,7 @@ withPrintWriter(
  * you can opt to use curly braces instead of parentheses to surround the argument
  */
 
-// Using 'currying', you can redefine 'withPrintWriter' signature like this:
+// using 'currying', you can redefine 'withPrintWriter' signature like this:
 def withPrintWriter(file: File)(op: PrintWriter => Unit)
 
 // which now enables you to call the function with a more pleasing syntax:
@@ -307,8 +308,7 @@ withPrintWriter(file) { // this curly brace is the second parameter
 * 218 - **By-name parameters**
 
 > - typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function
-> - what if you need to write a function that accepts as a parameter an expression that you don't want evaluated until it's called within your function?
-> - *call-by-name* mechanism passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
+> - to write a function that accepts an expression that is not evaluated until it's called within a function, you use *call-by-name* mechanism, which passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
 
 ```scala
 var assertionsEnabled = true
@@ -316,14 +316,14 @@ def myAssert(predicate: () => Boolean) =  // without by-name parameter
   if (assertionsEnabled && !predicate())  // call it like this: myAssert(() => 5 > 3)
     throw new AssertionError
 
-// To make a by-name parameter, you give the parameter a type
+// to make a by-name parameter, you give the parameter a type
 // starting with '=>' instead of '() =>'
 def myAssert(predicate: => Boolean) =     // with by-name parameter
   if (assertionsEnabled && !predicate())  // call it like this: myAssert(5 > 3)
     throw new AssertionError              // which looks exactly like built-in structure
 
-// You could use a plain-old Boolean, but then the passed expression would get executed
-// before the call to 'boolAssert'
+// we could've used a plain-old Boolean, but then the passed expression
+// would get executed before the call to 'boolAssert'
 ```
 
 ### 222 Composition and Inheritance
@@ -414,8 +414,8 @@ override def toString = contents mkString "\n"
 
 * 254 - Scala stores integers the same way as Java, as 32-bit words, but it uses the *backup* class `java.lang.Integer` to be used whenever an int has to be seen as object
 * 256 - For **reference equality**, `AnyRef` class has `eq` method, which cannot be overridden (behaves like `==` in Java for reference types). Opposite of `eq` is `ne`
-* 256 - *Null* is a subclass of every reference class (i.e. class that inherits from `AnyRef`). It's not compatible with *value types* (`val i: Int = Null // type mismatch`)
-* *Nothing* is a subtype of every other type (of *Null* also). There are no values of this type, it's used primarily to signal abnormal termination:
+* 256 - `Null` is a subclass of every reference class (i.e. class that inherits from `AnyRef`). It's not compatible with *value types* (`val i: Int = Null // type mismatch`)
+* `Nothing` is a subtype of every other type (of *Null* also). There are no values of this type, it's used primarily to signal abnormal termination:
 
 ```scala
 def error(message: String): Nothing =
@@ -430,11 +430,11 @@ def divide(x: Int, y: Int): Int =     // must return 'Int'
 ### 258 Traits
 * 258 - **Trait** encapsulates method and field definitions, which can then be reused by mixing them into classes
 
-> - *Trait* can be mixed in using keywords `extends` or `with`. The difference is that, by using `extends`, you implicitly inherit the trait's superclass (`AnyRef` if a trait has no explicit superclass)
-> - *Trait* also defines a type which can be used as a regular class
-> - If you want to mix a trait into a class that explicitly extends a superclass, use `extends` to indicate the superclass and `with` to mix in the trait:
-> - To mix in multiple traits using `with`:
-> - A class can override trait's members (polymorphism works the same way as with regular classes):
+> - *trait* can be mixed in using keywords `extends` or `with`. The difference is that, by using `extends`, you implicitly inherit the trait's superclass (`AnyRef` if a trait has no explicit superclass)
+> - *trait* also defines a type which can be used as a regular class
+> - if you want to mix a trait into a class that explicitly extends a superclass, use `extends` to indicate the superclass and `with` to mix in the trait:
+> - to mix in multiple traits using `with`:
+> - a class can override trait's members (polymorphism works the same way as with regular classes):
 
 ```scala
 class Animal
@@ -469,13 +469,13 @@ class Frog extends Animal with Philosophical with HasLegs {
 
 ```scala
 # // mixing in a trait when instantiating with 'new' (no need to create a new class)
-scala> val queue = new BasicIntQueue with Doubling with Filtering  // filtering is applied first
-queue: BasicIntQueue with Doubling with Filtering = $anon$1@5fa12d
+val queue = new BasicIntQueue with Doubling with Filtering  // filtering is applied first
+// queue: BasicIntQueue with Doubling with Filtering = $anon$1@5fa12d
 
-scala> queue.put(10)  // passes the Filtering and then gets doubled with Doubling trait
-scala> queue.put(-1)  // not placed in the queue (negative number filter trait applied)
-scala> queue.get()
-res14: Int = 20
+queue.put(10)  // passes the Filtering and then gets doubled with Doubling trait
+queue.put(-1)  // not placed in the queue (negative number filter trait applied)
+queue.get()
+// res14: Int = 20
 ```
 
 ![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Linearization-demonstration-image_zps07e8485d.jpg)
@@ -495,15 +495,15 @@ res14: Int = 20
 * 278 - **Packages** can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
 
 > - a package represents a scope, whose contents is accessed relative to current location
-> - a top level package that's outside all packages user can write is called `_root_`
-> - all names accessible outside packages can be access from inside the package the same way
+> - a top level package that's outside all packages any user can write is called `_root_`
+> - all names accessible outside packages can be access from inside the package in the same way
 > - if you stick with one package per file then Java package rules apply
 
 ```scala
 // this
 package one
 package two
-// is syntactic sugar for this
+// is just syntactic sugar for this
 package one {
   package two {
 
@@ -517,7 +517,7 @@ import one.{two}
 import one.two.three._  // could also be written as `import one.two.three.{_}`
 
 // to use import with objects and classes
-def showOne(one: One) {  // imports all members of its parameter `one` of class `One`
+def showOne(one: One) {  // imports all members of its parameter `one`, of class `One`
   import one._  // use imports wherever you like
   println(name + "s are the best")
 }
@@ -572,6 +572,7 @@ package object one {
     println(name + ", I am")
   }
 }
+
 // in file View.scala
 package view
 import one.Someone  // class defined in package 'one'
