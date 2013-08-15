@@ -1429,4 +1429,4 @@ def product(xs: List[Int]): Int = (1 /: xs) (_ * _)  // equals 1 * el1 * el2 * .
 >     - list `xs`
 >     - binary operation `op`
 
-![List fold left image](https://github.com/mbonaci/scala/blob/master/resources/Scala%20list%20folding.png)
+![List fold left image](https://github.com/mbonaci/scala/blob/master/resources/Scala%20list%20folding.png?raw=true)
