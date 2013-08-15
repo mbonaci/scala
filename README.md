@@ -1328,3 +1328,31 @@ var sum = 0
 List(1, 2, 3, 4, 5) foreach (sum += _) // sum: Int = 15
 ```
 
+> - **Filtering lists: `filter`, `partition`, `find`, `takeWhile`, `dropWhile` and `span`**
+
+```scala
+// 'filter' takes a list and a predicate function and returns the new list containing 
+// the elements that satisfy the predicate
+val xs = List(1, 2, 3, 4, 5)
+xs filter (_ % 2 == 0)  // List(2, 4)
+
+// 'partition' returns a pair of lists, one with elements that satisfy the predicate
+// and the other with ones that don't: '(xs filter p, xs filter (!p(_)))'
+xs partition (_ % 2 == 0)  // (List(2, 4), List(1, 3, 5))
+
+// 'find' is similar to 'filter', but returns only the first element, or 'None'
+xs find (_ % 2 == 0)  // Some(2)
+xs find (_ <= 0)  // None
+
+// 'takeWhile' returns the longest prefix that satisfy the predicate
+val ys = List(1, 2, 3, 4, 3, 2)
+ys takeWhile (_ <= 3)  // List(1, 2, 3)
+
+// 'dropWhile' is similar to 'takeWhile', but it drops the elements and returns the rest
+ys dropWhile (_ <= 3)  // List(4, 3, 2)
+
+// 'span' returns a pair of lists, the first 'takeWhile' and the second 'dropWhile'
+// like 'splitAt', 'span' traverses the list only once
+ys span (_ <= 3)  // (List(1, 2, 3), List(4, 3, 2))
+```
+
