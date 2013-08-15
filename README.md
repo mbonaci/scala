@@ -173,7 +173,7 @@ printTime()
 printTime(Console.err)
 ```
 
-* 202 - **Tail recursion** (**Tail call optimization**)
+* 202 - **Tail recursion (Tail call optimization)**
 
 > - if the recursive call is the last action in the function body, compiler is able to replace the call with a jump back to the beginning of the function, after updating param values
 > - because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
