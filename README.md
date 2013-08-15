@@ -52,33 +52,33 @@ Thank you.
 ```scala
 implicit def intToRational(x: Int) = new Rational(x)
 ```
-> - for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class Rational, it won't be in scope in the interpreter
+> - for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class `Rational`, it won't be in scope
 
 ### 159 Built-in Control Structures
-* 163 - **Assignment** always results in the **unit value**, `()`
+* 163 - **Assignment** always results with the **unit value**, `()`
 * 164 - In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value
 * 164 - The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`
-* 166 - **filter**: `for (file <- files if file.getName.endsWith(".scala"))`. Multiple filters example:
+* 166 - **filter**: `for (file <- files if file.getName.endsWith(".scala"))`
 
 ```scala
-  for (
-    file <- files  // files is a previously defined method that returns array of files
-    if file.isFile
-    if file.getName.endsWith(".scala")
-  ) println(file)
+// Multiple filters example:
+for (
+  file <- files  // files is a previously defined method that returns array of files
+  if file.isFile
+  if file.getName.endsWith(".scala")
+) println(file)
 ```
 
 * 167 - **Nested loops** and **mid-stream variable binding** example with generators and filters. *Curly braces are used because the Scala compiler will not infer semicolons inside parentheses*
 
 ```scala
-  def grep(pattern: String) =
-    for {
-      file <- files if file.getName.endsWith(".scala")  // semicolons inferred
-      line <- fileLines(file)
-      trimmed = line.trim  // mid-stream variable
-      if trimmed.matches(pattern)
-    } println(file + ": " + trimmed)
-    
+def grep(pattern: String) =
+  for {
+    file <- files if file.getName.endsWith(".scala")  // semicolons inferred
+    line <- fileLines(file)
+    trimmed = line.trim  // mid-stream variable
+    if trimmed.matches(pattern)
+  } println(file + ": " + trimmed)
 ```
 
 * 168 - **yield** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body* 
@@ -89,7 +89,7 @@ val target = firstArg match {  // firstArg is a previously initialized val
   case "salt" => println("pepper")
   case "chips" => println("salsa")
   case "eggs" => println("bacon")
-  case _ => println("huh?")
+  case _ => println("waat?")
 }
 ```
 
