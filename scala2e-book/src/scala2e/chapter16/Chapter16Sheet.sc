@@ -43,5 +43,12 @@ object Chapter16Sheet {
   zz exists (_ == Nil)                            //> res6: Boolean = true
   
   hasZeroRow(zz)                                  //> res7: Boolean = true
+  
+  
+  def withDefault: Option[Int] => Int = {
+    case Some(x) => x
+    case None => 0
+  }                                               //> withDefault: => Option[Int] => Int
+  withDefault(None)                               //> res8: Int = 0
 
 }

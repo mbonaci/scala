@@ -850,7 +850,8 @@ expr.isInstanceOf[String]  // member of class 'Any'
 expr.asInstanceOf[String]  // member of class 'Any'
 
 def isIntToIntMap(x: Any) = x match {
-  case m: Map[Int, Int] => true  // non-variable type Int is unchecked since it's eliminated by erasure
+  // non-variable type Int is unchecked since it's eliminated by erasure
+  case m: Map[Int, Int] => true
   case _ => false
 }
 
@@ -861,7 +862,7 @@ isIntToIntMap(Map("aei" -> "aei"))              //> res4: Boolean = true !!!
 ```
 
 > - **Type erasure**
->   - erasure model of generics, like in Java, means that no information about type arguments is maintained at runtime. Consequently, there is no way to determine at runtime whether a given Map object has been created with two Int arguments, rather than with arguments of different types. All the system can do is determine that a value is a Map of some arbitrary type parameters.
+>   - erasure model of generics, like in Java, means that no information about type arguments is maintained at runtime. Consequently, there is no way to determine at runtime whether a given Map object has been created with two Int arguments, rather than with arguments of any other type. All the system can do is determine that a value is a Map of some arbitrary type parameters
 
 * 323 - **Variable binding**
 
@@ -957,14 +958,16 @@ def describe(e: Expr): String = e match {
   case Var(_) => "a var"
 }
 
-// you'll get a compiler warning:
-/* warning: match is not exhaustive
- * missing combination       UnOp
- * missing combination      BinOp
+/* you'll get a compiler warning:
+ * warning: match is not exhaustive
+ * missing combination  UnOp
+ * missing combination  BinOp
+ *
+ * which is telling you that you might get 'MatchError'
+ * because some possible patterns are not handled
  */
-
-// which is telling you that you might get 'MatchError'
-// because some possible patterns are not handled
+// 
+// 
 
 // to get rid of the warning, in situations where you're sure that no such pattern will ever appear, throw in the last catch-all case:
 case _ => throw new RuntimeException  // should never happen
@@ -1173,7 +1176,7 @@ def insert(x: Int, xs: List[Int]): List[Int] = xs match {
 * 349 - **First-order methods on class List**
 
 > - a method is _first order_ if it doesn't take any functions as arguments
-> - **concatenating two lists**
+> - **Concatenating two lists**
 >   - `xs ::: ys` returns a new list that contains all the elements of `xs`, followed by all the elements of `ys`
 >   - `:::` is implemented as a method in class `List`
 >   - like `cons`, list concatenation associates to the right:
