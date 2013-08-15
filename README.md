@@ -186,7 +186,7 @@ def nestedFun(x: Int) {
 ```
 
 ### 207 Control Abstractions
-* 207 - **Higher order functions** - functions that take functions as params:
+* 207 - **Higher order functions** - functions that take other functions as parameters:
 
 ```scala
 /** 
@@ -270,7 +270,9 @@ scala> twice(_ + 1, 5)  // f(f(x)) = x + 1 + 1, where x = 5
 res2: Double = 7.0
 ```
 
-* 216 - When some control abstraction function, such as `withPrintWriter` bellow, opens a resource and *loans* it to a function, we call that the **Loan pattern**:
+* 216 - **Loan pattern**
+
+> - when some control abstraction function (such as `withPrintWriter` bellow) opens a resource and *loans* it to a function:
 
 ```scala
 def withPrintWriter(file: File, op: PrintWriter => Unit) {
@@ -286,23 +288,27 @@ withPrintWriter(
   new File("date.txt"),
   writer => writer.println(new java.util.Date)
 )
-```
-In any method invocation in which you're passing in 'exactly one argument', you can opt to use curly braces instead of parentheses to surround the argument
-Using *currying*, you can redefine `withPrintWriter` signature like this:
 
-```scala
+/*
+ * In any method invocation in which you're passing in 'exactly one argument'
+ * you can opt to use curly braces instead of parentheses to surround the argument
+ */
+
+// Using 'currying', you can redefine 'withPrintWriter' signature like this:
 def withPrintWriter(file: File)(op: PrintWriter => Unit)
-```
-which now enables you to call the function with a more pleasing syntax:
 
-```scala
+// which now enables you to call the function with a more pleasing syntax:
 val file = new File("date.txt")
 withPrintWriter(file) { // this curly brace is the second parameter
     writer => writer.println(new java.util.Date)
 }
 ```
 
-* 218 - **By-name parameters** Typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function. What if you need to write a function that accepts as a parameter an expression that you don't want evaluated until it's called within your function? For this circumstance, Scala offers **call-by-name parameters**. A *call-by-name* mechanism passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
+* 218 - **By-name parameters**
+
+> - typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function
+> - what if you need to write a function that accepts as a parameter an expression that you don't want evaluated until it's called within your function?
+> - *call-by-name* mechanism passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
 
 ```scala
 var assertionsEnabled = true
@@ -322,9 +328,19 @@ def myAssert(predicate: => Boolean) =     // with by-name parameter
 
 ### 222 Composition and Inheritance
 * 222 - **Composition** means one class holds a reference to another
-* 224 - A method is **abstract** if it does not have an implementation (i.e., no equals sign or body). Unlike Java, no abstract modifier is allowed on method declarations. Methods that do have an implementation are called **concrete**.
+* 224 - A method is **abstract** if it does not have an implementation (i.e., no equals sign or body)
+
+> - unlike Java, no abstract modifier is allowed on method declarations
+> - methods that do have an implementation are called **concrete**
+
 * 224 - Class is said to **declare an abstract method** and that it **defines a concrete method** (i.e. *declaration* is *abstract*, *definition* is *concrete*)
-* 225 - Methods with empty parentheses are called **empty-paren methods**. This convention (see bullet 127 on top) supports the *uniform access principle*, which says that the client code should not be affected by a decision to implement an attribute as a field or as a method (from the client code perspective, it should be irrelevant whether `val` or `def` is accessed. The only difference is speed, since fields are precomputed when the class is initialized)
+* 225 - Methods with empty parentheses are called **empty-paren methods**
+
+> - this convention (see _bullet 127_ on top) supports the __uniform access principle__, which says that the client code should not be affected by a decision to implement an attribute as a field or as a method
+> - from the client's code perspective, it should be irrelevant whether `val` or `def` is accessed
+> - the only difference is speed, since fields are precomputed when the class is initialized
+> - but, on the other hand, fields are carried around with the parent object
+
 * 229 - Fields and methods belong to the same *namespace*, which makes possible for a
 field to override a parameterless method, but it forbids defining a field and a method with the same name 
 * 230 - *Java* has four namespaces: fields, methods, types and packages
