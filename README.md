@@ -69,9 +69,10 @@ for (
 ) println(file)
 ```
 
-* 167 - **Nested loops** and **mid-stream variable binding** example with generators and filters. *Curly braces are used because the Scala compiler will not infer semicolons inside parentheses*
+* 167 - **Nested loops** and **mid-stream variable binding** example with _generators_ and _filters_
 
 ```scala
+// Curly braces are used because the Scala compiler will not infer semicolons inside parentheses
 def grep(pattern: String) =
   for {
     file <- files if file.getName.endsWith(".scala")  // semicolons inferred
