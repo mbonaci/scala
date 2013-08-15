@@ -7,7 +7,7 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 Thank you.
 
 ### 252 - Scala type hierarchy
-![Scala class hierarchy image](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Scala-class-hierarchy_zps124c49e1.png)
+![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
 
 ### 117 Basic Types and Operations
 * 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects
@@ -478,8 +478,8 @@ queue.get()
 // res14: Int = 20
 ```
 
-![Scala Linearization](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Linearization-demonstration-image_zps07e8485d.jpg)
-![Linearization order](http://i1329.photobucket.com/albums/w548/mbonaci/scala%20book/Linearization-order-image_zps229e88da.jpg)
+![Scala Linearization](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization-example.png?raw=true)
+![Linearization order](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization.png?raw=true)
 
 * 275 - **When to use a _trait_ and when an _abstract class_**
 
