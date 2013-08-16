@@ -21,4 +21,12 @@ object ListReversalWithFold {
   
   reverseLeft(lst)                                //> res0: List[Int] = List(4, 3, 2, 1)
   
+  
+  // tabulation
+  val squares = List.tabulate(5)(n => n * n)      //> squares  : List[Int] = List(0, 1, 4, 9, 16)
+ 
+  squares(2)                                      //> res1: Int = 4
+ 
+  val multiplication = List.tabulate(3, 4)(_ * _) //> multiplication  : List[List[Int]] = List(List(0, 0, 0, 0), List(0, 1, 2, 3),
+                                                  //|  List(0, 2, 4, 6))
 }

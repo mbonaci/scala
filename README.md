@@ -1484,3 +1484,51 @@ words sortWith (_.length > _.length)
 // List(quick, brown, the, fox)
 ```
 
+* 369 - **Methods of the List object**
+
+> - all the methods above are implemented in class `List`, whereas the following ones are defined in globally accessible, `List` class's companion object `scala.List`
+
+> - **Creating lists from their elements: `List.apply`**
+>   - `List(1, 2)` is in fact `List.apply(1, 2)`
+
+> - **Creating a range of numbers: `List.range`**
+
+```scala
+// simplest form
+List.range(1, 4)      // List(1, 2, 3)
+List.range(1, 7, 2)   // List(1, 3, 5)
+List.range(9, 1, -3)  // List(9, 6, 3)
+```
+
+> - **Creating uniform lists: `List.fill`**
+>   - creates a list consisting of zero or more copies of the same element
+
+```scala
+// use currying when invoking it:
+List.fill(3)('a')  // List(a, a, a)
+List.fill(2)("oy")  // List(oy, oy)
+
+// with more than one argument in the first arg list, it'll make multi-dimensional list
+List.fill(2, 3)('b')  // List(List(b, b, b), List(b, b, b))
+```
+
+> - **Tabulating a function: `List.tabulate`**
+>   - similar to `fill`, only element isn't fixed, but computed using supplied function
+
+```scala
+val squares = List.tabulate(5)(n => n * n)  // one list with 5 elements
+// List(0, 1, 4, 9, 16)
+
+val multiplication = List.tabulate(3, 4)(_ * _)  // 3 lists with 4 elements
+// List[List[Int]] = List(List(0, 0, 0, 0), List(0, 1, 2, 3), List(0, 2, 4, 6))
+/*
+
+  0  1  2  3
+0 0  0  0  0
+1 0  1  2  3
+2 0  2  4  6
+
+*/
+```
+
+
