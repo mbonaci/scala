@@ -1587,6 +1587,6 @@ msortSwapped(abcde)(_ > _)  // succeeds to compile
 
 >   - generally, when tasked to infer type parameters of a polymorphic method, the inferencer consults the types of all value arguments in the first parameter list, but it doesn't go beyond that
 >   - so, when we swapped the arguments, it used the known type of the first parameter `abcde` to deduce the type parameter of `msortSwapped`, so it did not need to consult the second argument list in order to determine the type parameter of the method
-> - **suggested library design principle:**
->   - when designing a polymorphic method that takes a non-function and function arguments, place the function argument last in a curried parameter list by its own
->   - that way, the method's correct instance type can be inferred from the non-function arguments, and then that type can be used to type-check the function argument
+>   - **suggested library design principle:**
+>     - when designing a polymorphic method that takes a non-function and function arguments, place the function argument last in a curried parameter list by its own
+>     - that way, the method's correct instance type can be inferred from the non-function arguments, and then that type can be used to type-check the function argument
