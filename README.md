@@ -135,8 +135,7 @@ a: (Int, Int, Int) => Int = <function3>
 
 // they are called partially applied functions because you can do this:
 scala> val b = sum(1, _: Int, 3)
-scala> b(2)
-res0: Int = 6
+scala> b(2)  // Int = 6
 ```
 
 * 197 - **Closures** see the changes to **free variables** and _vice versa_, changes to *free variables* made by *closure* are seen outside of *closure*
@@ -267,7 +266,7 @@ did need space for 'println _'
 // and returns the result:
 def twice(op: Double => Double, x: Double) = op(op(x))
 twice(_ + 1, 5)  // f(f(x)) = x + 1 + 1, where x = 5
-// res2: Double = 7.0
+// Double = 7.0
 ```
 
 * 216 - **Loan pattern**
@@ -474,8 +473,7 @@ val queue = new BasicIntQueue with Doubling with Filtering  // filtering is appl
 
 queue.put(10)  // passes the Filtering and then gets doubled with Doubling trait
 queue.put(-1)  // not placed in the queue (negative number filter trait applied)
-queue.get()
-// res14: Int = 20
+queue.get()  // Int = 20
 ```
 
 ![Scala Linearization](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization-example.png?raw=true)
@@ -710,7 +708,7 @@ op: BinOp = BinOp(+,Number(1.0),Var(x))
 
 // copy method example
 scala> op.copy(operator = "-")
-res0: BinOp = BinOp(-,Number(1.0),Var(x))
+// BinOp = BinOp(-,Number(1.0),Var(x))
 ```
 
 * 312 - **Pattern matching**
@@ -840,9 +838,9 @@ expr match {
     case _ => -1
   }                                               //> generalSize: (x: Any)Int
 
-  generalSize("aeiou")                            //> res0: Int = 5
-  generalSize(Map(1 -> 'a', 2 -> 'b'))            //> res1: Int = 2
-  generalSize(math.Pi)                            //> res2: Int = -1
+  generalSize("aeiou")                            //> Int = 5
+  generalSize(Map(1 -> 'a', 2 -> 'b'))            //> Int = 2
+  generalSize(math.Pi)                            //> Int = -1
 
 // generally, to test whether expression is an instance of a type:
 expr.isInstanceOf[String]  // member of class 'Any'
@@ -855,8 +853,8 @@ def isIntToIntMap(x: Any) = x match {
   case _ => false
 }
 
-isIntToIntMap(Map(1 -> 2, 2 -> 3))              //> res3: Boolean = true
-isIntToIntMap(Map("aei" -> "aei"))              //> res4: Boolean = true !!!
+isIntToIntMap(Map(1 -> 2, 2 -> 3))              //> Boolean = true
+isIntToIntMap(Map("aei" -> "aei"))              //> Boolean = true !!!
 
 // the same thing works fine with arrays since their type is preserved with their value
 ```
@@ -936,9 +934,9 @@ val allMin = UnOp("-", UnOp("-", 4))
 val allAdd = BinOp("+", 244, 0 + Number(0))
 val allMul = BinOp("*", 24, 1)
 
-simplifyAll(allMin)   //> res7: Expr = Number(4.0)
-simplifyAll(allAdd)   //> res8: Expr = Number(244.0)
-simplifyAll(allMul)   //> res9: Expr = Number(24.0)
+simplifyAll(allMin)   //> Expr = Number(4.0)
+simplifyAll(allAdd)   //> Expr = Number(244.0)
+simplifyAll(allMul)   //> Expr = Number(24.0)
 ```
 
 * 326 - **Sealed classes**
@@ -1264,8 +1262,7 @@ zipped.unzip
 ```scala
 // 'toString' returns canonical representation of a list:
 val abc = List("a", "b", "c")
-abc.toString
-res0: String = List(a, b, c)
+abc.toString  // List(a, b, c)
 
 // 'mkString' is more suitable for human consumption:
 mkString(pre, sep, post)  // returns:
@@ -1277,8 +1274,7 @@ xs mkString("", sep, "")  // also, you can omit all arguments (default to empty 
 
 // a variant of 'mkString' which appends string to a 'scala.StringBuilder' object:
 val buf = new StringBuilder
-abc addString(buf, "(", "; ", ")")
-res2: StringBuilder = (a; b; c)
+abc addString(buf, "(", "; ", ")")  // StringBuilder = (a; b; c)
 ```
 
 > - **Converting lists: `iterator`, `toArray` and `copyToArray`**
@@ -1410,7 +1406,7 @@ val y = List(0, -1)
 val z = List(0, 0, 0)
 val zz = List(y, y, z)  //> List(List(0, -1), List(0, -1), List(0, 0, 0))
   
-hasZeroRow(zz)          //> res5: Boolean = true
+hasZeroRow(zz)          //> Boolean = true
 ```
 
 > - **Folding lists: `/:` and `:\`**
@@ -1476,4 +1472,15 @@ def reverseLeft[T](xs: List[T]) =
 ```
 
 > - **Sorting lists: `sortWith`**
->   - 
+>   - `xs sortWith before`, where `before` is a function that compares two elements
+>   - `x before y` should return `true` if `x` should come before `y` in a sort order
+>   - uses _merge sort_ algorithm
+
+```scala
+list(1, -2, 8, 3, 6) sortWith (_ < _)
+// List(-2, 1, 3, 6, 8)
+
+words sortWith (_.length > _.length)
+// List(quick, brown, the, fox)
+```
+
