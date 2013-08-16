@@ -1620,6 +1620,7 @@ fiveInts  // Array(1, 0, 0, 0, 0)
 >   - constant time append and prepend operations
 >   - `+=` to append, and `+=:` to prepend
 >   - when you're done, you can obtain a list with the `toList` method of `ListBuffer`
+>   - if your `List` algorithm is not tail recursive, you can use `ListBuffer` with `for` or `while` to avoid the potential stack overflow
 
 ```scala
 import scala.collection.mutable.ListBuffer
@@ -1628,5 +1629,112 @@ val buf = new ListBuffer[Int]
 buf += 22   // ListBuffer(22)
 11 +=: buf  // ListBuffer(11, 22)
 buf.toList  // List(11, 22)
+```
+
+> - **Array buffers** (mutable)
+>   - like an array, but you can add and remove elements from the beginning and the end
+>   - all `Array` operations are available, though little slower, due to wrapping layer in the implementation
+>   - addition and removal take constant time on average, but require linear time if the array needs to be expanded
+
+```scala
+import scala.collection.mutable.ArrayBuffer
+val abuf = new ArrayBuffer[Int]()
+
+// append using '+='
+abuf += 8                   // ArrayBuffer(8)
+abuf += 4                   // ArrayBuffer(8, 4)
+
+abuf.length                 // Int = 2
+abuf(1)                     // Int = 4
+```
+
+> - **Strings** (via **StringOps**)
+>   - since `Predef` has an implicit conversion from `String` to `StringOps`, you can use any string like a sequence
+
+```scala
+def hasUpperCaseLetter(s: String) = s.exists(_.isUpper)  // String doesn't have 'exists'
+
+hasUpperCaseLetter("glupson 1")  // false
+hasUpperCaseLetter("glupsoN 1")  // true
+```
+
+* 381 - **Sets and maps**
+
+> - by default, when you write `Set` or `Map`, you get an immutable object
+> - for mutable objects, you need explicit import
+
+```scala
+object Predef {
+  type Map[A, +B] = collection.immutable.Map[A, B]
+  type Set[A] = collection.immutable.Set[A]
+  val Map = collection.immutable.Map
+  val Set = collection.immutable.Set
+  // ...
+}
+// the 'type' keyword is used in 'Predef' to define aliases for fully qualified names
+// the 'vals' are initialized to refer to the singleton objects
+// so 'Map' == 'Predef.Map' == 'scala.collection.immutable.Map'
+
+// to use the immutable and mutable in the same source file:
+import scala.collection.mutable
+val mutaSet = mutable.Set(1, 2)  // scala.collection.mutable.Set[Int]
+val set = Set(1, 2)              // scala.collection.immutable.Set[Int]
+```
+
+> - **Using sets**
+>   - the key characteristic is that they maintain uniqueness of their elements, as defined by `==`
+
+```scala
+val text = "run Forest, run. That's it Forest! Run!"
+val wordsArray = text.split("[ !,.]+")  // Array(run, Forest, Run, That's, it, Forest, Run)
+import scala.collection.mutable
+val set = mutable.Set.empty[String]  // Set()
+
+for(word <- wordsArray)
+  set += word.toLowerCase
+  
+set  // Set(it, run, that's, forest)
+```
+
+![Set hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-sets-hierarchy.png?raw=true)
+
+```scala
+/********************************************************************************/
+/*********************      Common operations for sets      *********************/
+/********************************************************************************/
+
+val nums = Set(1, 2, 3)          // crates an immutable set
+
+nums.toString                    // returns Set(1, 2, 3)
+
+nums + 5                         // adds an element (returns Set(1, 2, 3, 5))
+
+nums - 3                         // removes the element (returns Set(1, 2))
+
+nums ++ List(5, 6)               // adds multiple elements (returns Set(1, 2, 3, 5, 6))
+
+nums -- List(1, 2)               // removes multiple elements
+
+nums & Set(1, 3, 5, 7)           // returns the intersection of two sets (Set(1, 3))
+
+nums.size                        // returns the size of the set
+
+nums.contains(3)                 // checks for inclusion
+
+import scala.collection.mutable  // makes the mutable collections easy to access
+
+val words = mutable.Set.empty[String]  // creates an empty, mutable set
+
+words.toString                   // returns Set()
+
+words += "the"                   // adds an element (Set(the))
+
+words -= "the"                   // removes an element (Set())
+
+words ++= List("do", "re", "mi") // adds multiple elements
+
+words --= List("do", "re")       // removes multiple elements
+
+words.clear                      // removes all elements
 ```
 
