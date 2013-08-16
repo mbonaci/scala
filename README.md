@@ -1537,4 +1537,20 @@ List.concat(List(), List('b'), List('c'))  // List(b, c)
 List.concat()  // List()
 ```
 
+* 371 - **Processing multiple lists together**
+
+> - `zipped`, `map`, `forall`, `exists`
+> - `zipped` method (defined on tuples) combines the tuple elements sequentially, same as `zip`, first with first, second with second, ...
+> - it is used with other (multiple list) methods to apply an operation to combined elements
+
+```scala
+(List(4, 6, 1), List(5, 8)).zipped.map(_ * _)   // List(20, 48)
+
+(List("on", "mali", "debeli"), List(2, 4, 5)).zipped
+    .forall(_.length == _)                      //> false (two matches)
+(List("on", "mali", "debeli"), List(1, 4, 9)).zipped
+    .exists(_.length == _)                      // true (one matches)
+(List("on", "mali", "debeli"), List(2, 4, 6)).zipped
+    .exists(_.length != _)                      // false (all matches)
+```
 
