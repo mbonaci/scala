@@ -6,10 +6,10 @@ Basically, while I'm going through the book, I'm taking notes here, so I can lat
 If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean).  
 Thank you.
 
-### 252 - Scala type hierarchy
+### Scala type hierarchy
 ![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
 
-### 117 Basic Types and Operations
+### Basic Types and Operations
 * 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects
 
 > - **Pure methods** are methods that don't have any side effects and don't depend on mutable state (226) 
@@ -35,7 +35,7 @@ Thank you.
 * 136 - **Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`
 * 137 - `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
 
-### 139 Functional Objects
+### Functional Objects
 * 141 - **Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*. When declaring a class you can drop empty `{}`
 * 143 - A **precondition** is a constraint on values passed into a method or constructor (E.g. `require(d != 0)` in the class body will throw `IllegalArgumentException: requirement failed` when `0` is passed as `d`)
 * 144 - If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them
@@ -54,7 +54,7 @@ implicit def intToRational(x: Int) = new Rational(x)
 ```
 > - for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class `Rational`, it won't be in scope
 
-### 159 Built-in Control Structures
+### Built-in Control Structures
 * 163 - **Assignment** always results with the **unit value**, `()`
 * 164 - In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value
 * 164 - The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`
@@ -100,7 +100,7 @@ val target = firstArg match {  // firstArg is a previously initialized val
 * 175 - In Scala, there's no `break` nor `continue` statements
 * 180 - Unlike Java, Scala supports *inner scope variable shadowing*
 
-### 184 Functions and Closures
+### Functions and Closures
 * 186 - **Local functions** are functions inside other functions. They are visible only in their enclosing block
 * 188 - **Function literal** example: `(x: Int) => x + 1`
 * 188 - Every function value is an instance of some class that extends one of `FunctionN` traits that has an `apply` method used to invoke the function (`Function0` for functions with no params, `Function1` for functions with 1 param, ...)
@@ -184,7 +184,7 @@ def nestedFun(x: Int) {
 }
 ```
 
-### 207 Control Abstractions
+### Control Abstractions
 * 207 - **Higher order functions** - functions that take other functions as parameters:
 
 ```scala
@@ -325,7 +325,7 @@ def myAssert(predicate: => Boolean) =     // with by-name parameter
 // would get executed before the call to 'boolAssert'
 ```
 
-### 222 Composition and Inheritance
+### Composition and Inheritance
 * 222 - **Composition** means one class holds a reference to another
 * 224 - A method is **abstract** if it does not have an implementation (i.e., no equals sign or body)
 
@@ -386,7 +386,7 @@ def beside(that: Element): Element =
 override def toString = contents mkString "\n"
 ```
 
-### 250 Scala's Hierarchy
+### Scala's Hierarchy
 * 250 - In Scala hierarchy, **scala.Null** and **scala.Nothing** are the subclasses of every class (thus the name **bottom classes**), just as **Any** is the superclass of every other class
 * 250 - `Any` contains methods:
 
@@ -426,7 +426,7 @@ def divide(x: Int, y: Int): Int =     // must return 'Int'
   else error("can't divide by zero")  // 'Nothing' is a subtype of 'Int'
 ```
 
-### 258 Traits
+### Traits
 * 258 - **Trait** encapsulates method and field definitions, which can then be reused by mixing them into classes
 
 > - *trait* can be mixed in using keywords `extends` or `with`. The difference is that, by using `extends`, you implicitly inherit the trait's superclass (`AnyRef` if a trait has no explicit superclass)
@@ -489,7 +489,7 @@ queue.get()  // Int = 20
 > - if efficiency is very, very important, use a class (in Java, a virtual method invocation of a class member is faster than an interface method invocation)
 > - if none of the above fits your case, use trait
 
-### 277 Packages and Imports
+### Packages and Imports
 * 278 - **Packages** can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
 
 > - a package represents a scope, whose contents is accessed relative to current location
@@ -584,7 +584,7 @@ object ViewDialog {
 }
 ```
 
-### 295 Assertions and Unit Testing
+### Assertions and Unit Testing
 * 295 - **Assertions**
 
 > - written as calls of a predefined method `assert` (defined in the `Predef` singleton)
@@ -688,7 +688,7 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 }
 ```
 
-### 309 Case Classes and Pattern Matching
+### Case Classes and Pattern Matching
 * 310 - **Case classes**
 
 > - for classes with `case` modifier, Scala compiler adds some syntactic sugar:
@@ -1099,7 +1099,7 @@ for(Some(fruit) <- results) println(fruit)
 // 'None' does not match pattern 'Some(fruit)'
 ```
 
-### 344 Working with Lists
+### Working with Lists
 * 344 - **List literals**
 
 > - lists are _immutable_ (list elements cannot be changed by assignment)
@@ -1590,3 +1590,43 @@ msortSwapped(abcde)(_ > _)  // succeeds to compile
 >   - **suggested library design principle:**
 >     - when designing a polymorphic method that takes a non-function and function arguments, place the function argument last in a curried parameter list by its own
 >     - that way, the method's correct instance type can be inferred from the non-function arguments, and then that type can be used to type-check the function argument
+
+### Collections
+* 377 - **Sequences**
+
+> - groups of data lined up in order, which allows you to get the 'n-th' element
+> - **Lists** (immutable linked list)
+>   - support fast addition and removal of items to the beginning of the list
+>   - slow in manipulating the end of a sequence (add to front and reverse in the end)
+>   - do not provide fast access to arbitrary indexes (must iterate through the list)
+> - **Arrays**
+>   - fast access of an item in an arbitrary position (both, get and update)
+>   - represented in the same way as Java arrays (use Java methods that return arrays)
+
+```scala
+// to create an array whose size you know, but you don't know element values
+val fiveInts = new Array[Int](5)  // Array(0, 0, 0, 0, 0)
+
+// to initialize an array when you know the element values:
+val fiveToOne = Array(5, 4, 3, 2 , 1)
+
+// read and update:
+fiveInts(0) = fiveToOne(4)
+fiveInts  // Array(1, 0, 0, 0, 0)
+```
+
+> - **List buffers** (mutable)
+>   - used when you need to build a list by appending to the end
+>   - constant time append and prepend operations
+>   - `+=` to append, and `+=:` to prepend
+>   - when you're done, you can obtain a list with the `toList` method of `ListBuffer`
+
+```scala
+import scala.collection.mutable.ListBuffer
+val buf = new ListBuffer[Int]
+
+buf += 22   // ListBuffer(22)
+11 +=: buf  // ListBuffer(11, 22)
+buf.toList  // List(11, 22)
+```
+
