@@ -36,4 +36,9 @@ object wksChapter17 {
     set += word.toLowerCase
     
   set                                             //> res9: scala.collection.mutable.Set[String] = Set(it, run, that's, forrest)
+
+  val w = mutable.Map.empty[String, Int]          //> w  : scala.collection.mutable.Map[String,Int] = Map()
+  w += ("a" -> 1)                                 //> res10: scala2e.chapter17.wksChapter17.w.type = Map(a -> 1)
+  w.clear
+  w                                               //> res11: scala.collection.mutable.Map[String,Int] = Map()
 }

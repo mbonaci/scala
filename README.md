@@ -1738,3 +1738,78 @@ words --= List("do", "re")       // removes multiple elements
 words.clear                      // removes all elements
 ```
 
+> - **Using maps**
+>   - when creating a map, you must specify two types (key, value)
+
+```scala
+// word count using a map
+def main(args: Array[String]): Unit = {
+  val count = countWords("run forest, run fast! run forest!")
+  println(count.toString)  // Map(fast -> 1, run -> 3, forest -> 2)
+}
+
+import scala.collection.mutable
+def countWords(text: String): mutable.Map[String, Int] = {
+  val wordsArray = text.split("[ !,.]+")
+  val map = mutable.Map.empty[String, Int]
+  
+  for(w <- wordsArray)
+    if(map.contains(w))
+      map(w) = map(w) + 1
+    else
+      map += (w -> 1)
+      
+  map
+}
+```
+
+![Map hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-maps-hierarchy.png?raw=true)
+
+```scala
+/********************************************************************************/
+/*********************      Common operations for maps      *********************/
+/********************************************************************************/
+
+val m = Map("i" -> 1, "ii" -> 2)  // crates an immutable map
+
+m.toString                        // returns Map(i->1, ii->2)
+
+m + ("vi" -> 6)                   // adds an entry (returns Map(i->1, ii->2, vi->6)
+
+m - "ii"                          // removes the entry (returns Map(i->1, vi->6))
+
+m ++ List("iii" -> 5, "v" -> 5)   // adds multiple entries
+
+m -- List("i", "ii")              // removes multiple entries
+
+m.size                            // returns the size of the map
+
+m.contains("ii")                  // checks for inclusion
+
+m("ii")                           // returns 2
+
+m.keys                            // returns Iterable over keys ("i" and "ii")
+
+m.keySet                          // returns keys as a set (Set(i, ii))
+
+m.values                          // returns Iterable over values (1, 2)
+
+m.isEmpty                         // indicates whether the map is empty
+
+import scala.collection.mutable   // makes the mutable collections easy to access
+
+val w = mutable.Map.empty[String, Int]  // creates an empty, mutable map
+
+w.toString                        // returns Map()
+
+w += ("one" -> 1)                 // adds an entry (Map(one->1))
+
+w -= "one"                        // removes an entry (Map())
+
+w ++= List("st" -> 1, "nd" -> 2, "rd" - 3)  // adds multiple entries
+
+w --= List("st", "nd")            // removes multiple entries
+
+w.clear                           // removes all entries
+```
+
