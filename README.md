@@ -1415,11 +1415,12 @@ hasZeroRow(zz)          //> res5: Boolean = true
 
 > - **Folding lists: `/:` and `:\`**
 >   - _folding_ combines the elements of a list with some operator
+>   - there are equivalent methods named `foldLeft` and `foldRight` defined in class `List`
 
 ```scala
 sum(List(1, 2, 3))  // equals 0 + 1 + 2 + 3
 // which is a special instance of a fold operation:
-def sum(xs: List[Int]): Int = (0 /: xs) (_ + _)
+def sum(xs: List[Int]): Int = (0 /: xs) (_ + _)  // equals 0 + el1 + el2 + ...
 
 def product(xs: List[Int]): Int = (1 /: xs) (_ * _)  // equals 1 * el1 * el2 * ...
 ```
@@ -1428,6 +1429,51 @@ def product(xs: List[Int]): Int = (1 /: xs) (_ * _)  // equals 1 * el1 * el2 * .
 >     - start value `z`
 >     - list `xs`
 >     - binary operation `op`
+>   - `(z /: List(a, b, c))(op)` equals `op(op(op(z, a), b), c)`
 
 ![List fold left image](https://github.com/mbonaci/scala/blob/master/resources/Scala-fold-left.png?raw=true)
 
+>   - **fold right** operation `(z \: xs)(op)` is the reflection of _fold left_
+>   - consists of the same 3 operands, but the first two are reversed, list comes first
+>   - `(List(a, b, c) :\ z)(op)` equals `op(a, op(b, op(c, z)))`
+
+![List fold right image](https://github.com/mbonaci/scala/blob/master/resources/Scala-fold-right.png?raw=true)
+
+```scala
+// implementation of the 'flatten' methods with folding:
+def flattenLeft[T](xss: List[List[T]]) =
+  (List[T]() /: xss) (_ ::: _)  // less efficient, since it copies 'xss' 'n - 1' times
+
+def flattenRight[T](xss: List[List[T]]) =
+  (xss :\ List[T]()) (_ ::: _)
+
+// '(xs ::: ys)' takes linear time 'xs.length'
+// '[T]' is required due to a limitation in type inferencer
+
+// list reversal implemented using fold left (takes linear time):
+def reverseLeft[T](xs: List[T]) =
+  (List[T]() /: xs) {(ys, y) => y :: ys}  // "snoc" ("cons" reversed)
+
+// how we implemented the function:
+
+/* First we took smallest possible list, 'List()':
+  equals (by the properties of reverseLeft)
+    reverseLeft(List())
+  equals (by the template for reverseLeft)
+    (startvalue /: List())(operation)
+  equals (by the definition of /:)
+    startvalue
+*/
+
+/* Then we took the next smallest list, 'List(x)':
+  equals (by the properties of reverseLeft)
+    reverseLeft(List(x))
+  equals (by the template for reverseLeft)
+    (List() /: List(x)) (operation)
+  equals (by the definition of /:)
+    operation(List(), x)
+*/
+```
+
+> - **Sorting lists: `sortWith`**
+>   - 
