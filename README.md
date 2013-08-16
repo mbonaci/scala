@@ -1554,3 +1554,39 @@ List.concat()  // List()
     .exists(_.length != _)                      // false (all matches)
 ```
 
+* 372 - **Understanding Scala's type inference algorithm**
+
+> - the goal of type inference is to enable users of your method to give as less type information possible, so that function literals are written in more concise way
+> - type inference is flow based
+> - in a method application `m(args)`, the inferencer:
+> 
+>   - first checks whether the method `m` has a known type
+> 
+>   - if it has, that type is used to infer the expected type of arguments
+>     - e.g. in `abcde.sortWith(_ > _)` the type of `abcde` is `List[Char]`
+>     - so it knows `sortWith` takes `(Char, Char) => Boolean` and produces `List[Char]`
+>     - thus, it expands `(_ > _)` to `((x: Char, y: Char) => x > y)`
+> 
+>   - if the type is not know
+>     - e.g. in `msort(_ > _)(abcde)`, `msort` is curried, polymorphic method that takes an argument of type `(T, T) => Boolean` to a function from `List[T]` to `List[T]` where `T` is some as-yet unknown type
+>     - the `msort` needs to be instantiated with a specific type parameter before it can be applied to its arguments
+>     - inferencer changes its strategy and type-checks method arguments to determine the proper instance type of the method, but it fails, since all it has is `(_ > _)`
+>     - one way to solve the problem is to supply `msort` with explicit type parameter
+>       - `msort[Char](_ > _)(abcde)  // List(e, d, c, b, a)`
+>     - another solution is to rewrite `msort` so that its parameters are swapped:
+
+```scala
+def msortSwapped[T](xs: List[T])(less: 
+  (T, T) => Boolean): List[T] = {
+  // impl
+}
+
+msortSwapped(abcde)(_ > _)  // succeeds to compile
+// List(e, d, c, b, a)
+```
+
+>   - generally, when tasked to infer type parameters of a polymorphic method, the inferencer consults the types of all value arguments in the first parameter list, but it doesn't go beyond that
+>   - so, when we swapped the arguments, it used the known type of the first parameter `abcde` to deduce the type parameter of `msortSwapped`, so it did not need to consult the second argument list in order to determine the type parameter of the method
+> - **suggested library design principle:**
+>   - when designing a polymorphic method that takes a non-function and function arguments, place the function argument last in a curried parameter list by its own
+>   - that way, the method's correct instance type can be inferred from the non-function arguments, and then that type can be used to type-check the function argument
