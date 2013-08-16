@@ -1522,13 +1522,19 @@ val squares = List.tabulate(5)(n => n * n)  // one list with 5 elements
 val multiplication = List.tabulate(3, 4)(_ * _)  // 3 lists with 4 elements
 // List[List[Int]] = List(List(0, 0, 0, 0), List(0, 1, 2, 3), List(0, 2, 4, 6))
 /*
+    0  1  2  3
 
-  0  1  2  3
-0 0  0  0  0
-1 0  1  2  3
-2 0  2  4  6
-
+0   0  0  0  0
+1   0  1  2  3
+2   0  2  4  6
 */
+```
+
+> - **Concatenating multiple lists: `List.concat`**
+
+```scala
+List.concat(List(), List('b'), List('c'))  // List(b, c)
+List.concat()  // List()
 ```
 
 
