@@ -56,7 +56,9 @@ object wksChapter17 {
 
   var toys = Set("bear", "car")                   //> toys  : scala.collection.immutable.Set[String] = Set(bear, car)
   toys += "doll"
-  toys                                            //> res12: scala.collection.immutable.Set[String] = Set(bear, car, doll)
+  toys += "loading truck"
+  toys                                            //> res12: scala.collection.immutable.Set[String] = Set(bear, car, doll, loadin
+                                                  //| g truck)
 
 
 
@@ -76,6 +78,24 @@ object wksChapter17 {
   val mts = mutable.Set.empty ++= ts              //> mts  : scala.collection.mutable.Set[Int] = Set(9, 1, 5, 2, 6, 3, 4, 8)
   val its = Set.empty ++ mts                      //> its  : scala.collection.immutable.Set[Int] = Set(5, 1, 6, 9, 2, 3, 8, 4)
   
+  val lista = List[Any](1, "a", 'c')              //> lista  : List[Any] = List(1, a, c)
   
 
+  def findLongest(words: Array[String]): Tuple2[String, Int] = {
+    var len = -1
+    var index = -1
+    
+    for(word <- words) {
+      if(word.length > len) {
+        index = words.indexOf(word)
+        len = word.length
+      }
+    }
+    (words(index), index)
+  
+  }                                               //> findLongest: (words: Array[String])(String, Int)
+  
+  val tup = findLongest(toys.toArray)             //> tup  : (String, Int) = (loading truck,3)
+    
+    
 }

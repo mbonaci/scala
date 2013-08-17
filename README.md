@@ -1898,3 +1898,30 @@ val ms = mutable.Set.empty ++= ts  // mutable.Set[Int] = Set(9, 1, 5, 2, 6, 3, 4
 val is = Set.empty ++ mts        // immutable.Set[Int] = Set(5, 1, 6, 9, 2, 3, 8, 4)
 ```
 
+* 396 - **Tuples**
+
+> - a tuple combines a fixed number of items together so they can be passed around as a whole
+> - unlike arrays and lists, tuple can hold objects of different types
+> - tuples save you the effort of defining simplistic, data-heavy (as opposed to logic-heavy) classes
+> - since they can contain objects of different types, they don't inherit from `Traversable`
+> - a common usage pattern of tuples is returning multiple values from a method
+> - to access elements of a tuple you can use methods `_1`, `_2`, ...
+> - you can deconstruct a tuple like this: `val (word, idx) = someTuple2` (if you leave off the parentheses, both `word` and `idx` vals are assigned with a whole tuple)
+
+```scala
+def findLongest(words: Array[String]): Tuple2[String, Int] = {
+  var len = -1
+  var index = -1
+  
+  for(word <- words) {
+    if(word.length > len) {
+      index = words.indexOf(word)
+      len = word.length
+    }
+  }
+  (words(index), index)
+
+}  // findLongest: (words: Array[String])(String, Int)
+
+var toys = Set("bear", "car", "doll", "loading truck")
+val tup = findLongest(toys.toArray)  // tup: (String, Int) = (loading truck,3)
