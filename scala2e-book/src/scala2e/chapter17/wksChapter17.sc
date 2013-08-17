@@ -71,5 +71,11 @@ object wksChapter17 {
 
   val a = ts.toArray                              //> a  : Array[Int] = Array(1, 2, 3, 4, 5, 6, 8, 9)
   val l = ts.toList                               //> l  : List[Int] = List(1, 2, 3, 4, 5, 6, 8, 9)
+  
+  
+  val mts = mutable.Set.empty ++= ts              //> mts  : scala.collection.mutable.Set[Int] = Set(9, 1, 5, 2, 6, 3, 4, 8)
+  val its = Set.empty ++ mts                      //> its  : scala.collection.immutable.Set[Int] = Set(5, 1, 6, 9, 2, 3, 8, 4)
+  
+  
 
 }

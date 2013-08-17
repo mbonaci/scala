@@ -1879,11 +1879,22 @@ stuff += "green"  // scala.collection.mutable.Set[Any] = Set(42, green)
 > - to convert a collection to list, simply call `toList`
 > - there is a speed penalty, since all the elements need to be copied during the conversion process, which may be problematic for large collections
 > - the order of elements in the resulting list or array will be the order produced by an iterator obtained by invoking `elements` on the source collection
-> - in case of sorted collection, the resulting list or array will also be sorted:
+> - in case of sorted collections, the resulting list or array will also be sorted:
 
 ```scala
 val ts = TreeSet(8, 3, 4, 1)
 val a = ts.toArray  // Array(1, 3, 4, 8)
 val l = ts.toList   // List(1, 3, 4, 8)
+```
+
+* 395 - **Converting between mutable and immutable sets and maps**
+
+> - create a collection of the new type using the `empty` method and then add the new elements using method for adding multiple entries (`++` for mutable and `++=` for immutable)
+
+```scala
+// converting immutable TreeSet to a mutable set and back
+val ts = TreeSet(9, 2, 5, 1, 8, 6, 4, 3)
+val ms = mutable.Set.empty ++= ts  // mutable.Set[Int] = Set(9, 1, 5, 2, 6, 3, 4, 8)
+val is = Set.empty ++ mts        // immutable.Set[Int] = Set(5, 1, 6, 9, 2, 3, 8, 4)
 ```
 
