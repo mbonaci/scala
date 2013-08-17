@@ -1866,4 +1866,24 @@ import scala.collection.mutable.Set
 * 392 - **Initializing collections**
 
 > - the common way to create and initialize a collection is to pass the initial elements to a factory method on the companion object (invokes `apply`)
+> - when an inferred type is not what you need, explicitly set type of your collection:
+
+```scala
+val stuff = mutable.Set[Any](42)
+stuff += "green"  // scala.collection.mutable.Set[Any] = Set(42, green)
+```
+
+* 394 - **Converting to array or list**
+
+> - to convert a collection to array, simply call `toArray`
+> - to convert a collection to list, simply call `toList`
+> - there is a speed penalty, since all the elements need to be copied during the conversion process, which may be problematic for large collections
+> - the order of elements in the resulting list or array will be the order produced by an iterator obtained by invoking `elements` on the source collection
+> - in case of sorted collection, the resulting list or array will also be sorted:
+
+```scala
+val ts = TreeSet(8, 3, 4, 1)
+val a = ts.toArray  // Array(1, 3, 4, 8)
+val l = ts.toList   // List(1, 3, 4, 8)
+```
 

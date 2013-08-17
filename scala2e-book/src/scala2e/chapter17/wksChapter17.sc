@@ -58,4 +58,18 @@ object wksChapter17 {
   toys += "doll"
   toys                                            //> res12: scala.collection.immutable.Set[String] = Set(bear, car, doll)
 
+
+
+
+  val stuff = mutable.Set[Any](42)                //> stuff  : scala.collection.mutable.Set[Any] = Set(42)
+  stuff += "green"                                //> res13: scala2e.chapter17.wksChapter17.stuff.type = Set(42, green)
+  stuff += 3.14                                   //> res14: scala2e.chapter17.wksChapter17.stuff.type = Set(3.14, 42, green)
+  stuff                                           //> res15: scala.collection.mutable.Set[Any] = Set(3.14, 42, green)
+
+
+
+
+  val a = ts.toArray                              //> a  : Array[Int] = Array(1, 2, 3, 4, 5, 6, 8, 9)
+  val l = ts.toList                               //> l  : List[Int] = List(1, 2, 3, 4, 5, 6, 8, 9)
+
 }
