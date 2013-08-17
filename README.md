@@ -1863,3 +1863,7 @@ import scala.collection.mutable.Set
 // this works with any type, not just collections
 ```
 
+* 392 - **Initializing collections**
+
+> - the common way to create and initialize a collection is to pass the initial elements to a factory method on the companion object (invokes `apply`)
+
