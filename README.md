@@ -1842,4 +1842,24 @@ val tm = TreeMap(8 -> 'e', 7 -> 'a', 1 -> 'w')  // Map(1 -> w, 7 -> a, 8 -> e)
 val otm = tm + (2 -> 'u')  // Map(1 -> w, 2 -> u, 7 -> a, 8 -> e)
 ```
 
+* 390 - **Selecting mutable versus immutable collections**
+
+> - immutable collections can usually be stored more compactly, especially small maps and sets, e.g. empty mutable map, in its default representation, HashMap, takes around 80 bytes, with 16 bytes for every new element, while immutable Map1 takes only 16 bytes, and Map4 around 40 bytes
+> - immutable map is a single object that's shared between all references, so referring to it costs just a single pointer field
+> - to make the switch between mutable and immutable, Scala provides some syntactic sugar:
+
+```scala
+// if you declare immutable set or map as 'var':
+var toys = Set("bear", "car")  // scala.collection.immutable.Set[String] = Set(bear, car)
+toys += "doll"  // a new set is created and then 'toys' is reassigned to it
+toys  // scala.collection.immutable.Set[String] = Set(bear, car, doll)
+
+toys -= "bear"  // works with any other operator method ending with '='
+toys  // scala.collection.immutable.Set[String] = Set(car, doll)
+
+// then, if you want to switch to mutable the only thing you need is:
+import scala.collection.mutable.Set
+
+// this works with any type, not just collections
+```
 

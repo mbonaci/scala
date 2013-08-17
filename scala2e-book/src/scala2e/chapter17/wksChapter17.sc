@@ -54,6 +54,8 @@ object wksChapter17 {
   val otm = tm + (2 -> 'x')                       //> otm  : scala.collection.immutable.TreeMap[Int,Char] = Map(1 -> w, 2 -> x, 7 
                                                   //| -> a, 8 -> e)
 
-
+  var toys = Set("bear", "car")                   //> toys  : scala.collection.immutable.Set[String] = Set(bear, car)
+  toys += "doll"
+  toys                                            //> res12: scala.collection.immutable.Set[String] = Set(bear, car, doll)
 
 }
