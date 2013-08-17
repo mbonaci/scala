@@ -41,4 +41,19 @@ object wksChapter17 {
   w += ("a" -> 1)                                 //> res10: scala2e.chapter17.wksChapter17.w.type = Map(a -> 1)
   w.clear
   w                                               //> res11: scala.collection.mutable.Map[String,Int] = Map()
+
+
+
+  import scala.collection.immutable.TreeSet
+  val ts = TreeSet(9, 2, 5, 1, 8, 6, 4, 3)        //> ts  : scala.collection.immutable.TreeSet[Int] = TreeSet(1, 2, 3, 4, 5, 6, 8,
+                                                  //|  9)
+
+  import scala.collection.immutable.TreeMap
+  val tm = TreeMap(8 -> 'e', 7 -> 'a', 1 -> 'w')  //> tm  : scala.collection.immutable.TreeMap[Int,Char] = Map(1 -> w, 7 -> a, 8 -
+                                                  //| > e)
+  val otm = tm + (2 -> 'x')                       //> otm  : scala.collection.immutable.TreeMap[Int,Char] = Map(1 -> w, 2 -> x, 7 
+                                                  //| -> a, 8 -> e)
+
+
+
 }

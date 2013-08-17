@@ -1723,7 +1723,7 @@ nums.contains(3)                 // checks for inclusion
 
 import scala.collection.mutable  // makes the mutable collections easy to access
 
-val words = mutable.Set.empty[String]  // creates an empty, mutable set
+val words = mutable.Set.empty[String]  // creates an empty, mutable set (HashSet)
 
 words.toString                   // returns Set()
 
@@ -1798,7 +1798,7 @@ m.isEmpty                         // indicates whether the map is empty
 
 import scala.collection.mutable   // makes the mutable collections easy to access
 
-val w = mutable.Map.empty[String, Int]  // creates an empty, mutable map
+val w = mutable.Map.empty[String, Int]  // creates an empty, mutable map (HashMap)
 
 w.toString                        // returns Map()
 
@@ -1812,4 +1812,34 @@ w --= List("st", "nd")            // removes multiple entries
 
 w.clear                           // removes all entries
 ```
+
+> - **Default sets and maps**
+>   - `mutable.Map()` factory method returns `mutable.HashMap` (analogous for mutable set)
+>   - for immutable sets and maps, it depends on how many elements you pass to it:
+
+```scala
+// rules for sets (the same applies for maps)
+Number of elements  Implementation (used to maximize performance)
+0                   scala.collection.immutable.EmptySet
+1                   scala.collection.immutable.Set1
+2                   scala.collection.immutable.Set2
+3                   scala.collection.immutable.Set3
+4                   scala.collection.immutable.Set4
+5 or more           scala.collection.immutable.HashSet (implemented as trie)
+```
+
+> - **Sorted sets and maps**
+>   - a set or map whose iterator returns elements in a particular order
+>   - for this purpose, `collections` library provides traits `SortedSet` and `SortedMap`, which are implemented using `TreeSet` and `TreeMap`, which use a **red-black** tree to keep `TreeSet` elements and `TreeMap` keys in order
+>   - the order is determined by the `Ordered` trait, which the element type of set, or key type of map must either mix in or be implicitly convertible to
+
+```scala
+import scala.collection.immutable.TreeSet
+val ts = TreeSet(9, 2, 5, 1, 8, 6, 4, 3)  // TreeSet(1, 2, 3, 4, 5, 6, 8, 9)
+
+import scala.collection.immutable.TreeMap
+val tm = TreeMap(8 -> 'e', 7 -> 'a', 1 -> 'w')  // Map(1 -> w, 7 -> a, 8 -> e)
+val otm = tm + (2 -> 'u')  // Map(1 -> w, 2 -> u, 7 -> a, 8 -> e)
+```
+
 
