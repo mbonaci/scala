@@ -1925,3 +1925,70 @@ def findLongest(words: Array[String]): Tuple2[String, Int] = {
 
 var toys = Set("bear", "car", "doll", "loading truck")
 val tup = findLongest(toys.toArray)  // tup: (String, Int) = (loading truck,3)
+```
+
+### Stateful Objects
+* 402 - **Reassignable variables and properties**
+
+> - every non-private `var x` member of an object implicitly defines getter and setter
+> - getter is named `x` and setter is named `x_=`
+> - getter and setter inherit access from their `var`
+
+```scala
+var hour = 6
+// generates
+private[this] var h = 6
+// and getter
+hour
+// and setter
+hour_=
+
+// the following two class definitions are identical:
+class Time {
+  var hour = 6
+  var minute = 30
+}
+
+class Time {
+  private[this] var h = 6  // access qualifier: private up to this (invisible outside)
+  private[this] var m = 30
+
+  def hour: Int = h
+  def hour_=(x: Int) { h = x }
+
+  def minute: Int = m
+  def minute_=(x: Int) { m = x }
+}
+
+// you can define getters and setters explicitly
+class Time {
+  private[this] var h = 6
+  private[this] var m = 30
+
+  def hour: Int = h
+  def hour_=(x: Int) {
+    require(0 <= x && x < 24)
+    h = x
+  }
+}
+
+// getters and setters can be defined without the accompanying field:
+class Thermometer {
+  var celsius: Float = _  // initialized to default value (0)
+
+  def fahrenheit = celsius * 9 / 5 + 32
+
+  def fahrenheit_= (f: Float) {
+    celsius = (f - 32) * 5 / 9
+  }
+
+  override def toString = fahrenheit + "F/" + celsius + "C"
+}
+```
+
+> - initializer sets a variable to default value of that type:
+>   - `0`       - for numeric types
+>   - `false`   - for booleans
+>   - `null`    - for reference types
+> - works the same way as uninitialized variables in Java
+
