@@ -1995,3 +1995,80 @@ class Thermometer {
 * 405 - **Case study: Discrete event simulation**
 
 > - internal DSL is a DSL implemented as a library inside another language, rather than being implemented on its own
+
+### Type Parameterization
+* 422 - **Information hiding**
+
+> - to hide a primary constructor add `private` modifier in front of the class parameter list
+> - private constructor can only be accessed from withing the class itself or its companion object
+
+```scala
+class ImmutableQueue[T] private (
+  private val leading: List[T]
+  private val trailing: List[T]
+)
+
+new Queue(List(1, 2), List(3))  // error: ImmutableQueue cannot be accessed in object $iw
+
+// now one possibility is to add auxiliary constructor, e.g.:
+def this() = this(Nil, Nil)  // takes empty lists
+
+// auxiliary constructor that takes 'n' parameters of type 'T':
+def this(elems: T*) = this(elems.toList, Nil)  // 'T*' - repeated parameters
+
+// another possibility is to add a factory method
+// convenient way of doing that is to define an ImmutableQueue object
+// that contains 'apply' method
+// by placing this object in the same source file with the ImmutableQueue class
+// it becomes its companion object
+object ImmutableQueue {
+  // creates a queue with initial elements 'xs'
+  def apply[T](xs: T*) = new ImmutableQueue[T](xs.toList, Nil)
+}
+
+// since a companion object contains method 'apply', clients can create queues with:
+ImmutableQueue(1, 2, 3)  // expands to ImmutableQueue.apply(1, 2, 3)
+```
+
+* 428 - **Private classes**
+
+> - more radical way of information hiding that hides a class itself
+> - then, you export a trait that reveals the public interface of a class:
+
+```scala
+trait Queue[T] {
+  def head: T                  // public
+  def tail: Queue[T]
+  def enqueue(x: T): Queue[T]
+}
+
+
+object Queue {
+  def apply[T](xs: T*): Queue[T] =
+    new QueueImpl[T](xs.toList, Nil)
+    
+  private class QueueImpl[T](  // private inner class
+    private val leading: List[T],
+    private val trailing: List[T]
+  ) extends Queue[T] {         // mixes in the trait, which has access to private class
+    
+    def mirror =
+      if (leading.isEmpty)
+        new QueueImpl(trailing.reverse, Nil)
+      else
+        this
+        
+    def head: T = mirror.leading.head
+    
+    def tail: QueueImpl[T] = {
+      val q = mirror
+      new QueueImpl(q.leading.tail, q.trailing)
+    }
+    
+    def enqueue(x: T) =
+      new QueueImpl(leading, x :: trailing)
+  }
+  
+}
+```
+
