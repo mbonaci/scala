@@ -2072,3 +2072,48 @@ object Queue {
 }
 ```
 
+* 429 - **Variance annotations**
+
+> - `Queue`, as defined in previous listing is a trait, not a type, so you cannot create variables of type `Queue`
+> - instead, trait `Queue` enables you to specify parameterized types, such as `Queue[String]`, `Queue[AnyRef]`
+> - thus, `Queue` is a trait, and `Queue[String]` is a type
+> - this kind of traits are called **type constructors** (you can construct a type by specifying a type parameter, which is analogous to plain-old constructor with specified value parameter)
+> - _type constructors_ generate a family of types
+> - it is also said that the `Queue` is a **generic trait**
+> - in Scala, generic types have **nonvariant** (rigid) subtyping
+> - consequently, `Queue[String]` is not a subtype of `Queue[AnyRef]`
+> - however, you can demand **covariant** (flexible) subtyping by prefixing a type parameter with `+`:  
+
+`trait Queue[+T] { ... }`
+
+> - besides `+` **parameter's variance annotation**, there's also a `-`, which indicates **contravariant** subtyping:  
+
+`trait Queue[-T] { ... }`
+
+> - then, if `T` is a subtype of `S`, this would imply that `Queue[S]` is a subtype of `Queue[T]`
+
+* 432 - **Variance and arrays**
+
+> - arrays in Java are treated as covariants:
+
+```java
+// Java
+String[] a1 = { "abc" };
+Object[] a2 = a1;
+a2[0] = new Integer(8);  // ArrayStroreException (Integer placed in String[])
+String s = a1[0];
+```
+
+> - because of that, arrays in Scala are nonvariant:
+
+```scala
+val a1 = Array("abc")
+val a2 = Array[Any] = a1  // error: type mismatch, found Array[String], required Array[Any]
+```
+
+> - to interact with legacy methods in Java that use an `Object` array as a means to emulate generic array, Scala lets you cast an array of `T`s to an array of any supertype of T:
+
+```scala
+val a2: Array[Object] = a1.asInstanceOf[Array[Object]]
+```
+
