@@ -1992,3 +1992,6 @@ class Thermometer {
 >   - `null`    - for reference types
 > - works the same way as uninitialized variables in Java
 
+* 405 - **Case study: Discrete event simulation**
+
+> - internal DSL is a DSL implemented as a library inside another language, rather than being implemented on its own
