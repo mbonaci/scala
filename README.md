@@ -2080,7 +2080,7 @@ object Queue {
 > - this kind of traits are called **type constructors** (you can construct a type by specifying a type parameter, which is analogous to plain-old constructor with specified value parameter)
 > - _type constructors_ generate a family of types
 > - it is also said that the `Queue` is a **generic trait**
-> - in Scala, generic types have **nonvariant** (rigid) subtyping
+> - in Scala, **generic types have _nonvariant_ (rigid) subtyping**
 > - consequently, `Queue[String]` is not a subtype of `Queue[AnyRef]`
 > - however, you can demand **covariant** (flexible) subtyping by prefixing a type parameter with `+`:  
 
@@ -2115,5 +2115,27 @@ val a2 = Array[Any] = a1  // error: type mismatch, found Array[String], required
 
 ```scala
 val a2: Array[Object] = a1.asInstanceOf[Array[Object]]
+```
+
+* 433 - **Checking variance annotations**
+
+> - to verify the correctness of variance annotations, the compiler classifies all positions in a class or trait body as **positive**, **negative** or **neutral**
+> - a _position_ is any location in the class (or trait) body where a type parameter may be used
+> - e.g. every method value parameter is a position, because it has a type and therefore a type parameter could appear in that position
+> type parameters annotated with `+` can only be used in _positive_ positions, `-` in negative, and a type parameter without variance annotation may be used in any position (so it's the only one that can be used in _neutral_ positions)
+> - compiler classifies positions like this:
+>   - the positions at the top level of the class are classified as positive
+>   - positions at deeper nesting levels are classified the same as their enclosing level, but with exceptions where the classifications changes (_**flips**_):
+>     - method value parameter positions are classified to the flipped classification relative to positions outside the method (when flipped, neutral stays the same, negative position becomes positive, and vice versa)
+>     - classification is also flipped at the type parameters of methods
+>     - it is sometimes flipped at the type argument position of a type (e.g. `Arg` in `C[Arg]`), depending on the variance of the corresponding type parameter (if C's type param is annotated with `+`, then the classification stays the same, and if it's `-`, then it flips, and if has no variance then it's changed to neutral)
+> - because it's hard to keep track of variance position, it's good to know that the compiler does all the work for you
+
+```scala
+// variance checks by the compiler (postfix signs represent position classification):
+abstract class Cat[-T, +U] {
+  def meow[W-](volume: T-, listener: Cat[U+, T-]-): Cat[Cat[U+, T-]-, U+]+
+}
+// since T is always used in negative position and U in positive, the class is type correct
 ```
 
