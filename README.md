@@ -2153,8 +2153,33 @@ class Queue[+T](private val leading: List[T]), private val trailing: List[T]) {
 }
 // the param to 'enqueue' is now of type 'U'
 // the method's return type is now 'Queue[U]', instead of 'Queue[T]'
-// imagine e.g. class Fruit with two subclasses, Apple and Orange. With the new definition
-// of class Queue, it is possible to append an Orange to a Queue[Apple] and the result
-// will be of type Queue[Fruit]
+// imagine e.g. class Fruit with two subclasses, Apple and Orange
+// With the new definition of class Queue, it is possible to append an Orange to a 
+// Queue[Apple] and the result will be of type Queue[Fruit]
 ```
 
+* 438 - **Contravariance**
+
+> - **Liskov Substitution Principle** says that it is safe to assume that a type `T` is a subtype of a type `U` if you can substitute a value of type `T` wherever a value of type `U` is required
+> - the principle holds if `T` supports the same operations as `U` and all of `T's` operations require less and provide more than the corresponding operations in `U`
+
+```scala
+class Publication(val title: String)
+class Book(title: String) extends Publication(title)
+
+object Library {
+  val books: Set[Book] =
+    Set(
+      new Book("Programming in Scala"),
+      new Book("Walden")
+    )
+
+  def printBookList(info: Book => AnyRef) {  // requires function from Book to AnyRef
+    for (book <- books) println(info(book))
+  }
+}
+
+object Customer extends Application {
+  def getTitle(p: Publication): String = p.title
+  Library.printBookList(getTitle)  // provides function from Publication to String
+}
