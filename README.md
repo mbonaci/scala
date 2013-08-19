@@ -4,7 +4,6 @@ Shamelessly ripped of from [Programming in Scala, second edition](http://www.art
 (I did ask for permission).  
 Basically, while I'm going through the book, I'm taking notes here, so I can later use it as a quick reference.
 If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean).  
-Thank you.
 
 ### Scala type hierarchy
 ![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
@@ -2164,6 +2163,7 @@ class Queue[+T](private val leading: List[T]), private val trailing: List[T]) {
 > - the principle holds if `T` supports the same operations as `U` and all of `T's` operations require less and provide more than the corresponding operations in `U`
 
 ```scala
+// example of Contravariance of function parameter
 class Publication(val title: String)
 class Book(title: String) extends Publication(title)
 
@@ -2175,11 +2175,21 @@ object Library {
     )
 
   def printBookList(info: Book => AnyRef) {  // requires function from Book to AnyRef
-    for (book <- books) println(info(book))
+    for (book <- books) println(info(book))  // always passes a Book to a function
   }
 }
 
 object Customer extends Application {
-  def getTitle(p: Publication): String = p.title
+  def getTitle(p: Publication): String = p.title  // accesses only Publication
   Library.printBookList(getTitle)  // provides function from Publication to String
 }
+// any method declared in Publication is also available on its subclass Book
+// Publication => String is a subtype of Book => AnyRef
+```
+
+![Map hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-covariance-contravariance.png?raw=true)
+
+> - because the result type of a `Function1` is defined as _covariant_, the inheritance
+relationship of the two result types, shown at the right of the image, is in the same direction as that of the two functions shown in the center
+> - because the parameter type of a `Function1` is defined as _contravariant_, the inheritance relationship of the two parameter types, shown at the left of the image, is in the opposite direction as that of the two functions
+
