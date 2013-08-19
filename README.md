@@ -2125,7 +2125,7 @@ val a2: Array[Object] = a1.asInstanceOf[Array[Object]]
 > type parameters annotated with `+` can only be used in _positive_ positions, `-` in negative, and a type parameter without variance annotation may be used in any position (so it's the only one that can be used in _neutral_ positions)
 > - compiler classifies positions like this:
 >   - the positions at the top level of the class are classified as positive
->   - positions at deeper nesting levels are classified the same as their enclosing level, but with exceptions where the classifications changes (_**flips**_):
+>   - positions at deeper nesting levels are classified the same as their enclosing level, but with exceptions where the classifications changes (**flips**):
 >     - method value parameter positions are classified to the flipped classification relative to positions outside the method (when flipped, neutral stays the same, negative position becomes positive, and vice versa)
 >     - classification is also flipped at the type parameters of methods
 >     - it is sometimes flipped at the type argument position of a type (e.g. `Arg` in `C[Arg]`), depending on the variance of the corresponding type parameter (if C's type param is annotated with `+`, then the classification stays the same, and if it's `-`, then it flips, and if has no variance then it's changed to neutral)
