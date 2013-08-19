@@ -2139,3 +2139,22 @@ abstract class Cat[-T, +U] {
 // since T is always used in negative position and U in positive, the class is type correct
 ```
 
+* 437 - **Lower bounds**
+
+> - `Queue[T]` cannot be made covariant in `T` because `T` appears as a type of a parameter of the `enqueue` method, and that's a negative position
+> - there's still a way to solve that problem by generalizing `enqueue` by making it polymorphic (i.e. giving the method itself a type parameter) and using a **lower bound** for its type parameter:
+
+```scala
+class Queue[+T](private val leading: List[T]), private val trailing: List[T]) {
+  // defines T as the lower bound for U (U is required to be a supertype of T)
+  def enqueue[U >: T](x: U) = // U is negative (flip) and T is positive (two flips)
+    new Queue[U](leading, x :: trailing)
+    // ...
+}
+// the param to 'enqueue' is now of type 'U'
+// the method's return type is now 'Queue[U]', instead of 'Queue[T]'
+// imagine e.g. class Fruit with two subclasses, Apple and Orange. With the new definition
+// of class Queue, it is possible to append an Orange to a Queue[Apple] and the result
+// will be of type Queue[Fruit]
+```
+
