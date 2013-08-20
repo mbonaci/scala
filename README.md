@@ -2240,3 +2240,31 @@ class CovariantQueue[+T] private (
 }
 ```
 
+* 443 - **Upper bounds**
+
+> - with the `T <: Ordered[T]` you indicate that the type parameter `T` has an upper bound `Ordered[T]`, which means that the passed element's type must be a subtype of `Ordered`
+> - used e.g. to require that the passed type mixes in a trait (i.e. is a subtype of trait)
+
+```scala
+// requires that passed list type mixes in Ordered trait
+def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = {
+  def merge(xs: List[T], ys: List[T]): List[T] =
+    (xs, ys) match {
+      case (Nil, _) => ys
+      case (_, Nil) => xs
+      case (x :: xs1, y :: ys1) =>
+        if (x < y) x :: merge(xs1, ys)
+        else y :: merge(xs, ys1)
+    }
+  val n = xs.length / 2
+  if (n == 0) xs
+  else {
+    val (ys, zs) = xs splitAt n
+    merge(orderedMergeSort(ys), orderedMergeSort(zs))
+  }
+}
+
+// this is not a most general way to implement mergeSort, since you cannot pass e.g. List[Int]
+// that's achieved with 'implicit parameters' and 'view bounds' (section 21.6)
+```
+
