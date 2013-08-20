@@ -2163,7 +2163,7 @@ class Queue[+T](private val leading: List[T]), private val trailing: List[T]) {
 > - the principle holds if `T` supports the same operations as `U` and all of `T's` operations require less and provide more than the corresponding operations in `U`
 
 ```scala
-// example of Contravariance of function parameter
+// example of Contravariance of a function parameter
 class Publication(val title: String)
 class Book(title: String) extends Publication(title)
 
@@ -2192,4 +2192,51 @@ object Customer extends Application {
 > - because the result type of a `Function1` is defined as _covariant_, the inheritance
 relationship of the two result types, shown at the right of the image, is in the same direction as that of the two functions shown in the center
 > - because the parameter type of a `Function1` is defined as _contravariant_, the inheritance relationship of the two parameter types, shown at the left of the image, is in the opposite direction as that of the two functions
+
+* 441 - **Object private data**
+
+> - object or class components that are declared as `private[this]`
+> - may be accessed only from within their containing object, in which they are defined
+> - accesses to vars from the same object do not cause problems with variance
+> - variance rules can be broken by having a reference to a containing object that has a statically weaker type than the type the object was defined with
+> - for object private values, this is not possible
+> - variance checking has a special case for object private definitions, which is that such definitions are omitted when checking correctness of variance positions
+
+```scala
+/*
+ * Purely functional Queue that performs at most one trailing
+ * to leading adjustment for any sequence of head operations
+ * Yes, it has reassignable fields, but they are private,
+ * thus invisible to any client using the class
+ */
+class CovariantQueue[+T] private (
+    private[this] var leading: List[T],  // object private vars
+    private[this] var trailing: List[T]
+    // without [this]:
+    // error: covariant type T occurs in contravariant position
+    // in type List[T] of parameter of setter leading_=
+  ) {
+  private def mirror() =
+    if (leading.isEmpty) {
+      while (!trailing.isEmpty) {
+        leading = trailing.head :: leading
+        trailing = trailing.tail
+      }
+    }
+  
+  def head: T = {
+    mirror()
+    leading.head
+  }
+  
+  def tail: CovariantQueue[T] = {
+    mirror()
+    new CovariantQueue(leading.tail, trailing)
+  }
+  
+  def enqueue[U >: T](x: U) =
+    new CovariantQueue[U](leading, x :: trailing)
+
+}
+```
 
