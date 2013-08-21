@@ -2310,3 +2310,23 @@ class Concrete extends Abstract {
 > - guaranteed to return always the same value, unlike methods, which could be implemented by a concrete method that returns a different value every time it's called
 > - **abstract method declarations** may be implemented by both, concrete method and concrete `val` definitions
 
+* 450 - **Abstract vars**
+
+> - implicitly declare abstract getters and setters, just like non-abstract `vars` do
+> - reassignable field is not created
+
+```scala
+trait AbstractTime {
+  var hour: Int
+  var minute: Int
+}
+
+// gets expanded to:
+trait AbstractTime {
+  def hour: Int
+  def hour_=(x: Int)
+  def minute: Int
+  def minute_=(x: Int)
+}
+```
+
