@@ -2268,3 +2268,28 @@ def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = {
 // that's achieved with 'implicit parameters' and 'view bounds' (section 21.6)
 ```
 
+### Abstract Members
+
+> - a member of a class or trait is `abstract` if the member does not have a complete definition in the class
+> - abstract members are intended to be implemented by subclasses
+> - in Scala, besides methods, you can declare abstract fields and even abstract types as members of classes and traits (vals, vars, methods and types)
+> - a concrete implementation needs to fill in definitions for each of its abstract members:
+
+```scala
+// declaration of all four types of abstract members
+trait Abstract {
+  type T
+  def transform(x: T): T
+  val initial: T
+  var current: T
+}
+
+// the concrete implementation for all abstract members
+class Concrete extends Abstract {
+  type T = String  // defines type 'T' as an alias of type 'String'
+  def transform(x: String) = x + x
+  val initial = "hi"
+  var current = initial
+}
+```
+
