@@ -2293,3 +2293,11 @@ class Concrete extends Abstract {
 }
 ```
 
+* 448 - **Type members**
+
+> - **abstract types** are always members of some class or trait
+> - traits are abstract by definition
+> - a **non-abstract type member** is a way to define a new name (alias) for a type
+> - one reason to use a type member is to define a short, descriptive alias for a type whose real name is more verbose or less obvious in meaning (helps clarify the code)
+> - the other main use of type members is to declare abstract types that must be defined in subclasses
+
