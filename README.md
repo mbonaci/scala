@@ -2284,7 +2284,7 @@ trait Abstract {
   var current: T
 }
 
-// the concrete implementation for all abstract members
+// the concrete implementation of four type of abstract members
 class Concrete extends Abstract {
   type T = String  // defines type 'T' as an alias of type 'String'
   def transform(x: String) = x + x
@@ -2327,6 +2327,57 @@ trait AbstractTime {
   def hour_=(x: Int)
   def minute: Int
   def minute_=(x: Int)
+}
+```
+
+* 451 - **Initializing abstract vals**
+
+> - abstract vals sometimes play a role of superclass parameters, i.e. they let you provide details in a subclass that are missing in a superclass
+> - that is particularly important for _traits_, because they don't have a constructor to which you could pass parameters
+
+```scala
+// instead of class with two class parameters
+trait RationalTrait {
+  val numerArg: Int  // 0 until mixed in
+  val denomArg: Int
+}
+
+def main(args: Array[String]): Unit = {
+  // example implementation of two abstract vals
+  // yields an instance of an anonymous class
+  // which mixes in the trait and is defined by the body
+  new RationalTrait {
+    val numerArg = 1  // set to 1 as part of the initialization of the anonymous class
+    val denomArg = 2  // but the anonymous class is initialized after the RationalTrait
+  }                   // in the meantime, vals are set to their type's default values
+}
+```
+
+> - a class parameter argument is evaluated **before** it is passed to the class constructor (unless it's a by-name parameter)
+> - an implementing `val` definition in a subclass is evaluated only **after** the superclass has been initialized
+> - e.g. class parameters of `Rational(expr1, expr2)` are evaluated just before instantiation of the `Rational` object, but `RationalTrait`'s vals are evaluated as part of the initialization of the **anonymous class**
+
+```scala
+trait ProblematicRationalTrait {
+  val numerArg: Int  // initialized once an anonymous class is created
+  val denomArg: Int  // which happens after the trait is initialized
+  require(denomArg != 0)  // throws "requirement failed" exception
+  private val g = gcd(numerArg, denomArg)
+  val numer = numerArg / g
+  val denom = denomArg / g
+  
+  private def gcd(a: Int, b: Int): Int =
+    if (b == 0) a
+    else gcd(b, a % b)
+  
+  override def toString = numer + "/" + denom
+}
+
+// when you execute this, 'require' fails, since Int vals are 0 until 
+val x = 2
+val fun = new ProblematicRationalTrait {
+  val numerArg = 1 * x
+  val denomArg = 2 * x
 }
 ```
 
