@@ -27,6 +27,11 @@ object AbstractRational {
       val numerArg = x
       val denomArg = x * 2  // error: value numerArg is not a member of object
     } with ProblematicRationalTrait
+    
+    new LazyRationalTrait {
+      val numerArg = 1 * x
+      val denomArg = 2 * x
+    }
   }
   
   trait ProblematicRationalTrait {
@@ -42,5 +47,21 @@ object AbstractRational {
       else gcd(b, a % b)
     
     override def toString = numer + "/" + denom
+  }
+  
+  trait LazyRationalTrait {
+    val numerArg: Int
+    val denomArg: Int
+    lazy val numer = numerArg / g
+    lazy val denom = denomArg / g
+    override def toString = numer + "/" + denom
+    
+    private lazy val g = {
+      require(denomArg != 0)
+      gcd(numerArg, denomArg)
+    }
+    
+    private def gcd(a: Int, b: Int): Int =
+      if (b == 0) a else gcd(b, a % b)
   }
 }
