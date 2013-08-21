@@ -2301,3 +2301,12 @@ class Concrete extends Abstract {
 > - one reason to use a type member is to define a short, descriptive alias for a type whose real name is more verbose or less obvious in meaning (helps clarify the code)
 > - the other main use of type members is to declare abstract types that must be defined in subclasses
 
+* 449 - **Abstract vals**
+
+> - have a form like `val initial: String`
+> - `val` is given a name and a type, but not its value
+> - use it when you know that each instance of the class will have an unchangeable value, but you don't know what that value will be
+> - its concrete implementation must be a `val` (may not be `var` or `def`)
+> - guaranteed to return always the same value, unlike methods, which could be implemented by a concrete method that returns a different value every time it's called
+> - **abstract method declarations** may be implemented by both, concrete method and concrete `val` definitions
+
