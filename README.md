@@ -2425,3 +2425,27 @@ object AbsRat {
   // ...
 ```
 
+* 455 - **Lazy vals**
+
+> - evaluated the first time the val is used
+> - never evaluated more than once (the result of first time evaluation is stored in val)
+> - Scala objects are also initialized on demand, in fact an object definition can be thought of as a shorthand definition of a lazy val with an anonymous class that describes the object's contents
+
+```scala
+trait LazyRationalTrait {
+  val numerArg: Int
+  val denomArg: Int
+  lazy val numer = numerArg / g
+  lazy val denom = denomArg / g
+  override def toString = numer + "/" + denom
+  
+  private lazy val g = {
+    require(denomArg != 0)
+    gcd(numerArg, denomArg)
+  }
+  
+  private def gcd(a: Int, b: Int): Int =
+    if (b == 0) a else gcd(b, a % b)
+}
+```
+
