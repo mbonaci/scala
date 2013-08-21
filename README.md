@@ -2381,3 +2381,47 @@ val fun = new ProblematicRationalTrait {
 }
 ```
 
+* 453 - **Pre-initialized fields**
+
+> - let you initialize a field of a subclass before the superclass is called
+> - achieved by putting field definition in braces before superclass constructor call:
+
+```scala
+// anonymous class creation:
+new {
+  val numerArg = 1 * x
+  val denomArg = 2 * x
+} with ProblematicRationalTrait
+
+// object definition:
+object twoThirds extends {
+  val numerArg = 2
+  val denomArg = 3
+} with ProblematicRationalTrait
+
+// subclass definition:
+class RationalClass(n: Int, d: Int) extends {
+  val numerArg = n
+  val denomArg = d
+} with ProblematicRationalTrait {
+  def + (that: RationalClass) = new RationalClass(
+    numer * that.denom + that.numer * denom,
+    denom * that.denom
+  )
+}
+// in all cases initialization section comes before the trait is mentioned
+```
+
+> - because pre-initialized fields are initialized before the superclass constructor is called, their initializers cannot refer to the object that's being constructed
+> - so, if such an object refers to `this`, the reference goes to the object containing the class or object that's being constructed, not the constructed object itself:
+
+```scala
+object AbsRat {
+  // ...
+  val rat = new {
+    val numerArg = 1
+    val denomArg = this.numerArg * 2  // value numerArg is not member of object AbsRat
+  } with ProblematicRationalTrait
+  // ...
+```
+
