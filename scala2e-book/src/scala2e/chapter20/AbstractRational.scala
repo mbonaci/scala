@@ -12,16 +12,21 @@ object AbstractRational {
     // example implementation of two abstract vals
     // yields an instance of an anonymous class
     // which mixes in the trait and is defined by the body
-//    new RationalTrait {
-//      val numerArg = 1
-//      val denomArg = 2
-//    }
+    new RationalTrait {
+      val numerArg = 1
+      val denomArg = 2
+    }
     
     val x = 2
-    val fun = new ProblematicRationalTrait {
+    val fun = new {
       val numerArg = 1 * x
       val denomArg = 2 * x
-    }
+    } with ProblematicRationalTrait 
+    
+    val rat = new {
+      val numerArg = x
+      val denomArg = x * 2  // error: value numerArg is not a member of object
+    } with ProblematicRationalTrait
   }
   
   trait ProblematicRationalTrait {
