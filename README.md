@@ -2487,7 +2487,65 @@ abstract class Animal {
 class Grass extends Food
 class Cow extends Animal {
   type SuitableFood = Grass  // 'Cow' fixes its 'SuitableFood' to be 'Grass'
+                             // 'SuitableFood' becomes alias for class 'Grass'
   override def eat(food: Grass) {}  // concrete method for this kind of 'Food'
 }
+```
+
+* 461 - **Path-dependent types**
+
+> - objects in Scala can have types as members (e.g. any instance of 'Cow' will have type 'SuitableFood' as its member)
+> - e.g. `milka.SuitableFood` means "the type 'SuitableFood' that is a member of the object referenced from 'milka'", or "the type of 'Food' that suitable for 'milka'"
+> - a type like `milka.SuitableFood` is called a **path-dependent type**, where the word "path" means "the reference to an object"
+> - **path** can be a single name, such as 'milka', or a longer access path, like `farm.barn.milka.SuitableFood`, where path components are variables (or singleton object names)that refer to objects
+
+```scala
+class DogFood extends Food
+class Dog extends Animal {
+  type SuitableFood = DogFood
+  override def eat(food: DogFood) {}
+}
+
+val milka = new Cow
+val lassie = new Dog
+lassie eat (new milka.SuitableFood)  // error: type mismatch; found: Grass, required: DogFood
+
+// 'SuitableFood' types of two 'Dog's both point to the same type, 'DogFood'
+val mickey = new Dog
+lassie eat (new mickey.SuitableFood)  // OK
+```
+
+> - although path-dependent types resemble Java's inner classes, there is a crucial difference:
+>   - a path-dependent type names an outer **object**, whereas an inner class type name an outer class
+
+```scala
+class Outer {
+  class Inner
+}
+
+// the inner class is addressed 'Outer#Inner', instead of Java's 'Outer.Inner'
+// in Scala, '.' notation syntax is reserved for objects
+
+val out1 = new Outer
+val out2 = new Outer
+
+out1.Inner  // path-dependent type
+out2.Inner  // path-dependent type (different one)
+// both types are subtypes of 'Outer#Inner', which represents the 'Inner' class with an
+// arbitrary outer object of type 'Outer'
+// by contrast, 'out1.Inner' refers to the 'Inner' class with a specific outer object
+// likewise, type 'out2.Inner' refers to the 'Inner' class with a different, specific
+// outer object (the one referenced from 'out2')
+```
+
+> - the same as in Java, inner class instances hold a reference to an enclosing outer class instance, which allows an inner class to access members of its outer class
+> - thus, you cannot instantiate inner class without in some way specifying outer class instance
+>   - one way to do this is to instantiate the inner class inside the body of the outer class (in this case, the current outer class instance is used - 'this')
+>   - the other way is to use a path-dependent type, e.g. `new out1.Inner` (since 'out1' is a reference to a specific outer object)
+> - the resulting inner object will contain a reference to its outer object ('out1')
+> - by contrast, because the type `Outer#Inner` does not name any specific instance of `Outer`, you can't instantiate it:
+
+```scala
+new Outer#Inner  // error: Outer is not a legal prefix for a constructor
 ```
 
