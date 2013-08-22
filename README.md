@@ -2472,3 +2472,22 @@ res2: LazyRationalTrait = 1/2
 // 7. - finally, the resulting string "1/2" is constructed and printed
 ```
 
+* 459 - **Abstract types**
+
+> - used as a placeholder for a type that will be defined further down the hierarchy
+
+```scala
+// the type of food cannot be determined at the 'Animal' level, every subclass defines it
+class Food
+abstract class Animal {
+  type SuitableFood <: Food  // upper bound is 'Food' (requires subclass of 'Food')
+  def eat(food: SuitableFood)
+}
+
+class Grass extends Food
+class Cow extends Animal {
+  type SuitableFood = Grass  // 'Cow' fixes its 'SuitableFood' to be 'Grass'
+  override def eat(food: Grass) {}  // concrete method for this kind of 'Food'
+}
+```
+
