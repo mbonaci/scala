@@ -2430,6 +2430,8 @@ object AbsRat {
 > - evaluated the first time the val is used
 > - never evaluated more than once (the result of first time evaluation is stored in val)
 > - Scala objects are also initialized on demand, in fact an object definition can be thought of as a shorthand definition of a lazy val with an anonymous class that describes the object's contents
+> - since lazy vals get executed on demand, their textual order is not important when determining the order of their initialization
+> - in the presence of side effects (i.e. when our code produces or is affected by mutations), initialization order starts to matter and then it can be difficult to determine the actual order, which is why lazy vals are an ideal complement to functional objects
 
 ```scala
 trait LazyRationalTrait {
@@ -2447,5 +2449,26 @@ trait LazyRationalTrait {
   private def gcd(a: Int, b: Int): Int =
     if (b == 0) a else gcd(b, a % b)
 }
+
+// using LazyRationalTrait from the interpreter:
+scala> val x = 2
+scala> new LazyRationalTrait {
+     | val numerArg = 1 * x
+     | val denomArg = 2 * x
+     | }
+res2: LazyRationalTrait = 1/2
+
+// 1. - fresh instance of LazyRationalTrait gets created and the initialization code
+//      of LazyRationalTrait is run (fields are not initialized)
+// 2. - the primary constructor of the anonymous subclass is executed (expression 'new')
+//    - this involves the initialization of 'numerArg' with 2 and 'denomArg' with 4
+// 3. - the 'toString' method is invoked on the constructed object (by the interpreter)
+// 4. - the 'numer' field is accessed for the first time, by the 'toString' method
+// 5. - the initializer of 'numer' accesses the private field 'g', so 'g' is evaluated
+//    - the evaluation of 'g' accesses 'numerArg' and 'denomArg' (from step 2)
+// 6. - the 'toString' method accesses the value of 'denom', which causes its evaluation
+//    - that evaluation accesses the values of 'denomArg' and 'g'
+//    - the initializer of the 'g' field is not re-evaluated (it's a 'val', not 'def')
+// 7. - finally, the resulting string "1/2" is constructed and printed
 ```
 
