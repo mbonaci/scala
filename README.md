@@ -2698,4 +2698,8 @@ button.AddActionListener(  // now this works!
 >   - **Marking rule:** Only definitions marked `implicit` are used
 >   - **Scope rule:** An inserted implicit conversion must be in scope as a single identifier, or be associated with the conversion's source or target type
 >     - _single identifier_ means that the compiler will not insert a conversion of the form `someVariable.convert`
->     - it is common for 
+>     - it is common for libraries to include a `Preamble` object that contains useful implicits, which allows the code that uses a library to do a single `import Preamble._`
+>     - there's one exception to single identifier rule: the compiler will also look for implicit definitions in the companion objects of both, source and target types
+>     - when implicit is placed in a companion object of some type, it is said that the conversion is **associated** to that type
+>     - _modular code reasoning:_ when you read a source file, the only things you need to consider in other source files are those that are either imported or explicitly referenced through a fully qualified name
+
