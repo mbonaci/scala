@@ -2603,3 +2603,43 @@ def using[T <: { def close(): Unit}, S](obj: T)(operation: T => S) = {
 
 > - **Structural type** is a refinement type where the refinements are for members that are not in the base type
 
+* 466 - **Enumerations**
+
+> - Scala's _enumerations_ are not a built-in construct
+> - defined in `scala.Enumaration`
+> - to create a new enumeration, you define an object that extends `scala.Enumeration`
+
+```scala
+object Color extends Enumeration {
+  val Red, Green, Blue = Value  // 'Value' is an inner class of 'Enumeration'
+}
+// 'Value' is also a method of Enumeration that returns a new instance of 'Value' class
+// so 'Color.Red' is of type 'Color.Value' and so is any other enum value in object Color
+
+// Color object definition provides 3 values: 'Color.Red', 'Color.Green' and 'Color.Blue'
+
+// to import everything from Color:
+import Color._  // and then just use 'Red', 'Green' and 'Blue', without the object name
+```
+
+> - `Color.Value` is a _path-dependent_ type, with `Color` being the path and `Value` being the dependent type
+> - it's a completely new type, different from all other types
+> - you can associate names with enumeration values by using a different overloaded variant of the `Value` method:
+
+```scala
+object Direction extends Enumeration {
+  val Left = Value("Left")
+  val Right = Value("Right")
+}
+
+// to iterate over values:
+for (d <- Direction.values) print(d + " ")  // Left Right
+
+// you can get the number of enumeration value by its 'id' method (zero-based):
+Direction.Right.id  // Int = 1
+
+// also:
+Direction(0)  // Direction.Value = Left
+```
+
+
