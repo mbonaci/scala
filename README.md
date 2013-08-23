@@ -2541,11 +2541,65 @@ out2.Inner  // path-dependent type (different one)
 > - the same as in Java, inner class instances hold a reference to an enclosing outer class instance, which allows an inner class to access members of its outer class
 > - thus, you cannot instantiate inner class without in some way specifying outer class instance
 >   - one way to do this is to instantiate the inner class inside the body of the outer class (in this case, the current outer class instance is used - 'this')
->   - the other way is to use a path-dependent type, e.g. `new out1.Inner` (since 'out1' is a reference to a specific outer object)
+>   - the other way is to use a path-dependent type:
+
+```scala
+new out1.Inner  // since 'out1' is a reference to a specific outer object
+```
+
 > - the resulting inner object will contain a reference to its outer object ('out1')
 > - by contrast, because the type `Outer#Inner` does not name any specific instance of `Outer`, you can't instantiate it:
 
 ```scala
 new Outer#Inner  // error: Outer is not a legal prefix for a constructor
 ```
+
+* 464 - **Structural subtyping with Refinement types**
+
+> - when one class inherits from the other, the first one is said to be a **nominal subtype** of the other one (explicit subtype, by name)
+> - Scala additionally supports **structural subtyping**, where you get a subtyping relationship simply because two types have the same members
+> - _structural subtyping_ is expressed using **refinement types**
+> - it is recommended that the _nominal subtyping_ is used wherever it can, because _structural subtyping_ can be more flexible than needed (e.g. a Graph and a Cowboy can `draw()`, but you'd rather get a compilation error than call graphical draw on cowboy)
+
+```scala
+// sometimes there is no more to a type than its members
+// e.g. suppose you wanted to define 'Pasture' class that can contain animals that eat 'Grass'
+// one could define a trait 'AnimalThatEatsGrass' and mix it in classes, where applicable
+// but that would be verbose, since 'Cow' already declares that it's an animal that eats grass
+// and with the trait, it again declares that it's an 'AnimalThatEatsGrass'
+// instead, you can use a 'refinement type', and to do that
+// you write the base type, Animal, followed by a sequence of members in curly braces
+// which are used to further refine the types of members from the base class
+// so here is how to write the type "animal that eats grass":
+Animal { type SuitableFood = Grass }
+
+// and given this type, you can write the pasture:
+class Pasture {
+  var animals: List[Animal { type SuitableFood = Grass }] = Nil
+  // ...
+}
+```
+
+> - another application of structural subtyping is grouping together a number of classes that were written by someone else
+> - for example, to generalize [the loan pattern from page 216](#control-abstractions), which worked for only for type `PrintWriter`, to work with any type with a `close` method:
+
+```scala
+// the first try:
+def using[T, S](obj: T)(operation: T => S) = {  // operation from any to any type
+  val result = operation(obj)
+  obj.close() // type error: 'T' can be any type and 'AnyRef' doesn't have 'close' method
+  result
+}
+
+// the proper implementation:
+def using[T <: { def close(): Unit}, S](obj: T)(operation: T => S) = {
+  // upper bound of 'T' is the structural type '{def close(): Unit}'
+  // which means: "any subtype of AnyRef that has a 'close' method"
+  val result = operation(obj)
+  obj.close()
+  result
+}
+```
+
+> - **Structural type** is a refinement type where the refinements are for members that are not in the base type
 
