@@ -2642,4 +2642,51 @@ Direction.Right.id  // Int = 1
 Direction(0)  // Direction.Value = Left
 ```
 
+### Implicit Conversions and Parameters
+
+> - used when working with two bodies of code that were developed separately, thus each may have its own way to represent the same concept
+> - **implicits** help by reducing the number of explicit conversions one has to write
+> - good candidate for implicit conversions is Java Swing, since Java doesn't have function as first class citizens
+
+```scala
+// using Swing without implicit conversions (a lot of boilerplate):
+val button = new JButton
+button.addActionListener(
+  new ActionListener {
+    def actionPerformed(event: ActionEvent) {
+      println("pressed!")
+    }
+  }
+)
+
+// Scala-friendly version:
+button.addActionListener(  // type mismatch (passing function instead of ActionListener)
+  (_: ActionEvent) => println("pressed!")
+)
+
+// first step is to define implicit conversion from function to action listener:
+implicit def function2ActionListener(f: ActionEvent => Unit) =
+  new ActionListener {
+    def actionPerformed(event: ActionEvent) = f(event)
+  }
+
+// now we can write:
+button.addActionListener(
+  function2ActionListener(
+    (_: ActionEvent) => println("pressed!")
+  )
+)
+
+// which is already much better than the inner class version
+// because the function 'function2ActionListener' is marked as 'implicit', it can be left out:
+button.AddActionListener(  // now this works!
+  (_: ActionEvent) => println("pressed!")
+)
+```
+
+> - how implicits work:
+>   - the compiler first tries to compile it as is, but it sees a type error
+>   - it looks for an implicit conversion that can repair the problem
+>   - it finds 'function2ActionListener'
+>   - it tries to use it as a conversion method, sees that it works and moves on
 
