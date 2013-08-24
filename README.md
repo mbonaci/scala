@@ -2695,7 +2695,7 @@ button.AddActionListener(  // now this works!
 > - **implicit definitions** are definitions that the compiler is allowed to insert into a program in order to fix a type error
 > - you can use `implicit` to mark any variable, function or object definition  
 > 
-> Implicit conversions are governed by the following general rules:
+> _Implicit conversions are governed by the following general rules_
 > - **Marking rule:** Only definitions marked `implicit` are used
 > - **Scope rule:** An inserted implicit conversion must be in scope as a single identifier, or be associated with the conversion's source or target type
 >   - _single identifier_ means that the compiler will not insert a conversion of the form `someVariable.convert`
@@ -2706,3 +2706,27 @@ button.AddActionListener(  // now this works!
 > - **One-at-a-time rule: Only one implicit is tried**
 >   - for sanity's sake, the compiler does not insert further implicits when it's already in the process of trying another implicit, e.g. `convert1(convert2(x)) + y`
 >   - that would cause compile time to increase dramatically on erroneous code and would increase the difference between what the programmer writes and what the program does
+>   - it is possible to circumvent this rule by having implicits take implicit params
+> - **Explicits-First rule:
+>   - the compiler will not change code that already works
+>   - a consequence of this rule is that you can trade between verbose (explicits) and terse (implicits) code
+
+* 484 - **Naming an implicit conversion**
+
+> - implicit conversions can have arbitrary names
+> - the name matters only in two situations:
+>   - if you want to write it explicitly in a method application
+>   - for determining which implicits are available in a program
+
+```scala
+// to determine which implicits will be used:
+object MyConversions {
+  implicit def stringWrapper(s: String): IndexedSeq[Char] = ...
+  implicit def intToString(x: Int): String = ...
+}
+
+// you can achieve that your code uses only 'stringWrapper' and not 'intToString':
+import MyConversions.stringWrapper  // possible only because implicit has a name
+// ... code making use of 'stringWrapper'
+```
+
