@@ -2737,3 +2737,20 @@ import MyConversions.stringWrapper  // possible only because implicit has a name
 > 2 conversions of the receiver of a selection (adapts receiver of a method call)
 > 3 implicit parameters
 
+* 485 - **Implicit conversion to an expected type**
+
+> - whenever the compiler sees an `X`, but needs a `Y`, it will look for an implicit function that converts `X` to `Y`
+
+```scala
+val i: Int = 3.5  // type mismatch (loss of precision)
+
+// however, if you define implicit conversion:
+implicit def doubleToInt(x: Double) = x.toInt
+
+val i: Int = 3.5  // i: Int = 3
+
+// the compiler sees a 'Double' 3.5 in a context where it requires an 'Int'
+// before giving up and reporting 'type mismatch', it searches for a suitable implicit
+// it finds 'doubleToInt', and wraps 3.5 in the 'doubleToInt' function call
+```
+
