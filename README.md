@@ -2707,7 +2707,7 @@ button.AddActionListener(  // now this works!
 >   - for sanity's sake, the compiler does not insert further implicits when it's already in the process of trying another implicit, e.g. `convert1(convert2(x)) + y`
 >   - that would cause compile time to increase dramatically on erroneous code and would increase the difference between what the programmer writes and what the program does
 >   - it is possible to circumvent this rule by having implicits take implicit params
-> - **Explicits-First rule:
+> - **Explicits-First rule:**
 >   - the compiler will not change code that already works
 >   - a consequence of this rule is that you can trade between verbose (explicits) and terse (implicits) code
 
@@ -2732,10 +2732,10 @@ import MyConversions.stringWrapper  // possible only because implicit has a name
 
 * 485 - **Where implicits are tried**
 
-> - there are 3 places where implicits are used:
-> 1 conversions to an expected type (use one type where the other is expected)
-> 2 conversions of the receiver of a selection (adapts receiver of a method call)
-> 3 implicit parameters
+> - there are 3 places where implicits are used:  
+>  1  conversions to an expected type (use one type where the other is expected)
+>  2  conversions of the receiver of a selection (adapts receiver of a method call)
+>  3  implicit parameters
 
 * 485 - **Implicit conversion to an expected type**
 
@@ -2795,3 +2795,6 @@ implicit def intToRational(x: Int) = new Rational(x, 1)
 intToRational(1) + oneHalf
 ```
 
+* 489 - **Simulating new syntax**
+
+> - 
