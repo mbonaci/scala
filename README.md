@@ -2646,7 +2646,6 @@ Direction(0)  // Direction.Value = Left
 
 > - used when working with two bodies of code that were developed separately, thus each may have its own way to represent the same concept
 > - **implicits** help by reducing the number of explicit conversions one has to write
-> - good candidate for implicit conversions is Java Swing, since Java doesn't have function as first class citizens
 
 ```scala
 // using Swing without implicit conversions (a lot of boilerplate):
@@ -2709,7 +2708,7 @@ button.AddActionListener(  // now this works!
 >   - it is possible to circumvent this rule by having implicits take implicit params
 > - **Explicits-First rule:**
 >   - the compiler will not change code that already works
->   - a consequence of this rule is that you can trade between verbose (explicits) and terse (implicits) code
+>   - a consequence of this rule is that you can make trade offs between verbose (explicits) and terse (implicits) code
 
 * 484 - **Naming an implicit conversion**
 
@@ -2733,9 +2732,9 @@ import MyConversions.stringWrapper  // possible only because implicit has a name
 * 485 - **Where implicits are tried**
 
 > - there are 3 places where implicits are used:  
-> **1** conversions to an expected type (use one type where the other is expected)  
-> **2** conversions of the receiver of a selection (adapts receiver of a method call)  
-> **3** implicit parameters
+> **1**  conversions to an expected type (use one type where the other is expected)  
+> **2**  conversions of the receiver of a selection (adapts receiver of a method call)  
+> **3**  implicit parameters
 
 * 485 - **Implicit conversion to an expected type**
 
@@ -2762,7 +2761,7 @@ val i: Int = 3.5  // i: Int = 3
 > - has 2 main uses: allows smoother integration of a new class into an existing class hierarchy and second, they support writing DSLs withing the Scala language
 > - how it works:
 >   - you write down `obj.doIt` where `obj` doesn't have a member named `doIt`
->   - before giving up, compiler tries to insert conversions that apply to the `obj`, converting it to a type that has `doIt` member
+>   - before giving up, compiler tries to insert conversions that apply to the `obj`, converting it to a type that has a `doIt` member
 
 ```scala
 // use an instance of one type as if it was an instance of some other type
@@ -2797,4 +2796,28 @@ intToRational(1) + oneHalf
 
 * 489 - **Simulating new syntax**
 
-> - 
+> - the major use of implicit conversions is to simulate adding new syntax
+
+```scala
+// you can make a map using syntax:
+Map(1 -> "one", 2 -> "two")  // what is '->'
+
+// '->' is a method of the class 'ArrowAssoc' (defined in 'scala.Predef' preamble)
+// preamble also defines an implicit conversion from 'Any' to 'ArrayAssoc' so that the
+// '->' method can be found:
+
+package scala
+object Predef {
+  class ArrowAssoc[A](x: A) {
+    def -> [B](y: B): Tuple2[A, B] = Tuple2(x, y)
+  }
+
+  implicit def any2ArrowAssoc[A](x: A): ArrowAssoc[A] = new ArrowAssoc(x)
+
+  // ...
+}
+```
+
+> - that is called a **rich wrapper pattern**, which is common in libraries that provide syntax-like extensions to the language
+> - classes named 'RichSomething' (e.g. 'RichInt' or 'RichBoolean') are likely using implicits to add the syntax-like methods to type 'Something'
+
