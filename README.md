@@ -2730,3 +2730,10 @@ import MyConversions.stringWrapper  // possible only because implicit has a name
 // ... code making use of 'stringWrapper'
 ```
 
+* 485 - **Where implicits are tried**
+
+> - there are 3 places where implicits are used:
+> 1 conversions to an expected type (use one type where the other is expected)
+> 2 conversions of the receiver of a selection (adapts receiver of a method call)
+> 3 implicit parameters
+
