@@ -2695,11 +2695,13 @@ button.AddActionListener(  // now this works!
 > - **implicit definitions** are definitions that the compiler is allowed to insert into a program in order to fix a type error
 > - you can use `implicit` to mark any variable, function or object definition
 > - implicit conversions are governed by the following general rules:
->   - **Marking rule:** Only definitions marked `implicit` are used
->   - **Scope rule:** An inserted implicit conversion must be in scope as a single identifier, or be associated with the conversion's source or target type
->     - _single identifier_ means that the compiler will not insert a conversion of the form `someVariable.convert`
->     - it is common for libraries to include a `Preamble` object that contains useful implicits, which allows the code that uses a library to do a single `import Preamble._`
->     - there's one exception to single identifier rule: the compiler will also look for implicit definitions in the companion objects of both, source and target types
->     - when implicit is placed in a companion object of some type, it is said that the conversion is **associated** to that type
->     - _modular code reasoning:_ when you read a source file, the only things you need to consider in other source files are those that are either imported or explicitly referenced through a fully qualified name
-
+>  - **Marking rule:** Only definitions marked `implicit` are used
+>  - **Scope rule:** An inserted implicit conversion must be in scope as a single identifier, or be associated with the conversion's source or target type
+>   - _single identifier_ means that the compiler will not insert a conversion of the form `someVariable.convert`
+>   - it is common for libraries to include a `Preamble` object that contains useful implicits, which allows the code that uses a library to do a single `import Preamble._`
+>   - there's one exception to single identifier rule: the compiler will also look for implicit definitions in the companion objects of both, source and target types
+>   - when implicit is placed in a companion object of some type, it is said that the conversion is **associated** to that type
+>   - _modular code reasoning:_ when you read a source file, the only things you need to consider in other source files are those that are either imported or explicitly referenced through a fully qualified name
+>  - **One-at-a-time rule: Only one implicit is tried**
+>   - for sanity's sake, the compiler does not insert further implicits when it's already in the process of trying another implicit, e.g. `convert1(convert2(x)) + y`
+>   - that would cause compile time to increase dramatically on erroneous code and would increase the difference between what the programmer writes and what the program does
