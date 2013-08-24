@@ -2693,9 +2693,9 @@ button.AddActionListener(  // now this works!
 * 482 - **Rules for implicits**
 
 > - **implicit definitions** are definitions that the compiler is allowed to insert into a program in order to fix a type error
-> - you can use `implicit` to mark any variable, function or object definition
-> Implicit conversions are governed by the following general rules:  
+> - you can use `implicit` to mark any variable, function or object definition  
 > 
+> Implicit conversions are governed by the following general rules:
 > - **Marking rule:** Only definitions marked `implicit` are used
 > - **Scope rule:** An inserted implicit conversion must be in scope as a single identifier, or be associated with the conversion's source or target type
 >   - _single identifier_ means that the compiler will not insert a conversion of the form `someVariable.convert`
