@@ -2749,8 +2749,49 @@ implicit def doubleToInt(x: Double) = x.toInt
 
 val i: Int = 3.5  // i: Int = 3
 
-// the compiler sees a 'Double' 3.5 in a context where it requires an 'Int'
-// before giving up and reporting 'type mismatch', it searches for a suitable implicit
-// it finds 'doubleToInt', and wraps 3.5 in the 'doubleToInt' function call
+/*
+ * 1. the compiler sees a 'Double' 3.5 in a context where it requires an 'Int'
+ * 2. before giving up and reporting 'type mismatch', it searches for a suitable implicit
+ * 3. it finds 'doubleToInt', and wraps 3.5 in the 'doubleToInt' function call
+ */
+```
+
+* 486 - **Converting the receiver**
+
+> - implicits are applied on an object on which a method is invoked
+> - has 2 main uses: allows smoother integration of a new class into an existing class hierarchy and second, they support writing DSLs withing the Scala language
+> - how it works:
+>   - you write down `obj.doIt` where `obj` doesn't have a member named `doIt`
+>   - before giving up, compiler tries to insert conversions that apply to the `obj`, converting it to a type that has `doIt` member
+
+```scala
+// use an instance of one type as if it was an instance of some other type
+class Rational(n: Int, d: Int) {  // existing class (from page 155)
+  // ...
+  def + (that: Rational): Rational = ...
+  def + (that: Int): Rational = ...
+}
+
+// the two overloaded methods allow you to:
+val oneHalf = new Rational(1, 2)  // Rational = 1/2
+oneHalf + oneHalf  // Rational = 1/1
+oneHalf + 1  // Rational = 3/2
+
+// but:
+1 + oneHalf  // error: overloaded method value + (of Int) cannot bi applied to Rational
+
+// so:
+implicit def intToRational(x: Int) = new Rational(x, 1)
+
+1 + oneHalf  // Rational = 3/2
+
+/*
+ * 1. the compiler first tries to type check the expression '1 + oneHalf' as it is
+ * 2. this fails because none of Int's '+' methods takes a 'Rational' argument
+ * 3. compiler searches for an implicit conversion from 'Int' to another type 
+ *    that has a '+' method which can be applied to a 'Rational'
+ * 4. it finds 'intToRational' and wraps 1 in the 'intToRational' call:
+ */
+intToRational(1) + oneHalf
 ```
 
