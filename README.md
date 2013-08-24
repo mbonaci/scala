@@ -2821,3 +2821,60 @@ object Predef {
 > - that is called a **rich wrapper pattern**, which is common in libraries that provide syntax-like extensions to the language
 > - classes named 'RichSomething' (e.g. 'RichInt' or 'RichBoolean') are likely using implicits to add the syntax-like methods to type 'Something'
 
+* 489 - **Implicit parameters**
+
+> - compiler can also insert implicits within argument lists, e.g. replacing `someCall(a)` with `someCall(a)(b)` or `new SomeClass(a)` with `new SomeClass(a)(b)`, thereby adding a missing parameter list to complete a function call
+> - it is the entire last curried parameter that's supplied, not just the last parameter, e.g. compiler might replace `aCall(a)` with `aCall(a)(b, c, d)`
+> - for this to work, not just that the inserted identifiers (such as b, c and d) must be marked `implicit` where they are defined, but also the last parameter list in `aCall`'s definition must be marked `implicit`:
+
+```scala
+// suppose you have a class which encapsulates a user's preferred shell prompt string:
+class PreferredPrompt(val preference: String)
+
+object Greeter {
+  def greet
+    (name: String)  // first param list
+    (implicit prompt: PreferredPrompt) {  // implicit applies to the entire param list
+      println("Welcome, " + name)
+      println(prompt.preference)
+  }
+}
+
+object Prompt {  // dummy - just hosting 'main'
+  def main(args: Array[String]): Unit = {
+    val bobsPrompt = new PreferredPrompt("relax> ")
+    Greeter.greet("Bob")(bobsPrompt)  // explicit prompt
+    
+    implicit val prompt = new PreferredPrompt("Yes, master> ")  // implicit identifier
+    Greeter.greet("Joe")  // implicit prompt
+  }
+}
+```
+
+> - example with multiple parameters in the last parameter list:
+
+```scala
+class PreferredPrompt(val preference: String)
+class PreferredDrink(val preference: String)
+
+object Greeter {
+  def greet(name: String)(implicit prompt: PreferredPrompt, drink: PreferredDrink) {
+    println("Welcome, " + name + ". The system is ready.")
+    print("But while you work, ")
+    println("why not enjoy a cup of " + drink.preference + "?")
+    println(prompt.preference)
+  }
+}
+
+object Prompt {  // dummy - just hosting 'main'
+  def main(args: Array[String]): Unit = {
+    val bobsPrompt = new PreferredPrompt("relax> ")
+    val bobsDrink = new PreferredDrink("travarica")
+    Greeter.greet("Bob")(bobsPrompt, bobsDrink)  // all explicit
+    
+    implicit val prompt = new PreferredPrompt("Yes, master> ")
+    implicit val drink = new PreferredDrink("rakija")
+    Greeter.greet("Joe")
+  }
+}
+```
