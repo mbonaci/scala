@@ -2896,8 +2896,7 @@ def maxListUpBound[T <: Ordered[T]](elements: List[T]): T =
 
 // to remedy the weakness, we could add an extra argument
 // that converts 'T' to 'Ordered[T]' (i.e. provides info on how to order 'T's)
-def maxListImpParm[T](elements: List[T])
-    (implicit ordered: T => Ordered[T]): T =
+def maxListImpParm[T](elements: List[T])(implicit ordered: T => Ordered[T]): T =
   elements match {
     case List() => throw new IllegalArgumentException("empty")
     case List(x) => x
@@ -2917,7 +2916,61 @@ maxListImpParm(List("one", "two", "three"))    // for String
  * Because elements must always be provided explicitly in any invocation of
  * maxListImpParm, the compiler will know T at compile time, and can therefore
  * determine whether an implicit definition of type T => Ordered[T] is in
- * scope. If so, it can pass in the second parameter list, orderer, implicitly.
+ * scope. If so, it can pass in the second parameter list, 'orderer', implicitly.
  */
+```
+
+* 495 - **A style rule for implicit parameters**
+
+> - it is best to use a custom named type in the types of implicit parameters (e.g. in the `Prompt` example, the type of `prompt` and `drink` was not `String`, but `PreferredPrompt` and `PreferredDrink`)
+> - use at least one role-determining name within the type of an implicit parameter (in our case `Ordered`)
+
+* 495 - **View bounds**
+
+> - when you use `implicit` on a parameter, then not only will the compiler try to supply that parameter with an implicit value, but it will also use that parameter as an available implicit in the body of the method:
+
+```scala
+def maxList[T](elements: List[T])(implicit orderer: T => Ordered[T]): T =
+  elements match {
+    case List() => throw new IllegalArgumentException("empty")
+    case List(x) => x
+    case x :: rest =>
+      val maxRest = maxList(rest)  // '(orderer)' is implicit
+      if (x > maxRest) x           // 'orderer(x)' is implicit
+      else maxRest
+  }
+
+/*
+ * 1. compiler sees that types don't match (e.g. 'x' of type 'T' doesn't have '>' method)
+ * 2. compiler looks for implicit conversions to repair the code
+ * 3. it finds 'orderer' in scope and converts the code to 'orderer(x) > maxRest'
+ * 4. it also converts 'maxList(rest)' to 'maxList(rest)(orderer)'
+ * 5. after these two implicit insertions the code fully type checks
+ *
+ * All that happens without a single mention of the 'orderer' parameter in the body, thus
+ * all uses of 'orderer' are implicit
+ */
+```
+
+> - because this pattern is so common, Scala lets you leave out the name of this parameter and shorten the method header by using a **view bound:**
+
+```scala
+def maxList[T <% Ordered[T]](elements: List[T]): T =
+  elements match {
+    case List() => throw new IllegalArgumentException("empty")
+    case List(x) => x
+    case x :: rest =>
+      val maxRest = maxList(rest)  // '(orderer)' is implicit
+      if (x > maxRest) x           // 'orderer(x)' is implicit
+      else maxRest
+  }
+```
+
+> - you can think of `T <% Ordered[T]` as saying "I can use any T, so long as T can be treated as an Ordered[T]", which is different from "T is an Ordered[T]", as **upper bound**, `T <: Ordered[T]`, would say
+> - so even though class `Int` is not a subtype of `Ordered[Int]`, we can still pass a `List[Int]` to `maxList`, so long as an implicit conversion from `Int` to `Ordered[Int]` is available
+> - if type `T` happens to already be an `Ordered[T]`, you can still pass a `List[T]` to `maxList` because the compiler will use an implicit **identity function**, declared in `Predef`:
+
+```scala
+implicit def identity[A](x: A): A = x  // simply returns received object
 ```
 
