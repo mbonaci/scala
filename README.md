@@ -2974,3 +2974,10 @@ def maxList[T <% Ordered[T]](elements: List[T]): T =
 implicit def identity[A](x: A): A = x  // simply returns received object
 ```
 
+* 498 - **When multiple conversions apply**
+
+> - when multiple implicit conversions are in scope, compiler chooses the most specific one (e.g. if one of the conversions takes `String` and the other takes `Any`, the compiler will choose the one that takes a `String`)
+> - one implicit conversion is **more specific** than the other if one of the following applies:
+>   - the argument type of the former is a subtype of the latter's
+>   - both conversions are methods and the enclosing class of the former extends the enclosing class of the latter one
+
