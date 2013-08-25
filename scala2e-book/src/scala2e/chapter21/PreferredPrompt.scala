@@ -6,7 +6,7 @@ object Prompt {
     val bobsDrink = new PreferredDrink("travarica")
     Greeter.greet("Bob")(bobsPrompt, bobsDrink)
     
-    implicit val prompt = new PreferredPrompt("Yes, master> ")
+    implicit val prompt = new PreferredPrompt("Welcome home Sir> ")
     implicit val drink = new PreferredDrink("rakija")
     Greeter.greet("Joe")
   }
