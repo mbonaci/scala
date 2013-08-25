@@ -2878,3 +2878,46 @@ object Prompt {  // dummy - just hosting 'main'
   }
 }
 ```
+
+> - implicit parameters are most often used to provide information about a type mentioned explicitly in the earlier parameter list (like _type classes_ in Haskell):
+
+```scala
+// the weakness of this method is that you cannot use it to sort list of Ints
+// because it requires that 'T' is a subtype of 'Ordered[T]', which Int isn't
+def maxListUpBound[T <: Ordered[T]](elements: List[T]): T =
+  elements match {
+    case List() => throw new IllegalArgumentException("empty")
+    case List(x) => x
+    case x :: rest =>
+      val maxRest = maxListUpBound(rest)
+      if (x > maxRest) x
+      else maxRest
+  }
+
+// to remedy the weakness, we could add an extra argument
+// that converts 'T' to 'Ordered[T]' (i.e. provides info on how to order 'T's)
+def maxListImpParm[T](elements: List[T])
+    (implicit ordered: T => Ordered[T]): T =
+  elements match {
+    case List() => throw new IllegalArgumentException("empty")
+    case List(x) => x
+    case x :: rest =>
+      val maxRest = maxListImpParm(rest)(ordered)
+      if (ordered(x) > maxRest) x
+      else maxRest
+  }
+
+// because patter is so common, the standard library provides implicit 'orderer'
+// methods for many common types, which is why you can use 'maxListImpParm' with:
+maxListImpParm(List(1, 5, 10, 3))  // compiler inserts 'orderer' function for Ints
+maxListImpParm(List(1.5, 5.2, 10.7, 3.22323))  // for Doubles
+maxListImpParm(List("one", "two", "three"))    // for String
+
+/*
+ * Because elements must always be provided explicitly in any invocation of
+ * maxListImpParm, the compiler will know T at compile time, and can therefore
+ * determine whether an implicit definition of type T => Ordered[T] is in
+ * scope. If so, it can pass in the second parameter list, orderer, implicitly.
+ */
+```
+
