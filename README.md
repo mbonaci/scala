@@ -2981,3 +2981,10 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 >   - the argument type of the former is a subtype of the latter's
 >   - both conversions are methods and the enclosing class of the former extends the enclosing class of the latter one
 
+* 501 - **Debugging implicits**
+
+> - when you wonder why the compiler did not find an implicit conversion that you think should have been applied, it helps to write the conversion explicitly, which would possibly produce an error message so you'll know the reason why it was not applied
+> - if inserting the conversion explicitly make the error go away, then you know that insertion was prevented by one of the rules (often Scope rule)
+> - `-Xprint:typer` option tells the compiler to show what the code looks like after all implicit conversions have been added by the type checker
+> - implicits can make code confusing if used too frequently, thus, before writing a new implicit conversion, first try to achieve the same effect using inheritance, mixin composition or method overloading
+
