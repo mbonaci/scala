@@ -3005,3 +3005,15 @@ def head: T
 def tail: List[T]
 ```
 
+> - **The `Nil` object**
+> - defines an empty list
+> - inherits from type `List[Nothing]`, and because of covariance, `Nil` is compatible with every instance of the `List` type
+
+```scala
+case object Nil extends List[Nothing] {
+  override def isEmpty = true
+  def head: Nothing = throw new NoSuchElementException("head of empty list")
+  def tail: List[Nothing] = throw new NoSuchElementException("tail of empty list")
+}
+```
+
