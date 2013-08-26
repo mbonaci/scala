@@ -15,6 +15,7 @@ object wksChapter21 {
 
   // to remedy the weakness, we could add an extra argument
   // that converts 'T' to 'Ordered[T]'
+  // the second param provides info about how to order 'T's
   def maxListImpParm[T](elements: List[T])
       (implicit ordered: T => Ordered[T]): T =
     elements match {
@@ -31,4 +32,12 @@ object wksChapter21 {
   maxListImpParm(List(1.5, 5.2, 10.7, 3.22323))   //> res1: Double = 10.7
   maxListImpParm(List("one", "two", "three"))     //> res2: String = two
 
+  /*
+   *Because elements must always be provided explicitly in any invocation of
+maxListImpParm, the compiler will know T at compile time, and can therefore
+determine whether an implicit definition of type T => Ordered[T] is in
+scope. If so, it can pass in the second parameter list, orderer, implicitly.
+   *
+   *
+   */
 }
