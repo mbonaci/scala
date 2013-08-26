@@ -3039,3 +3039,20 @@ final case class ::[T](head: T, tail: List[T]) extends List[T] {
 // as if param declaration was prefixed with the 'val' keyword
 ```
 
+> - **Some more methods**
+> - all other `List` methods can be elegantly written using the basic three, e.g.:
+
+```scala
+def length: Int =
+  if (isEmpty) 0 else 1 + tail.length
+
+def drop(n: Int): List[T] =
+  if (isEmpty) Nil
+  else if (n <= 0) this
+  else tail.drop(n - 1)
+
+def map[U](f: T => U): List[U] =
+  if (isEmpty) Nil
+  else f(head) :: tail.map(f)
+```
+
