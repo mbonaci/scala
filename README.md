@@ -2993,7 +2993,7 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 
 > - lists are not built-in as a language construct in Scala, they are defined by an abstract class `scala.List`, which comes with 2 subclasses, `Nil` and `::`
 
-![Lists hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-Lists-hierarchy.png?raw=true)
+![Lists hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-lists-hierarchy.png?raw=true)
 
 ```scala
 package scala
@@ -3006,8 +3006,9 @@ def tail: List[T]
 ```
 
 > - **The `Nil` object**
-> - defines an empty list
-> - inherits from type `List[Nothing]`, and because of covariance, `Nil` is compatible with every instance of the `List` type
+>   - defines an empty list
+>   - inherits from type `List[Nothing]`
+>   - because of covariance, `Nil` is compatible with every instance of the `List` type
 
 ```scala
 case object Nil extends List[Nothing] {
@@ -3015,5 +3016,26 @@ case object Nil extends List[Nothing] {
   def head: Nothing = throw new NoSuchElementException("head of empty list")
   def tail: List[Nothing] = throw new NoSuchElementException("tail of empty list")
 }
+```
+
+> - **The `::` object**
+>   - pronounced **cons**, represents non-empty lists
+>   - the pattern `x :: xs` is treated as `::(x, xs)`
+
+```scala
+final case class ::[T](hd: T, tl: List[T]) extends List[T] {
+  def head = hd
+  def tail = tl
+  override def isEmpty: Boolean = false
+}
+
+// since definitions of 'head' and 'tail' simply return the corresponding param, we can
+// write the code so that it directly uses the parameters as implementations of the
+// abstract methods 'head' and 'tail' that were inherited from class 'List'
+final case class ::[T](head: T, tail: List[T]) extends List[T] {
+  override def isEmpty: Boolean = false
+}
+// this works because every 'case class' param is implicitly also a field
+// as if param declaration was prefixed with the 'val' keyword
 ```
 
