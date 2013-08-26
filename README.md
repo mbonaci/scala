@@ -2988,3 +2988,20 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 > - `-Xprint:typer` option tells the compiler to show what the code looks like after all implicit conversions have been added by the type checker
 > - implicits can make code confusing if used too frequently, thus, before writing a new implicit conversion, first try to achieve the same effect using inheritance, mixin composition or method overloading
 
+### Implementing Lists
+* 503 - **The List class in principle**
+
+> - lists are not built-in as a language construct in Scala, they are defined by an abstract class `scala.List`, which comes with 2 subclasses, `Nil` and `::`
+
+![Lists hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-Lists-hierarchy.png?raw=true)
+
+```scala
+package scala
+abstract class List[+T] {  // you can assign 'List[Int]' to var of type 'List[Any]'
+
+// 3 main methods are abstract in class 'List', and concrete in classes 'Nil' and '::'
+def isEmpty: Boolean
+def head: T
+def tail: List[T]
+```
+
