@@ -2999,10 +2999,11 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 package scala
 abstract class List[+T] {  // you can assign 'List[Int]' to var of type 'List[Any]'
 
-// 3 main methods are abstract in class 'List', and concrete in classes 'Nil' and '::'
-def isEmpty: Boolean
-def head: T
-def tail: List[T]
+  // 3 main methods are abstract in class 'List', and concrete in classes 'Nil' and '::'
+  def isEmpty: Boolean
+  def head: T
+  def tail: List[T]
+}
 ```
 
 > - **The `Nil` object**
@@ -3020,7 +3021,7 @@ case object Nil extends List[Nothing] {
 
 > - **The `::` object**
 >   - pronounced **cons**, represents non-empty lists
->   - the pattern `x :: xs` is treated as `::(x, xs)`
+>   - the pattern `x :: xs` is treated as `::(x, xs)`, which is treated as `xs.::(x)`
 
 ```scala
 final case class ::[T](hd: T, tl: List[T]) extends List[T] {
@@ -3054,5 +3055,48 @@ def drop(n: Int): List[T] =
 def map[U](f: T => U): List[U] =
   if (isEmpty) Nil
   else f(head) :: tail.map(f)
+```
+
+* 507 - **List construction**
+
+> - `::` method should take an element value and yield a new list
+
+```scala
+abstract class Fruit
+class Apple extends Fruit
+class Orange extends Fruit
+
+val apples = new Apple :: Nil      // apples: List[Apple]
+val fruits = new Orange :: apples  // fruits: List[Fruit] - most precise common supertype
+
+// this flexibility is obtained by defining the 'cons' method as:
+def ::[U >: T](x: U): List[U] = new scala.::(x, this)
+
+// the method is itself polymorphic:
+// 'U' is constrained to be a supertype of the list element type 'T'
+```
+
+> - when the code above is executed the result type is widened as necessary to include the types of all list elements
+
+![Polymorphic list construction](https://github.com/mbonaci/scala/blob/master/resources/Scala-polymorphic-list-construction.png?raw=true)
+
+> - first, the type parameter `U` of `::` is instantiated to `Fruit`
+> - the lower-bound constraint of `U` is satisfied, because the list `apples` has type `List[Apple]` and `Fruit` is supertype of `Apple`
+> - the argument to the `::` is `new Orange`, which conforms to type `Fruit`
+> - therefore, the method is type-correct with result type `List[Fruit]`
+
+```scala
+def :::[U >: T](prefix: MyList[U]): MyList[U] =
+  if (prefix.isEmpty) this
+  else prefix.head :: prefix.tail ::: this
+
+// the infix operations can be expanded to equivalent method calls:
+prefix.head :: prefix.tail ::: this
+  // equals (because '::' and ':::' are right-associative)
+prefix.head :: (prefix.tail ::: this)
+  // equals (because '::' binds to the right)
+(prefix.tail ::: this).::(prefix.head)
+  // equals (because ':::' binds to the right)
+this.:::(prefix.tail).::(prefix.head)
 ```
 
