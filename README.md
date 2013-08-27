@@ -1358,6 +1358,10 @@ List.range(1, 5) flatMap (i => List.range(1, i) map (j => (i, j)))
 for(i <- List.range(1, 5);
     j <- List.range(1, i)) yield (i, j)
 
+// difference between 'map' and 'flatMap':
+List(1, 2, 3, 4) map (_ :: 8 :: Nil)  // List(List(1,8), List(2,8), List(3,8), List(4,8))
+List(1, 2, 3, 4) flatMap (_ :: 8 :: Nil)  // List(1, 8, 2, 8, 3, 8, 4, 8)
+
 // 'foreach' takes a procedure (a function resulting with Unit) as its right operand,
 // and applies the procedure to each list element. The result is Unit, not a new list
 var sum = 0
@@ -3164,7 +3168,7 @@ final case class ::[U](hd: U, private[scala] var tl: List[U]) extends List[U] {
 
 ```scala
 // 'ListBuffer' implementation:
-package scala.collection.immutable
+package scala.collection.mutable
 final class ListBuffer[T] extends Buffer[T] {
   private var start: List[T] = Nil
   private var last0: ::[T] = _
@@ -3198,4 +3202,11 @@ override def += (x: T) {
 
 // most use cases add elements incrementally and then do one 'toList' call at the end
 ```
+
+* 513 - **Functional on the outside**
+
+> - lists are purely functional on the outside, but have an imperative implementation using list buffers on the inside
+> - a typical strategy in Scala programming is to combine purity with efficiency by carefully delimiting the effects of impure operations
+> - Scala opts for pervasive sharing and no mutation for lists
+> - `ListBuffer` still allows you to build up lists imperatively and incrementally
 
