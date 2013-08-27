@@ -3210,3 +3210,6 @@ override def += (x: T) {
 > - Scala opts for pervasive sharing and no mutation for lists
 > - `ListBuffer` still allows you to build up lists imperatively and incrementally
 
+### For Expressions Revisited
+> - all `for` expressions that `yield` a result are translated by the compiler into combination of higher-order methods `map`, `flatMap` and `withFilter`
+> - all `for` expressions without `yield` are translated into combination of `withFilter` and `foreach`
