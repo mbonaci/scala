@@ -3100,3 +3100,29 @@ prefix.head :: (prefix.tail ::: this)
 this.:::(prefix.tail).::(prefix.head)
 ```
 
+* 509 - **The `ListBuffer` class**
+
+> - the typical access pattern for a list is recursive, e.g. to increment every element without using `map`:
+
+```scala
+def incAll(xs: List[Int]): List[Int] = xs match {
+  case List() => List()
+  case x :: xs1 => x + 1 :: incAll(xs1)  // not tail recursive (call is inside '::')
+}
+```
+
+> - since the function is not tail recursive, each call allocates a new stack frame
+> - this means that you cannot use `incAll` on list with more than 30k to 50k elements
+> - **list buffers** let you accumulate the elements of a list
+> - **ListBuffer** is a class in package `scala.collection.mutable`
+
+```scala
+// increment all elements of a list using 'ListBuffer':
+def incAll(xs: List[Int]): List[Int] = {
+  val buf = new ListBuffer[Int]
+  for (x <- xs) buf += x + 1
+  buf.toList
+}
+// both '+=' and 'toList' take constant time
+```
+
