@@ -3024,6 +3024,7 @@ case object Nil extends List[Nothing] {
 >   - the pattern `x :: xs` is treated as `::(x, xs)`, which is treated as `xs.::(x)`
 
 ```scala
+// idealized implementation (the real deal on page 511)
 final case class ::[T](hd: T, tl: List[T]) extends List[T] {
   def head = hd
   def tail = tl
@@ -3124,5 +3125,77 @@ def incAll(xs: List[Int]): List[Int] = {
   buf.toList
 }
 // both '+=' and 'toList' take constant time
+```
+
+* 511 - **The `List` class in practice**
+
+> - most methods in the real implementation of class `List` avoid recursion (even if it's tail call optimized) and use loops with list buffers instead
+
+```scala
+// the real implementation of 'map' method:
+final override def map[U](f: T => U): List[U] = {
+  val b = new ListBuffer[U]
+  var these = this
+  while (!these.isEmpty) {  // highly efficient
+    b += f(these.head)
+    these = these.tail
+  }
+  b.toList
+}
+```
+
+> - a tail recursive implementation would be similarly efficient, but a general recursive implementation would be slower and less scalable
+
+```scala
+// the real implementation of '::' method:
+final case class ::[U](hd: U, private[scala] var tl: List[U]) extends List[U] {
+  def head = hd
+  def tail = tl
+  override def isEmpty: Boolean = false
+}
+
+// 'tl' is a 'var' - possible to modify the tail of a list after it's constructed
+// 'private[scala]' - accessible only from within 'scala' package
+// the client code outside 'scala' package can neither read nor write 'tl'
+// 'ListBuffer', since it is contained in subpackage of 'scala', can access 'tl' field
+```
+
+> - the elements of a list buffer are represented as a list and appending new elements involves modification of 'tl' field of the last '::' cell in that list
+
+```scala
+// 'ListBuffer' implementation:
+package scala.collection.immutable
+final class ListBuffer[T] extends Buffer[T] {
+  private var start: List[T] = Nil
+  private var last0: ::[T] = _
+  private var exported: Boolean = false
+  // ...
+
+// start    - points to the list of all elements stored in the buffer
+// last0    - points to the last :: cell in that list
+// exported - indicates whether the buffer has been turned into a list using 'toList'
+
+override def toList: List[T] = {
+  exported = !start.isEmpty
+  start
+}
+// very efficient, since it doesn't copy the list which is stored in list buffer
+
+// once a list is returned from 'toList', it must be immutable, but appending to the
+// 'last0' will modify the 'start' list
+// to maintain correctness, we work on a fresh list instead:
+override def += (x: T) {
+  if (exported) copy()  // maintain correctness
+  if (start.isEmpty) {
+    last 0 = new scala.::(x, Nil)
+    start = last0
+  } else {
+    val last1 = last0
+    last0 = new scala.::(x, Nil)
+    last1.tl = last0
+  }
+}
+
+// most use cases add elements incrementally and then do one 'toList' call at the end
 ```
 
