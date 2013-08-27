@@ -71,7 +71,8 @@ for (
 * 167 - **Nested loops** and **mid-stream variable binding** example with _generators_ and _filters_
 
 ```scala
-// curly braces are used because the Scala compiler will not infer semicolons inside parentheses
+// curly braces may be used instead of parentheses
+// the compiler does not infer semicolons inside regular parentheses
 def grep(pattern: String) =
   for {
     file <- files if file.getName.endsWith(".scala")  // semicolons inferred
@@ -3213,3 +3214,20 @@ override def += (x: T) {
 ### For Expressions Revisited
 > - all `for` expressions that `yield` a result are translated by the compiler into combination of higher-order methods `map`, `flatMap` and `withFilter`
 > - all `for` expressions without `yield` are translated into combination of `withFilter` and `foreach`
+
+* 518 - **For expressions**
+
+> - generally, a `for` expression is of the form `for (seq) yield expr`, where `seq` is a sequence of **generators**, **definitions** and **filters** with semicolon between successive elements
+
+```scala
+for (p <- persons; n = p.name; if (n startsWith "To")) yield n
+
+// if you replace parentheses with curly braces, semicolons become optional:
+for {
+  p <- persons            // generator
+  n = p.name              // definition (has the same effect as 'val' definition)
+  if (n startsWith "To")  // filter
+} yield n
+```
+
+
