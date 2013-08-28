@@ -3233,7 +3233,8 @@ for {
 * 519 - **The n-queens problem**
 
 > - a particularly suitable application area of for expressions are combinatorial puzzles
-> - an example of such a puzzle is the n-queens problem, where 'n' queens are supposed to be placed on a 'n x n' board, each queen in its own row, such that no two queens check one another:
+> - an example of such a puzzle is the n-queens problem, where 'n' queens are supposed to be placed on a 'n x n' board, each queen in its own row, such that no two queens check one another
+> - the goal is to find all possible solutions that match the given requirements:
 
 ```scala
 def queens(n: Int): List[List[(Int, Int)]] = {
