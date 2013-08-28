@@ -3379,11 +3379,7 @@ for (x <- expr1; y <- expr2; seq) yield expr3
 // is translated to:
 expr1.flatMap(x => for (y <- expr2; seq) yield expr3)
 // the inner 'for' expression is also translated with the same rules
-```
 
-> - translation examples:
-
-```scala
 // the previous "query" example:
 for (b1 <- books; b2 <- books if b1 != b2;
      a1 <- b1.authors; a2 <- b2.authors if a1 == a1)
