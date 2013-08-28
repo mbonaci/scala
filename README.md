@@ -3468,4 +3468,36 @@ xss foreach (xs =>
     sum += x))
 ```
 
+* 528 - **Going the other way**
+
+> - every application of a `map`, `flatMap` and `withFilter` can be represented as a `for` expression
+
+```scala
+object ReversedTranslationDemo {
+
+  def map[A, B](xs: List[A], f: A => B): List[B] =
+    for (x <- xs) yield f(x)
+  
+  def flatMap[A, B](xs: List[A], f: A => List[B]): List[B] =
+    for (x <- xs; y <- f(x)) yield y
+    
+  def filter[A](xs: List[A], p: A => Boolean): List[A] =
+    for (x <- xs if p(x)) yield x
+
+  def main(args: Array[String]): Unit = {
+    val xs = List(1, 2, 3, 4)
+    def f1 = (x: Int) => x + 1
+    def f2 = (x: Int) => (x. to (x + 1)).toList
+    def f3 = (x: Int) => x % 2 == 0
+    
+    val mapped = map(xs, f1)
+    val flatmapped = flatMap(xs, f2)
+    val filtered = filter(xs, f3)
+    
+    println(mapped)      // List(2, 3, 4, 5)
+    println(flatmapped)  // List(1, 2, 2, 3, 3, 4, 4, 5)
+    println(filtered)    // List(2, 4)
+  }
+}
+```
 
