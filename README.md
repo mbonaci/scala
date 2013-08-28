@@ -3342,3 +3342,130 @@ def removeDuplicates[A](xs: List[A]): List[A] = {
 }
 ```
 
+* 524 - **Translation of `for` expressions**
+
+> - how the compiler translates `for` expressions to higher-order function calls
+> - **Translating `for` expressions with one generator**
+
+```scala
+// a simple 'for' expression:
+for (x <- expr1) yield expr2
+// is translated to:
+expr1.map(x => expr2)
+```
+
+> - **Translating `for` expressions starting with a generator and a filter**
+
+```scala
+// a 'for' expression that combine a leading generator with some other elements:
+for (x <- expr1 if expr2) yield expr3
+// is translated to 'for' with one less element:
+for (x <- expr1 withFilter (x => expr2)) yield expr3
+// and then to:
+expr1 withFilter (x => expr2) map (x => expr3)
+
+// the same translation scheme applies if there are further elements following the filter
+// if 'seq' is an arbitrary sequence of generators, definitions and filters, then:
+for (x <- expr1 if expr2; seq) yield expr3
+// is translated to:
+for (x <- expr1 withFilter expr2; seq) yield expr3
+// and then translation continues with the second expression which is shorter by one elem
+```
+
+> - **Translating `for` expressions starting with two generators**
+
+```scala
+for (x <- expr1; y <- expr2; seq) yield expr3
+// is translated to:
+expr1.flatMap(x => for (y <- expr2; seq) yield expr3)
+// the inner 'for' expression is also translated with the same rules
+```
+
+> - translation examples:
+
+```scala
+// the previous "query" example:
+for (b1 <- books; b2 <- books if b1 != b2;
+     a1 <- b1.authors; a2 <- b2.authors if a1 == a1)
+yield a1
+
+// is translated to:
+books flatMap (b1 =>
+  books withFilter (b2 => b1 != b2) flatMap (b2 =>
+    b1.authors flatMap (a1 =>
+      b2.authors withFilter (a2 => a1 == a2) map (a2 =>
+        a1))))
+```
+
+> - these were all examples where generators bind simple variables (as opposed to patterns) and with no definitions
+> - **Translating patterns in generators**
+> - the translation scheme becomes more complicated if the left hand side of generator is a pattern ('pat')
+
+```scala
+// if instead if simple variable tuple appears:
+for ((x1, ..., xn) <- expr1) yield expr2
+// translates to:
+expr1.map { case (x1, ..., xn) => expr2 }
+
+// if a single pattern is involved:
+for (pat <- expr1) yield expr2
+// translates to:
+expr1 withFilter {
+  case pat => true
+  case _ => false
+} map {
+  case pat => expr2
+}
+
+// the generated items are first filtered with pattern matching
+// and only the remaining ones are mapped
+// so it's guaranteed that a pattern-matching generator will never throw a 'MatchError'
+```
+
+> - **Translating definitions**
+
+```scala
+// if a 'for' expression contains embedded definitions:
+for (x <- expr1; y = expr2; seq) yield expr3
+// is translated to:
+for ((x, y) <- for (x <- expr1) yield (x, expr2); seq)
+yield expr3
+
+// 'expr2' is evaluated every time a new 'x' value is generated
+// which is necessary because 'expr2' might depend on 'x'
+// so it's not a good idea to have definitions in 'for' expressions that do not refer
+// to variables bound by some preceding generator, because reevaluating such 
+// expressions is wasteful, e.g. instead of:
+for (x <- 1 to 1000; y = expensiveComputationNotInvolvingX)
+yield x * y
+// it's better to write:
+val y = expensiveComputationNotInvolvingX
+for (x <- 1 to 1000) yield x * y
+```
+
+> - **Translating `for` loops**
+> - the translation of `for` loops that perform a side effect without returning anything is similar, but simpler than `for` expressions
+
+```scala
+// wherever the previous translations used 'map' or 'flatMap', we use 'foreach':
+for (x <- expr1) body
+// translates to:
+expr1 foreach (x => body)
+
+// or slightly larger example:
+for (x <- expr1; if expr2; y <- expr3) body
+// translates to:
+expr1 withFilter (x => expr2) foreach (x => 
+  expr3 foreach (y => body))
+
+// for example, summing up all elements of a matrix represented as list of lists:
+var sum = 0
+for (xs <- xss; x <- xs) sum += x
+// is translated into two nested 'foreach' applications:
+var sum = 0
+xss foreach (xs => 
+  xs foreach (x =>
+    sum += x))
+```
+
+
