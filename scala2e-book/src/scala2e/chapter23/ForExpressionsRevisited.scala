@@ -21,9 +21,9 @@ object ForExpressionsRevisited {
     println(xf)
     println(mothersWitChildren)
     
-    val forList = for (p <- persons;
-    	if !p.isMale;
-    	c <- p.children) yield (p.name, c.name)
+    val forList = 
+      for (p <- persons; if !p.isMale; c <- p.children) 
+      yield (p.name, c.name)
     
     println(forList)
   }
