@@ -3529,3 +3529,100 @@ abstract class C[A] {
 >   - **scala.collection.generic** - provide building blocks for implementing collections
 > - typically, collection classes defer the implementation of some of their operations to classes in `generic`
 
+* 535 - **Collections consistency**
+
+```scala
+// the most important collection classes:
+Traversable
+  Iterable
+    Seq
+      IndexedSeq
+        Vector
+        ResizableArray
+        GenericArray
+      LinearSeq
+        MutableList
+        List
+        Stream
+      Buffer
+        ListBuffer
+        ArrayBuffer
+    Set
+      SortedSet
+        TreeSet
+      HashSet (mutable)
+      LinkedHashSet
+      HashSet (immutable)
+      BitSet
+      EmptySet, Set1, Set2, Set3, Set4
+    Map
+      SortedMap
+        TreeMap
+      HashMap (mutable)
+      LinkedHashMap (mutable)
+      HashMap (immutable)
+      EmptyMap, Map1, Map2, Map3, Map4
+```
+
+> - there is a quite a bit commonality shared by all these classes, e.g. every kind of collection can be created by the same uniform syntax:
+
+```scala
+Traversable(1, 2, 3)
+Iterable("x", "y", "z")
+Map("x" -> 24, "y" -> 25)
+Set(Color.Red, Color.Green, Color.Blue)
+SortedSet("hello", "world")
+Buffer(x, y, z)
+IndexedSeq(1.0, 2.0)
+LinearSeq(a, b, c)
+```
+
+* 537 - **Trait `Traversable`**
+
+> - on top of the collection hierarchy
+> - its only _abstract_ operation is `foreach`:
+
+```scala
+def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
+```
+
+> - collection classes that mix in `Traversable`, just need to implement the `foreach` method, all other methods can be inherited from `Traversable`
+> - `foreach` is supposed to traverse all elements and apply a given operation, `f`, to each element
+> - `f` is invoked only because of its side effects (result of `f` is discarded)
+> - the following table lists all concrete methods of `Traversable`:
+
+**Abstract method**  
+> - `xs foreach f`    Executes function f for every element of xs
+
+**Addition**
+> - `xs ++ ys`        A collection consisting of the elements of both xs and ys
+
+**Maps**
+> - `xs map f`        The collection obtained from applying f to every element of xs
+> - `xs flatMap f`    The collection obtained by applying f to every element of xs and
+>                     concatenating the results
+> - `xs collect f`    The collection obtained by applying partial function f to every
+>                     element in xs for which it is defined and collecting the results
+
+**Conversions**
+> - `xs.toArray`      Converts the collection to an array
+> - `xs.toList`       Converts the collection to a list
+> - `xs.toIterable`   Converts the collection to an iterable
+> - `xs.toSeq`        Converts the collection to a sequence
+> - `xs.toIndexedSeq` Converts the collection to an indexed sequence
+> - `xs.toStream`     Converts the collection to a stream (a lazily computed sequence)
+> - `xs.toSet`        Converts the collection to a set
+> - `xs.toMap`        Converts the collection of key/value pairs to a map
+
+**Copying**
+> - `xs copyToBuffer buf`         Copies all elements to buffer 'buf'
+> - `xs copyToArray(arr, s, len)` Copies at most 'len' elements of 'arr', starting at 's'
+
+**Element retrieval**
+> - `xs.head`         Retrieves the first element of the collection
+> - `xs.headOption`   The first element of xs in an option value, or None if xs is empty
+> - `xs.last`         The last element of the collection (or some elem. if no order)
+> - `xs.lastOption`   The last element of xs in an option value, or None if xs is empty
+> - `xs find p`       An option containing the first element in xs that satisfies p
+
+**Subcollections**
