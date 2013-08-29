@@ -1,9 +1,8 @@
 Java developer's Scala cheat sheet
 -----
-Shamelessly ripped of from [Programming in Scala, second edition](http://www.artima.com/shop/programming_in_scala_2ed).
-(I did ask for permission).  
+Shamelessly ripped of from [Programming in Scala, second edition](http://www.artima.com/shop/programming_in_scala_2ed) (I did ask for permission).  
 Basically, while I'm going through the book, I'm taking notes here, so I can later use it as a quick reference.
-If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean).  
+If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean :)  
 
 ### Scala type hierarchy
 ![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
@@ -1489,7 +1488,7 @@ words sortWith (_.length > _.length)
 // List(quick, brown, the, fox)
 ```
 
-**369 - Methods of the List object**
+**369 - Methods of the `List` object**
 
 > - all the methods above are implemented in class `List`, whereas the following ones are defined in globally accessible, `List` class's companion object `scala.List`
 
