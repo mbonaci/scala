@@ -57,7 +57,7 @@ implicit def intToRational(x: Int) = new Rational(x)
 **163 - Assignment** always results with the **unit value**, `()`  
 **164 -** In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value  
 **164 -** The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`  
-**166 - Filter**: `for (file <- files if file.getName.endsWith(".scala"))`
+**166 - Filter:** `for (file <- files if file.getName.endsWith(".scala"))`
 
 ```scala
 // multiple filters example:
@@ -82,7 +82,7 @@ def grep(pattern: String) =
   } println(file + ": " + trimmed)
 ```
 
-**168 - `yield`** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body*  
+**168 - `yield`** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for clauses yield body`  
 **174 - `match case`**
 
 > - unlike Java's `select case`, there is no fall through, `break` is implicit and `case` expression can contain any type of value
@@ -97,15 +97,15 @@ val target = firstArg match {  // firstArg is a previously initialized val
 }
 ```
 
-**175 -** In Scala, there's no `break` nor `continue` statements  
+**175 -** Scala doesn't have `break`, nor does it have `continue` statement  
 **180 -** Unlike Java, Scala supports *inner scope variable shadowing*
 
 ### Functions and Closures
 **186 - Local functions** are functions inside other functions. They are visible only in their enclosing block  
 **188 - Function literal** example: `(x: Int) => x + 1`  
 **188 -** Every function value is an instance of some class that extends one of `FunctionN` traits that has an `apply` method used to invoke the function (`Function0` for functions with no params, `Function1` for functions with 1 param, ...)  
-**189 - foreach** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it to all elements  
-**190 - filter** method takes a function that maps each element to true or false, e.g. `someNums.filter((x: Int) => x > 0)`  
+**189 - `foreach`** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it to all elements  
+**190 - `filter`** method takes a function that maps each element to true or false, e.g. `someNums.filter((x: Int) => x > 0)`  
 **190 - Target typing** - Scala infers type by examining the way the expression is used, e.g. `filter` example can be written: `someNums.filter(x => x > 0)`  
 **191 - Placeholder** allows you to write: `someNums.filter(_ > 0)`
 
@@ -128,14 +128,14 @@ someNums.foreach(println)
 ```
 
 ```scala
-scala> def sum(a: Int, b: Int, c: Int) = a + b + c
+def sum(a: Int, b: Int, c: Int) = a + b + c
 
-scala> val a = sum _  // '_' is a placeholder for the entire param list
+val a = sum _  // '_' is a placeholder for the entire param list
 a: (Int, Int, Int) => Int = <function3>
 
 // they are called partially applied functions because you can do this:
-scala> val b = sum(1, _: Int, 3)
-scala> b(2)  // Int = 6
+val b = sum(1, _: Int, 3)
+b(2)  // Int = 6
 ```
 
 **197 - Closures** see the changes to **free variables** and _vice versa_, changes to *free variables* made by *closure* are seen outside of *closure*  
@@ -227,10 +227,10 @@ def filesRegex(query: String) =
 **213 - Currying**: A curried function is applied to multiple argument lists, instead of just one:
 
 ```scala
-scala> def curriedSum(x: Int)(y: Int) = x + y
+def curriedSum(x: Int)(y: Int) = x + y
 // curriedSum: (x: Int)(y: Int)Int
 
-scala> curriedSum(1)(2)
+curriedSum(1)(2)
 // Int = 3
 
 /*
@@ -240,13 +240,13 @@ scala> curriedSum(1)(2)
 */
 
 // This is what the first function actually does:
-scala> def first(x: Int) = (y: Int) => x + y  // returns function value
+def first(x: Int) = (y: Int) => x + y  // returns function value
 // (x: Int)Int => Int
 
-scala> val second = first(1)  // applying 1 to the first fn yields the second fn
+val second = first(1)  // applying 1 to the first fn yields the second fn
 // (x: Int)Int => Int
 
-scala> second(2)  // applying 2 to the second fn yields the final result
+second(2)  // applying 2 to the second fn yields the final result
 // Int = 3
 
 /*
@@ -364,8 +364,8 @@ class LineElement(s: String) extends ArrayElement(Array(s)) {
 ```
 
 **238 -** If you want to disallow for a method to be overridden or for a class to be subclassed, use the keyword **final** (e.g. `final class ...` or `final def ...`)  
-**240 - ++** operator is used to concatenate two arrays  
-**241 - zip** is used to pair two arrays (make `Tuple2`s), dropping the elements from the longer array that don't have corresponding elements in the shorter array, so:
+**240 - `++`** operator is used to concatenate two arrays  
+**241 - `zip`** is used to pair two arrays (make `Tuple2`s), dropping the elements from the longer array that don't have corresponding elements in the shorter array, so:
 
 ```scala
 Array(1, 2, 3) zip Array("a", "b") // will evaluate to
@@ -380,7 +380,7 @@ def beside(that: Element): Element =
   )
 ```
 
-**242 - mkString** is defined for all sequences (including arrays). `toString` is called on each element of the sequence. Separator is inserted between every two elems:
+**242 - `mkString`** is defined for all sequences (including arrays). `toString` is called on each element of the sequence. Separator is inserted between every two elems:
 
 ```scala
 override def toString = contents mkString "\n"
@@ -390,10 +390,10 @@ override def toString = contents mkString "\n"
 **250 -** In Scala hierarchy, **scala.Null** and **scala.Nothing** are the subclasses of every class (thus the name **bottom classes**), just as **Any** is the superclass of every other class  
 **250 -** `Any` contains methods:
 
-> `==`..........`final`, same as `equals` (except for Java boxed numeric types)  
-> `!=`..........`final`, same as `!equals`  
-> `equals`....used by the subclasses to override equality  
-> `##`...........same as `hashCode`  
+> `==`...............`final`, same as `equals` (except for Java boxed numeric types)  
+> `!=`...............`final`, same as `!equals`  
+> `equals`.........used by the subclasses to override equality  
+> `##`................same as `hashCode`  
 > `hashCode`  
 > `toString`  
 
@@ -463,11 +463,11 @@ class Frog extends Animal with Philosophical with HasLegs {
 > - traits let you modify the methods of a class in a way that allows you to stack those modifications together, by mixing in multiple traits
 > - when a trait extends a superclass, it means that the trait can only be mixed in in classes that also extend the same superclass
 > - traits can have `abstract override` methods because of dynamically bound `super` (the call works if the trait is mixed in after another trait or class has already given a concrete definition to that method)
-> - when you instantiate a class with `new` Scala takes the class and all of its inherited classes and traits and puts them in a single, *linear* order, thus this behavior is called **linearization**. Then, when you call `super` inside one of those classes, the invoked method is the first implementation up the chain (right in the image)
+> - when you instantiate a class with `new` Scala takes the class and all of its inherited classes and traits and puts them in a single, *linear* order, thus the name **linearization**. Then, when you call `super` inside one of those classes, the invoked method is the first implementation up the chain (right in the image bellow)
 > - the **order of mixins** is significant. Traits further to the right take effect first
 
 ```scala
-# // mixing in a trait when instantiating with 'new' (no need to create a new class)
+// mixing in a trait when instantiating with 'new' (no need to create a new class)
 val queue = new BasicIntQueue with Doubling with Filtering  // filtering is applied first
 // queue: BasicIntQueue with Doubling with Filtering = $anon$1@5fa12d
 
@@ -658,7 +658,7 @@ intercept[IllegalArgumentException] {  // returns caught exception
 >   - although ScalaTest includes Runner application, you can also run Suite directly from the Scala interpreter by invoking `execute` on it (trait Suite's `execute` method uses reflection to discover its test methods and invoke them):
 
 ```scala
-scala> (new ElementSuite).execute()
+(new ElementSuite).execute()
 Test Starting - ElementSuite.testUniformElement
 Test Succeeded - ElementSuite.testUniformElement
 ```
@@ -698,16 +698,16 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 >   - `copy` method is added to the class (used to create modified copies). To use it, you specify the changes by using *named parameters* and for any param you don't specify, the original value is used:
 
 ```scala
-scala> abstract class Expr
-scala> case class Var(name: String) extends Expr
-scala> case class Number(num: Double) extends Expr
-scala> case class UnOp(operator: String, arg: Expr) extends Expr
-scala> case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
-scala> val op = BinOp("+", Number(1), Var("x"))
+abstract class Expr
+case class Var(name: String) extends Expr
+case class Number(num: Double) extends Expr
+case class UnOp(operator: String, arg: Expr) extends Expr
+case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
+val op = BinOp("+", Number(1), Var("x"))
 op: BinOp = BinOp(+,Number(1.0),Var(x))
 
 // copy method example
-scala> op.copy(operator = "-")
+op.copy(operator = "-")
 // BinOp = BinOp(-,Number(1.0),Var(x))
 ```
 
@@ -2422,12 +2422,12 @@ trait LazyRationalTrait {
 }
 
 // using LazyRationalTrait from the interpreter:
-scala> val x = 2
-scala> new LazyRationalTrait {
-     | val numerArg = 1 * x
-     | val denomArg = 2 * x
-     | }
-res2: LazyRationalTrait = 1/2
+val x = 2
+new LazyRationalTrait {
+  val numerArg = 1 * x
+  val denomArg = 2 * x
+}
+// res2: LazyRationalTrait = 1/2
 
 // 1. - fresh instance of LazyRationalTrait gets created and the initialization code
 //      of LazyRationalTrait is run (fields are not initialized)
