@@ -14,8 +14,8 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 > - **Pure methods** are methods that don't have any side effects and don't depend on mutable state (226) 
 >   - if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 
-**127 - Postfix operator:** A method that takes no arguments can be called like this: `"some String" toLowerCase`
-**127 - Integral types:** `Int`, `Long`, `Byte`, `Short`, `Char`
+**127 - Postfix operator:** A method that takes no arguments can be called like this: `"some String" toLowerCase`  
+**127 - Integral types:** `Int`, `Long`, `Byte`, `Short`, `Char`  
 **135 - Operator precedence:**
 
 >  `(all other special characters)`  
@@ -30,7 +30,7 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 >  `(all letters)`  
 >  `(all assignment operators)`  
 
-**136 - The operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`
+**136 - Operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`
 **136 - Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`
 **137 -** `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
 
