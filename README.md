@@ -3497,3 +3497,25 @@ object ReversedTranslationDemo {
 }
 ```
 
+* 529 - **Generalizing `for`**
+
+> - it is possible to apply `for` notation to every type that defines `map`, `flatMap`, `withFilter` or `foreach`
+> - if a type defines:
+>   - just `map`, it allows `for` expressions with a single generator
+>   - `map` and `flatMap` - more than one generator
+>   - `foreach` - it allows `for loops` (with single and multiple generators)
+>   - `withFilter` - it allows filter expressions starting with an `if` inside `for`
+> - the translation happens before type checking, which allows maximal flexibility, because it is only required that the result of expansion type checks
+> - Scala defines no typing rules for `for` expressions and doesn't require that methods `map`, `flatMap`, `withFilter` and `foreach` to have any particular type signatures
+> - nevertheless, there is a typical setup that captures most common intention of the higher order methods to which `for` expressions translate:
+
+```scala
+// a class that would be used for a collection 'C' of elements 'A':
+abstract class C[A] {
+  def map[B](f: A => B): C[B]
+  def flatMap[B](f: A => C[B]): C[B]
+  def withFilter(p: A => Boolean): C[A]
+  def foreach(b: A => Unit): Unit
+}
+```
+
