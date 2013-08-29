@@ -411,8 +411,8 @@ override def toString = contents mkString "\n"
 >  
 > All **reference classes** inherit from a special marker trait called `ScalaObject`
 
-**254 -** Scala stores integers the same way as Java, as 32-bit words, but it uses the *backup* class `java.lang.Integer` to be used whenever an int has to be seen as object
-**256 -** For **reference equality**, `AnyRef` class has `eq` method, which cannot be overridden (behaves like `==` in Java for reference types). Opposite of `eq` is `ne`
+**254 -** Scala stores integers the same way as Java, as 32-bit words, but it uses the *backup* class `java.lang.Integer` to be used whenever an int has to be seen as object  
+**256 -** For **reference equality**, `AnyRef` class has `eq` method, which cannot be overridden (behaves like `==` in Java for reference types). Opposite of `eq` is `ne`  
 **256 - `Null`** is a subclass of every reference class (i.e. class that inherits from `AnyRef`). It's not compatible with *value types* (`val i: Int = Null // type mismatch`)  
 **257 - `Nothing`** is a subtype of every other type (of *Null* also). There are no values of this type, it's used primarily to signal abnormal termination:
 
@@ -967,10 +967,12 @@ def describe(e: Expr): String = e match {
 // 
 // 
 
-// to get rid of the warning, in situations where you're sure that no such pattern will ever appear, throw in the last catch-all case:
+// to get rid of the warning, in situations where you're sure that no such pattern
+// will ever appear, throw in the last catch-all case:
 case _ => throw new RuntimeException  // should never happen
 
-// the same problem can be solved with more elegant solution, without any dead code:
+// the same problem can be solved with more elegant solution, without any dead code
+// using 'unchecked' annotation:
 def describe(e: Expr): String = (e: @unchecked) match {
   case Number(_) ...
 }
@@ -1107,8 +1109,7 @@ for(Some(fruit) <- results) println(fruit)
 > - list type is _covariant_ (if `S` is subtype of `T`, then `List[S]` is a subtype of `List[T]`)
 >   - `List[Nothing]` is a subtype of any other `List[T]`
 >   - that is why it's possible to write `val xs: List[String] = List()`
-> - they have two fundamental building blocks, `Nil` and `::` (cons), where `Nil` represents an empty list
-
+> - they have two fundamental building blocks, `Nil` and `::` (cons), where `Nil` represents an empty list  
 ```val nums = 1 :: 2 :: 3 :: 4 :: Nil```
 
 **346 - Basic operations on lists**
