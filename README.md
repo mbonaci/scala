@@ -3519,3 +3519,13 @@ abstract class C[A] {
 }
 ```
 
+### The Scala Collections API
+* 534 - **Mutable an immutable collections**
+
+> - there are 4 packages with collection types:
+>   - **scala.collection** - may be changed by other parties in run time
+>   - **scala.collection.immutable** - collection changes in place
+>   - **scala.collection.mutable** - guaranteed to be immutable for everyone
+>   - **scala.collection.generic** - provide building blocks for implementing collections
+> - typically, collection classes defer the implementation of some of their operations to classes in `generic`
+
