@@ -1708,37 +1708,22 @@ set  // Set(it, run, that's, forest)
 /********************************************************************************/
 
 val nums = Set(1, 2, 3)          // crates an immutable set
-
 nums.toString                    // returns Set(1, 2, 3)
-
 nums + 5                         // adds an element (returns Set(1, 2, 3, 5))
-
 nums - 3                         // removes the element (returns Set(1, 2))
-
 nums ++ List(5, 6)               // adds multiple elements (returns Set(1, 2, 3, 5, 6))
-
 nums -- List(1, 2)               // removes multiple elements
-
 nums & Set(1, 3, 5, 7)           // returns the intersection of two sets (Set(1, 3))
-
 nums.size                        // returns the size of the set
-
 nums.contains(3)                 // checks for inclusion
 
 import scala.collection.mutable  // makes the mutable collections easy to access
-
 val words = mutable.Set.empty[String]  // creates an empty, mutable set (HashSet)
-
 words.toString                   // returns Set()
-
 words += "the"                   // adds an element (Set(the))
-
 words -= "the"                   // removes an element (Set())
-
 words ++= List("do", "re", "mi") // adds multiple elements
-
 words --= List("do", "re")       // removes multiple elements
-
 words.clear                      // removes all elements
 ```
 
@@ -1775,45 +1760,26 @@ def countWords(text: String): mutable.Map[String, Int] = {
 /********************************************************************************/
 
 val m = Map("i" -> 1, "ii" -> 2)  // crates an immutable map
-
 m.toString                        // returns Map(i->1, ii->2)
-
 m + ("vi" -> 6)                   // adds an entry (returns Map(i->1, ii->2, vi->6)
-
 m - "ii"                          // removes the entry (returns Map(i->1, vi->6))
-
 m ++ List("iii" -> 5, "v" -> 5)   // adds multiple entries
-
 m -- List("i", "ii")              // removes multiple entries
-
 m.size                            // returns the size of the map
-
 m.contains("ii")                  // checks for inclusion
-
 m("ii")                           // returns 2
-
 m.keys                            // returns Iterable over keys ("i" and "ii")
-
 m.keySet                          // returns keys as a set (Set(i, ii))
-
 m.values                          // returns Iterable over values (1, 2)
-
 m.isEmpty                         // indicates whether the map is empty
 
 import scala.collection.mutable   // makes the mutable collections easy to access
-
 val w = mutable.Map.empty[String, Int]  // creates an empty, mutable map (HashMap)
-
 w.toString                        // returns Map()
-
 w += ("one" -> 1)                 // adds an entry (Map(one->1))
-
 w -= "one"                        // removes an entry (Map())
-
 w ++= List("st" -> 1, "nd" -> 2, "rd" - 3)  // adds multiple entries
-
 w --= List("st", "nd")            // removes multiple entries
-
 w.clear                           // removes all entries
 ```
 
@@ -3260,8 +3226,8 @@ def inCheck(q1: (Int, Int), q2: (Int, Int)) =
   (q1._1 - q2._1).abs == (q1._2 - q2._2).abs  // in diagonal
 
   
-def printTables(tbls: List[List[(Int, Int)]]) = {
-  def printTable(row: List[(Int, Int)]) = {
+def printSolutions(tbls: List[List[(Int, Int)]]) = {
+  def printSolution(row: List[(Int, Int)]) = {
     val len = row.head._1
     println("_" * (len * 2))
     val tbl = 
@@ -3273,7 +3239,7 @@ def printTables(tbls: List[List[(Int, Int)]]) = {
         nl = if (col == len) "\n" else ""
       } print(pipe + mark + nl)
   }
-  for (tbl <- tbls) printTable(tbl)
+  for (tbl <- tbls) printSolution(tbl)
 }
 ```
 
@@ -3597,7 +3563,8 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 **Addition**
 > - `xs ++ ys`        A collection consisting of the elements of both xs and ys
 
-**Maps**
+ - **Maps**
+ 
 > - `xs map f`        The collection obtained from applying f to every element of xs
 > - `xs flatMap f`    The collection obtained by applying f to every element of xs and
 >                     concatenating the results
