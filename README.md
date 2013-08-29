@@ -9,14 +9,14 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 ![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
 
 ### Basic Types and Operations
-* 127 - The convention is to include empty parentheses when invoking a method only if that method has side effects
+127 - The convention is to include empty parentheses when invoking a method only if that method has side effects
 
 > - **Pure methods** are methods that don't have any side effects and don't depend on mutable state (226) 
 >   - if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 
-* 127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
-* 127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
-* 135 - Operator precedence:
+127 - **Postfix operator**: A method that takes no arguments can be called like this: `"some String" toLowerCase`
+127 - Integral types: `Int`, `Long`, `Byte`, `Short`, `Char`
+135 - Operator precedence:
 
 >  `(all other special characters)`  
 >  `*` `/` `%`  
@@ -30,23 +30,23 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 >  `(all letters)`  
 >  `(all assignment operators)`  
 
-* 136 - The **operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`
-* 136 - **Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`
-* 137 - `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
+136 - The **operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`
+136 - **Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`
+137 - `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
 
 ### Functional Objects
-* 141 - **Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*. When declaring a class you can drop empty `{}`
-* 143 - A **precondition** is a constraint on values passed into a method or constructor (E.g. `require(d != 0)` in the class body will throw `IllegalArgumentException: requirement failed` when `0` is passed as `d`)
-* 144 - If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them
-* 146 - **Auxiliary constructors** - constructors other than the primary constructor
+141 - **Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*. When declaring a class you can drop empty `{}`
+143 - A **precondition** is a constraint on values passed into a method or constructor (E.g. `require(d != 0)` in the class body will throw `IllegalArgumentException: requirement failed` when `0` is passed as `d`)
+144 - If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them
+146 - **Auxiliary constructors** - constructors other than the primary constructor
 
 > - every *auxiliary constructor* must invoke another constructor **of the same class** (like Java, only Java can also call superclass's constructor instead) as its first action. That other constructor must textually come before the calling constructor
 
-* 152 - The convention is to use camel case for constants, such as `XOffset`
-* 153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation
-* 153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier, e.g. `unary_+` (used to support *properties*)
-* 153 - A **literal identifier** is an arbitrary string enclosed in back ticks. Used to tell Scala to treat a keyword as an ordinary identifier, e.g., writing `Thread.'yield'()` treats `yield` as an identifier rather than a keyword.
-* 156 - **Implicit conversion** definition:
+152 - The convention is to use camel case for constants, such as `XOffset`
+153 - The Scala compiler will internally “mangle” operator identifiers to turn them into legal Java identifiers with embedded `$` characters. For instance, the identifier `:->` would be represented internally as `$colon$minus$greater`. If you ever wanted to access this identifier from Java code, you'd need to use this internal representation
+153 - A **mixed identifier** consists of an alphanumeric identifier, which is followed by an underscore and an operator identifier, e.g. `unary_+` (used to support _properties_)
+153 - A **literal identifier** is an arbitrary string enclosed in back ticks. Used to tell Scala to treat a keyword as an ordinary identifier, e.g., writing `Thread.'yield'()` treats `yield` as an identifier rather than a keyword.
+156 - **Implicit conversion** definition:
 
 ```scala
 implicit def intToRational(x: Int) = new Rational(x)
@@ -54,10 +54,10 @@ implicit def intToRational(x: Int) = new Rational(x)
 > - for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class `Rational`, it won't be in scope
 
 ### Built-in Control Structures
-* 163 - **Assignment** always results with the **unit value**, `()`
-* 164 - In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value
-* 164 - The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`
-* 166 - **filter**: `for (file <- files if file.getName.endsWith(".scala"))`
+163 - **Assignment** always results with the **unit value**, `()`
+164 - In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value
+164 - The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`
+166 - **filter**: `for (file <- files if file.getName.endsWith(".scala"))`
 
 ```scala
 // multiple filters example:
@@ -68,7 +68,7 @@ for (
 ) println(file)
 ```
 
-* 167 - **Nested loops** and **mid-stream variable binding** example with _generators_ and _filters_
+167 - **Nested loops** and **mid-stream variable binding** example with _generators_ and _filters_
 
 ```scala
 // curly braces may be used instead of parentheses
@@ -82,8 +82,8 @@ def grep(pattern: String) =
   } println(file + ": " + trimmed)
 ```
 
-* 168 - **yield** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body* 
-* 174 - **match case**
+168 - **yield** keyword makes `for` clauses produce a value (of the same type as the expression iterated over). Syntax: `for` *clauses* `yield` *body* 
+174 - **match case**
 
 > - unlike Java's `select case`, there is no fall through, `break` is implicit and `case` expression can contain any type of value
 > - `_` is a placeholder for *completely unknown value*
@@ -97,17 +97,17 @@ val target = firstArg match {  // firstArg is a previously initialized val
 }
 ```
 
-* 175 - In Scala, there's no `break` nor `continue` statements
-* 180 - Unlike Java, Scala supports *inner scope variable shadowing*
+175 - In Scala, there's no `break` nor `continue` statements
+180 - Unlike Java, Scala supports *inner scope variable shadowing*
 
 ### Functions and Closures
-* 186 - **Local functions** are functions inside other functions. They are visible only in their enclosing block
-* 188 - **Function literal** example: `(x: Int) => x + 1`
-* 188 - Every function value is an instance of some class that extends one of `FunctionN` traits that has an `apply` method used to invoke the function (`Function0` for functions with no params, `Function1` for functions with 1 param, ...)
-* 189 - **foreach** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it to all elements
-* 190 - **filter** method takes a function that maps each element to true or false, e.g. `someNums.filter((x: Int) => x > 0)`
-* 190 - **Target typing** - Scala infers type by examining the way the expression is used, e.g. `filter` example can be written: `someNums.filter(x => x > 0)`
-* 191 - **Placeholder** allows you to write: `someNums.filter(_ > 0)`
+186 - **Local functions** are functions inside other functions. They are visible only in their enclosing block
+188 - **Function literal** example: `(x: Int) => x + 1`
+188 - Every function value is an instance of some class that extends one of `FunctionN` traits that has an `apply` method used to invoke the function (`Function0` for functions with no params, `Function1` for functions with 1 param, ...)
+189 - **foreach** is a method of `Traversable` trait (supertrait of `List`, `Set`, `Array` and `Map`) which takes a function as an argument and applies it to all elements
+190 - **filter** method takes a function that maps each element to true or false, e.g. `someNums.filter((x: Int) => x > 0)`
+190 - **Target typing** - Scala infers type by examining the way the expression is used, e.g. `filter` example can be written: `someNums.filter(x => x > 0)`
+191 - **Placeholder** allows you to write: `someNums.filter(_ > 0)`
 
 > - only if each function parameter appears in function literal only once (one placeholder for each param, sequentially)
 > - sometimes the compiler might not have enough info to infer missing param types:
@@ -3564,7 +3564,7 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 > - `xs ++ ys`        A collection consisting of the elements of both xs and ys
 
  - **Maps**
- 
+
 > - `xs map f`        The collection obtained from applying f to every element of xs
 > - `xs flatMap f`    The collection obtained by applying f to every element of xs and
 >                     concatenating the results
