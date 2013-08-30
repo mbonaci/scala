@@ -11,7 +11,7 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 **127 -** The convention is to include empty parentheses when invoking a method only if that method has side effects
 
 > - **Pure methods** are methods that don't have any side effects and don't depend on mutable state (226) 
->   - if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
+> - if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses
 
 **127 - Postfix operator:** A method that takes no arguments can be called like this: `"some String" toLowerCase`  
 **127 - Integral types:** `Int`, `Long`, `Byte`, `Short`, `Char`  
@@ -3486,7 +3486,7 @@ abstract class C[A] {
 ```
 
 ### The Scala Collections API
-**534 - **Mutable an immutable collections**
+**534 - Mutable an immutable collections**
 
 > - there are 4 packages with collection types:
 >   - **scala.collection** - may be changed by other parties in run time
@@ -3495,7 +3495,7 @@ abstract class C[A] {
 >   - **scala.collection.generic** - provide building blocks for implementing collections
 > - typically, collection classes defer the implementation of some of their operations to classes in `generic`
 
-**535 - **Collections consistency**
+**535 - Collections consistency**
 
 ```scala
 // the most important collection classes:
@@ -3543,7 +3543,7 @@ IndexedSeq(1.0, 2.0)
 LinearSeq(a, b, c)
 ```
 
-**537 - **Trait `Traversable`**
+**537 - Trait `Traversable`**
 
 > - on top of the collection hierarchy
 > - its only _abstract_ operation is `foreach`:
@@ -3557,10 +3557,12 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 > - `f` is invoked only because of its side effects (result of `f` is discarded)
 > - the following table lists all concrete methods of `Traversable`:
 
-**Abstract method**  
+ - **Abstract method**
+
 > - `xs foreach f`    Executes function f for every element of xs
 
-**Addition**
+ - **Addition**
+
 > - `xs ++ ys`        A collection consisting of the elements of both xs and ys
 
  - **Maps**
@@ -3571,7 +3573,8 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 > - `xs collect f`    The collection obtained by applying partial function f to every
 >                     element in xs for which it is defined and collecting the results
 
-**Conversions**
+ - **Conversions**
+
 > - `xs.toArray`      Converts the collection to an array
 > - `xs.toList`       Converts the collection to a list
 > - `xs.toIterable`   Converts the collection to an iterable
@@ -3581,15 +3584,77 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 > - `xs.toSet`        Converts the collection to a set
 > - `xs.toMap`        Converts the collection of key/value pairs to a map
 
-**Copying**
+ - **Copying**
+
 > - `xs copyToBuffer buf`         Copies all elements to buffer 'buf'
 > - `xs copyToArray(arr, s, len)` Copies at most 'len' elements of 'arr', starting at 's'
 
-**Element retrieval**
+ - **Element retrieval**
+
 > - `xs.head`         Retrieves the first element of the collection
 > - `xs.headOption`   The first element of xs in an option value, or None if xs is empty
 > - `xs.last`         The last element of the collection (or some elem. if no order)
 > - `xs.lastOption`   The last element of xs in an option value, or None if xs is empty
 > - `xs find p`       An option containing the first element in xs that satisfies p
 
-**Subcollections**
+ - **Subcollections**
+
+> - `xs.tail`             Returns the rest of the collection (except xs.head)
+> - `xs.init`             The rest of the collection except xs.last
+> - `xs slice (from, to)` Collection of elements from 'from', up to and excluding 'to'
+> - `xs take n`           First n elements (or some elements if no order is defined)
+> - `xs drop n`           The rest of collection (except xs take n)
+> - `xs takeWhile p`      The longest prefix of elements that satisfy p
+> - `xs dropWhile p`      The collection without prefix that satisfies p
+> - `xs filter p`         The collection of all elements that satisfy p
+> - `xs withFilter p`     A non-strict filter
+> - `xs filterNot p`      The collection of all elements that do not satisfy p
+
+ - **Subdivisions**
+
+> - `xs splitAt n`    Splits xs returning pair of collections (xs take n, xs drop n)
+> - `xs span p`       Splits xs returning (xs takeWhile p, xs dropWhile p)
+> - `xs partition p`  Splits on (xs filter p, xs filterNot p)
+> - `xs groupBy f`    Partitions xs into a map of collections according to function f
+
+- **Element conditions**
+
+> - `xs forall p`     A boolean indicating whether all elements satisfy p
+> - `xs exists p`     A boolean indicating whether p holds for at least one element
+> - `xs count p`      The number of elements in xs that satisfy the predicate p
+
+- **Folds**
+
+> - `(z /: xs)(op)`        Applies operation op between successive elements, going
+>                          left to right, starting with z
+> - `(xs :\ z)(op)`        Applies operation op between successive elements, going
+>                          right to left, starting with z
+> - `xs.foldLeft(z)(op)`   Same as (z /: xs)(op)
+> - `xs.foldRight(z)(op)`  Same as (xs :\ z)(op)
+> - `xs reduceLeft op`     Applies binary operation op between successive elements of
+>                          non-empty collection xs, going left to right
+> - `xs reduceRight op`    Applies binary operation op between successive elements of
+>                          non-empty collection xs, going right to left
+
+- **Specific folds**
+
+> - `xs.sum`          The sum of all numeric element values of xs
+> - `xs.product`      The product of all numeric element values of xs
+> - `xs.min`          The minimum of the ordered element values of xs
+> - `xs.max`          The maximum of the ordered element values of xs
+
+- **Strings**
+
+> - `xs addString (b, start, sep, end)` Adds a string to StringBuilder b that allows
+>                                       all elems between sep enclosed in strings start
+>                                       and end (start, sep and end are all optional)
+> - `xs mkString (start, sep, end)`     Converts the collection to a string that shows
+>                                       all elems between sep enclosed in strings
+>                                       start and end (start, sep and end are optional)
+> - `xs.stringPrefix`                   The collection name returned from xs.toString
+
+- **Views**
+
+> - `xs.view`                  Produces a view over xs
+> - `xs view (from, to)`       Produces a view that represents elems in some index range
+
