@@ -3555,7 +3555,8 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 > - collection classes that mix in `Traversable`, just need to implement the `foreach` method, all other methods can be inherited from `Traversable`
 > - `foreach` is supposed to traverse all elements and apply a given operation, `f`, to each element
 > - `f` is invoked only because of its side effects (result of `f` is discarded)
-> - the following table lists all concrete methods of `Traversable`:
+
+_The following table lists all concrete methods of `Traversable`:_
 
  - **Abstract method**
 
@@ -3657,4 +3658,60 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 
 > - `xs.view`                  Produces a view over xs
 > - `xs view (from, to)`       Produces a view that represents elems in some index range
+
+**542 - Trait `Iterable`**
+
+> - all methods are defined in terms of an abstract method `iterator`, which yields the collection's elements one by one
+> - the `foreach` method from trait `Traversable` is implemented in `Iterable`:
+
+```scala
+// the actual implementation
+def foreach[U](f: Elem => U): Unit = {
+  val it = iterator
+  while (it.hasNext) f(it.next())
+}
+```
+
+> - many subclasses of `Iterable` override this standard implementation, because they can provide more efficient implementation (performance matters, since it is the basis for all operations in `Traversable`)
+> - two more methods exist in `Iterable` that return iterators **`grouped`** and **`sliding`** (they return subsequences of elements, whose maximal size is given as an argument)
+> - `grouped` chunks its elements into increments, whereas `sliding` yields a sliding window over the elements:
+
+```scala
+val xs = List(1, 2, 3, 4, 5)
+val git = xs grouped 3  // returns non-empty Iterator[List[Int]]
+git.next()  // List(1, 2, 3)
+git.next()  // List(4, 5)
+
+val sit = xs sliding 3  // returns non-empty Iterator[List[Int]]
+sit.next()  // List(1, 2, 3)
+sit.next()  // List(2, 3, 4)
+sit.next()  // List(3, 4, 5)
+```
+
+_The summary of operations in trait `Iterable`:_  
+
+ - **Abstract method**
+
+> - `xs.iterator`     Iterator that yields every element in the same order as `foreach`
+
+ - **Other iterators**
+
+> - `xs grouped size` Iterator that yields fixed-size chunks of the collection
+> - `xs sliding size` Iterator that yields a sliding fixed-size window of elements
+
+ - **Subcollections**
+
+> - `xs takeRight n`  Collection consisting of last n elems of xs (or arbitrary)
+> - `xs dropRight n`  The rest of the collection except `xs takeRight n`
+
+ - **Zippers**
+
+> - `xs zip ys`            An iterable of pairs of corresponding elems from xs and ys
+> - `xs zipAll (ys, x, y)` An iterable of pairs, where shorter sequence is extended to
+>                          match the longer one by appending elements x or y
+> - `xs.zipWithIndex`      An iterable of pairs from xs with their indices
+
+ - **Comparison**
+
+> - `xs sameElement ys`    Tests whether xs and ys have same elements in the same order
 
