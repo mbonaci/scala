@@ -1,50 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Java developer's Scala cheatsheet by mbonaci</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <title>Java developer's Scala cheatsheet by mbonaci</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/mbonaci/scala">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/mbonaci/scala/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/mbonaci/scala/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+    <header>
+      <div class="inner">
+        <h1>Java developer's Scala cheatsheet</h1>
+        <h2>Scala reference</h2>
+        <a href="https://github.com/mbonaci/scala" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
 
-    <div class="wrapper">
-
-      <section>
-        <div id="title">
-          <h1>Java developer's Scala cheatsheet</h1>
-          <p>Scala reference</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/mbonaci">mbonaci</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
-
-        <h2>
-<a name="java-developers-scala-cheat-sheet" class="anchor" href="#java-developers-scala-cheat-sheet"><span class="octicon octicon-link"></span></a>Java developer's Scala cheat sheet</h2>
-
-<p>Shamelessly ripped of from <a href="http://www.artima.com/shop/programming_in_scala_2ed">Programming in Scala, second edition</a>.
-(I did ask for permission).<br>
-Basically, while I'm going through the book, I'm taking notes here, so I can later use it as a quick reference.
-If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean).  </p>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <p>Shamelessly ripped of from <a href="http://www.artima.com/shop/programming_in_scala_2ed">Programming in Scala, second edition</a>. I did ask for permission, though.<br>
+Basically, while I'm going through the book, I'm taking notes and pushing them here, so I can later use this page as a Scala quick reference.
+If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean :)  </p>
 
 <h3>
 <a name="scala-type-hierarchy" class="anchor" href="#scala-type-hierarchy"><span class="octicon octicon-link"></span></a>Scala type hierarchy</h3>
@@ -59,12 +45,8 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 <blockquote>
 <ul>
 <li>
-<strong>Pure methods</strong> are methods that don't have any side effects and don't depend on mutable state (226) 
-
-<ul>
+<strong>Pure methods</strong> are methods that don't have any side effects and don't depend on mutable state (226) </li>
 <li>if the function you're calling performs an operation, use the parentheses, but if it merely provides access to a property, leave out the parentheses</li>
-</ul>
-</li>
 </ul>
 </blockquote>
 
@@ -1895,7 +1877,7 @@ field to override a parameterless method, but it forbids defining a field and a 
 <span class="c1">// List(quick, brown, the, fox)</span>
 </pre></div>
 
-<p><strong>369 - Methods of the List object</strong></p>
+<p><strong>369 - Methods of the <code>List</code> object</strong></p>
 
 <blockquote>
 <ul>
@@ -4436,7 +4418,7 @@ relationship of the two result types, shown at the right of the image, is in the
 <h3>
 <a name="the-scala-collections-api" class="anchor" href="#the-scala-collections-api"><span class="octicon octicon-link"></span></a>The Scala Collections API</h3>
 
-<p><strong>534 - **Mutable an immutable collections</strong></p>
+<p><strong>534 - Mutable an immutable collections</strong></p>
 
 <blockquote>
 <ul>
@@ -4458,7 +4440,7 @@ relationship of the two result types, shown at the right of the image, is in the
 </ul>
 </blockquote>
 
-<p><strong>535 - **Collections consistency</strong></p>
+<p><strong>535 - Collections consistency</strong></p>
 
 <div class="highlight"><pre><span class="c1">// the most important collection classes:</span>
 <span class="nc">Traversable</span>
@@ -4508,7 +4490,7 @@ relationship of the two result types, shown at the right of the image, is in the
 <span class="nc">LinearSeq</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span>
 </pre></div>
 
-<p><strong>537 - **Trait <code>Traversable</code></strong></p>
+<p><strong>537 - Trait <code>Traversable</code></strong></p>
 
 <blockquote>
 <ul>
@@ -4532,18 +4514,18 @@ relationship of the two result types, shown at the right of the image, is in the
 </ul>
 </blockquote>
 
-<p><strong>Abstract method</strong>  </p>
-
-<blockquote>
+<ul>
+<li><strong>Abstract method</strong></li>
+</ul><blockquote>
 <ul>
 <li>
 <code>xs foreach f</code>    Executes function f for every element of xs</li>
 </ul>
 </blockquote>
 
-<p><strong>Addition</strong></p>
-
-<blockquote>
+<ul>
+<li><strong>Addition</strong></li>
+</ul><blockquote>
 <ul>
 <li>
 <code>xs ++ ys</code>        A collection consisting of the elements of both xs and ys</li>
@@ -4565,9 +4547,9 @@ relationship of the two result types, shown at the right of the image, is in the
 </ul>
 </blockquote>
 
-<p><strong>Conversions</strong></p>
-
-<blockquote>
+<ul>
+<li><strong>Conversions</strong></li>
+</ul><blockquote>
 <ul>
 <li>
 <code>xs.toArray</code>      Converts the collection to an array</li>
@@ -4588,9 +4570,9 @@ relationship of the two result types, shown at the right of the image, is in the
 </ul>
 </blockquote>
 
-<p><strong>Copying</strong></p>
-
-<blockquote>
+<ul>
+<li><strong>Copying</strong></li>
+</ul><blockquote>
 <ul>
 <li>
 <code>xs copyToBuffer buf</code>         Copies all elements to buffer 'buf'</li>
@@ -4599,9 +4581,9 @@ relationship of the two result types, shown at the right of the image, is in the
 </ul>
 </blockquote>
 
-<p><strong>Element retrieval</strong></p>
-
-<blockquote>
+<ul>
+<li><strong>Element retrieval</strong></li>
+</ul><blockquote>
 <ul>
 <li>
 <code>xs.head</code>         Retrieves the first element of the collection</li>
@@ -4616,18 +4598,152 @@ relationship of the two result types, shown at the right of the image, is in the
 </ul>
 </blockquote>
 
-<p><strong>Subcollections</strong></p>
-      </section>
+<ul>
+<li><strong>Subcollections</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>xs.tail</code>             Returns the rest of the collection (except xs.head)</li>
+<li>
+<code>xs.init</code>             The rest of the collection except xs.last</li>
+<li>
+<code>xs slice (from, to)</code> Collection of elements from 'from', up to and excluding 'to'</li>
+<li>
+<code>xs take n</code>           First n elements (or some elements if no order is defined)</li>
+<li>
+<code>xs drop n</code>           The rest of collection (except xs take n)</li>
+<li>
+<code>xs takeWhile p</code>      The longest prefix of elements that satisfy p</li>
+<li>
+<code>xs dropWhile p</code>      The collection without prefix that satisfies p</li>
+<li>
+<code>xs filter p</code>         The collection of all elements that satisfy p</li>
+<li>
+<code>xs withFilter p</code>     A non-strict filter</li>
+<li>
+<code>xs filterNot p</code>      The collection of all elements that do not satisfy p</li>
+</ul>
+</blockquote>
 
+<ul>
+<li><strong>Subdivisions</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>xs splitAt n</code>    Splits xs returning pair of collections (xs take n, xs drop n)</li>
+<li>
+<code>xs span p</code>       Splits xs returning (xs takeWhile p, xs dropWhile p)</li>
+<li>
+<code>xs partition p</code>  Splits on (xs filter p, xs filterNot p)</li>
+<li>
+<code>xs groupBy f</code>    Partitions xs into a map of collections according to function f</li>
+</ul>
+</blockquote>
+
+<ul>
+<li><strong>Element conditions</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>xs forall p</code>     A boolean indicating whether all elements satisfy p</li>
+<li>
+<code>xs exists p</code>     A boolean indicating whether p holds for at least one element</li>
+<li>
+<code>xs count p</code>      The number of elements in xs that satisfy the predicate p</li>
+</ul>
+</blockquote>
+
+<ul>
+<li><strong>Folds</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>(z /: xs)(op)</code>        Applies operation op between successive elements, going
+                     left to right, starting with z</li>
+<li>
+<code>(xs :\ z)(op)</code>        Applies operation op between successive elements, going
+                     right to left, starting with z</li>
+<li>
+<code>xs.foldLeft(z)(op)</code>   Same as (z /: xs)(op)</li>
+<li>
+<code>xs.foldRight(z)(op)</code>  Same as (xs :\ z)(op)</li>
+<li>
+<code>xs reduceLeft op</code>     Applies binary operation op between successive elements of
+                     non-empty collection xs, going left to right</li>
+<li>
+<code>xs reduceRight op</code>    Applies binary operation op between successive elements of
+                     non-empty collection xs, going right to left</li>
+</ul>
+</blockquote>
+
+<ul>
+<li><strong>Specific folds</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>xs.sum</code>          The sum of all numeric element values of xs</li>
+<li>
+<code>xs.product</code>      The product of all numeric element values of xs</li>
+<li>
+<code>xs.min</code>          The minimum of the ordered element values of xs</li>
+<li>
+<code>xs.max</code>          The maximum of the ordered element values of xs</li>
+</ul>
+</blockquote>
+
+<ul>
+<li><strong>Strings</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>xs addString (b, start, sep, end)</code> Adds a string to StringBuilder b that allows
+                                  all elems between sep enclosed in strings start
+                                  and end (start, sep and end are all optional)</li>
+<li>
+<code>xs mkString (start, sep, end)</code>     Converts the collection to a string that shows
+                                  all elems between sep enclosed in strings
+                                  start and end (start, sep and end are optional)</li>
+<li>
+<code>xs.stringPrefix</code>                   The collection name returned from xs.toString</li>
+</ul>
+</blockquote>
+
+<ul>
+<li><strong>Views</strong></li>
+</ul><blockquote>
+<ul>
+<li>
+<code>xs.view</code>                  Produces a view over xs</li>
+<li>
+<code>xs view (from, to)</code>       Produces a view that represents elems in some index range</li>
+</ul>
+</blockquote>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/mbonaci/scala/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/mbonaci/scala/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/mbonaci/scala"></a> is maintained by <a href="https://github.com/mbonaci">mbonaci</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-              <script type="text/javascript">
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
           <script type="text/javascript">
             try {
-              var pageTracker = _gat._getTracker("UA-42923339-1");
+              var pageTracker = _gat._getTracker("UA-43640202-1");
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
