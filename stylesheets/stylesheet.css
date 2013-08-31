@@ -50,7 +50,8 @@ table {
 body {
   font-size: 15px;
   line-height: 1.5; 
-  background: #fafafa url(../images/body-bg.jpg) 0 0 repeat;
+  background: #fafafa url(../images/body-bg.jpg) 0 0;
+  background-size: 100%, auto;
   font-family: 'Helvetica Neue', Helvetica, Arial, serif;
   font-weight: 400;
   color: #666;
@@ -67,8 +68,9 @@ header {
   padding-top: 40px;
   padding-bottom: 40px;
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; 
-  background: url(../images/pyramid.PNG) 0 0;
-  border-bottom: solid 1px #275da1;
+  background: url(../images/pyramid.PNG);
+  background-size: cover;
+  border-bottom: solid 1px;
 }
 
 header h1 {
