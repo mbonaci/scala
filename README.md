@@ -604,8 +604,8 @@ def widen(w: Int): Element =
   } ensuring(w <= _.width)  // takes a predicate function
                             // when invoked, it passes return type ('Element') to the 
                             // predicate function that returns 'Boolean'
-// if predicate evaluates to 'true', 'ensuring' results with 'Element' on which it was invoked
-// since this is the last expression of the method, 'widen' returns the 'Element'
+// if predicate evaluates to 'true', 'ensuring' results with 'Element' on which it was 
+// invoked since this is the last expression of the method, 'widen' returns the 'Element'
 // throws AssertionError if predicate returns 'false'
 ```
 
@@ -632,7 +632,8 @@ class ElementSuite extends Suite {
 class ElementSuite extends FunSuite {
   // test is a method in FunSuite which is invoked by ElementSuite's primary constructor
   test("elem result should have passed width") {  // name of test
-    // curly - function passed as by-name param to 'test', which registers it for later execution
+    // curly - function passed as by-name parameter to 'test'
+    // which registers it for later execution
     val e = elem('x', 2, 3)
     assert(e.width == 2)  // if fails you see error message with line number
   }
@@ -761,15 +762,15 @@ E match {
   case 0 => "zero"
   case Pi => "strange! " + E + " cannot be " + Pi
   case `pi` => "strange? Pi = " + pi  // will be treated as constant ('val pi')
-  case pi => "That could be anything: " + pi  // not constant pattern ('val pi'). Variable pattern!
+  case pi => "That could be anything: " + pi  // variable pattern ('val pi')
   case _ => "What?"  // Compiler reports "Unreachable code" error
 }
 /*
  * How does Scala know whether 'Pi' is a constant from 'scala.math' and not a variable?
  * A simple lexical rule is applied:
- *   - If a name starts with a lowercase letter Scala treats it as a variable pattern.
- *   - All other references are treated as constants
- *   - With exception of fields: 'this.pi' and 'obj.pi', and lowercase names in back ticks
+ *  - If a name starts with a lowercase letter Scala treats it as a variable pattern.
+ *  - All other references are treated as constants
+ *  - With exception of fields: 'this.pi' and 'obj.pi', and lowercase names in back ticks
  */
 ```
 
@@ -1053,8 +1054,8 @@ second.isDefinedAt(List())  // false
 
 /* 
  * these expressions above get translated by the compiler to a partial function
- * by translating the patterns twice, once for the implementation of the real function
- * and once to test whether the function is defined or not
+ *   by translating the patterns twice, once for the implementation of the real function
+ *   and once to test whether the function is defined or not
  */
 
 // e.g. the function literal
@@ -1071,15 +1072,16 @@ new PartialFunction[List[Int], Int] {
   }
 }
 
-// the translation takes place whenever the declared type of a function literal is 'PartialFunction'
+// the translation takes place whenever the declared type of a function literal is
+//   a 'PartialFunction'
 // if the declared type is just 'Function1', or is missing, the function literal gets 
-// translated to a complete function
+//   translated to a complete function
 
-// if you can, use a complete function, because partial functions allow for runtime errors
-// that the compiler cannot spot
+// if you can, use a complete function, because partial functions allow for runtime
+//   errors that the compiler cannot spot
 
 // if you happen to e.g. use a framework that expects partial function, you should
-// always check 'isDefinedAt' before calling the function
+//   always check 'isDefinedAt' before calling the function
 ```
 
 **334 - Patterns in `for` expressions**
@@ -1089,7 +1091,7 @@ for((country, city) <- capitals)
   println("The capital of " + country + " is " + city)
 
 // in the above example, 'for' retrieves all key/value pairs from the map
-// each pair is then matched against the '(country, city)' pattern
+//   each pair is then matched against the '(country, city)' pattern
 
 // to pick elements from a list that match a pattern:
 val results = List(Some("apple"), None, Some("orange"))
@@ -1690,7 +1692,7 @@ val set = Set(1, 2)              // scala.collection.immutable.Set[Int]
 
 ```scala
 val text = "run Forest, run. That's it Forest! Run!"
-val wordsArray = text.split("[ !,.]+")  // Array(run, Forest, Run, That's, it, Forest, Run)
+val wordsArray = text.split("[ !,.]+")  // Array(run,Forest,Run,That's,it,Forest,Run)
 import scala.collection.mutable
 val set = mutable.Set.empty[String]  // Set()
 
@@ -2106,7 +2108,7 @@ val a2: Array[Object] = a1.asInstanceOf[Array[Object]]
 abstract class Cat[-T, +U] {
   def meow[W-](volume: T-, listener: Cat[U+, T-]-): Cat[Cat[U+, T-]-, U+]+
 }
-// since T is always used in negative position and U in positive, the class is type correct
+// since T is always used in negative position and U in positive, the class type checks
 ```
 
 **437 - Lower bounds**
@@ -2235,7 +2237,7 @@ def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = {
   }
 }
 
-// this is not a most general way to implement mergeSort, since you cannot pass e.g. List[Int]
+// this is not a most general way to implement mergeSort, you cannot pass e.g. List[Int]
 // that's achieved with 'implicit parameters' and 'view bounds' (section 21.6)
 ```
 
@@ -2534,9 +2536,9 @@ new Outer#Inner  // error: Outer is not a legal prefix for a constructor
 
 ```scala
 // sometimes there is no more to a type than its members
-// e.g. suppose you wanted to define 'Pasture' class that can contain animals that eat 'Grass'
+// e.g. if you wanted to define 'Pasture' class that can contain animals that eat 'Grass'
 // one could define a trait 'AnimalThatEatsGrass' and mix it in classes, where applicable
-// but that would be verbose, since 'Cow' already declares that it's an animal that eats grass
+// but that would be verbose, since 'Cow' already declares it's an animal that eats grass
 // and with the trait, it again declares that it's an 'AnimalThatEatsGrass'
 // instead, you can use a 'refinement type', and to do that
 // you write the base type, Animal, followed by a sequence of members in curly braces
@@ -2648,7 +2650,7 @@ button.addActionListener(
 )
 
 // which is already much better than the inner class version
-// because the function 'function2ActionListener' is marked as 'implicit', it can be left out:
+// because 'function2ActionListener' is marked as 'implicit', it can be left out:
 button.AddActionListener(  // now this works!
   (_: ActionEvent) => println("pressed!")
 )
