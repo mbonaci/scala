@@ -18,7 +18,7 @@ time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	font-size: 100%;
+	font-size: 85%;
 	font: inherit;
 	vertical-align: baseline;
 }
@@ -67,7 +67,7 @@ header {
   padding-top: 40px;
   padding-bottom: 40px;
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; 
-  background: #2e7bcf url(../images/header-bg.jpg) 0 0 repeat-x;
+  background: url(../images/pyramid.PNG) 0 0;
   border-bottom: solid 1px #275da1;
 }
 
@@ -158,10 +158,10 @@ aside a.button {
 }
 
 code, pre {
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  font-family: Terminal, monospace;
   color: #222;
   margin-bottom: 30px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 code {
@@ -319,10 +319,10 @@ p a {
 }
 
 blockquote {
-  font-size: 1.6em;
+  font-size: 1.2em;
   border-left: 10px solid #e9e9e9;
   margin-bottom: 20px;
-  padding: 0 0 0 30px;
+  padding: 0 0 0 5px;
 }
 
 ul li {
