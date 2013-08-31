@@ -127,10 +127,17 @@ aside#sidebar p.repo-owner a {
 }
 
 aside#sidebar p.page-built,
-aside#sidebar p.page-built a {
+aside#sidebar p.page-built a,
+aside#sidebar p.index-title,
+aside#sidebar p.index a {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
 }
 
+aside#sidebar p.index-title {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 0px;
+}
 
 #downloads {
   margin-bottom: 40px;
