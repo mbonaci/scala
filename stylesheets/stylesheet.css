@@ -126,13 +126,17 @@ aside#sidebar p.repo-owner a {
   font-weight: bold;
 }
 
+aside#sidebar p a:hover {
+  color: #9ddcff;
+}
+
 aside#sidebar p.page-built,
 aside#sidebar p.page-built a,
 aside#sidebar p.index-title,
 aside#sidebar p.index a {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
 }
-
+s
 aside#sidebar p.index-title {
     font-weight: bold;
     font-size: 13px;
