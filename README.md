@@ -17,7 +17,8 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 
 **127 - Postfix operator:** A method that takes no arguments can be called like this: `"some String" toLowerCase`  
 **127 - Integral types:** `Int`, `Long`, `Byte`, `Short`, `Char`  
-**135 - Operator precedence:**
+
+### **135 - Operator precedence:**
 
 >  `(all other special characters)`  
 >  `*` `/` `%`  
@@ -31,8 +32,11 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 >  `(all letters)`  
 >  `(all assignment operators)`  
 
-**136 - Operator precedence** is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`  
-**136 - Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`  
+_Operator precedence_ is based on the first character of the method used in operator notation, with one exception: If an operator ends with a `=`, and the operator is not one of the comparison operators `<=`, `>=`, `==`, or `!=`, then the precedence of the operator is the same as that of simple assignment `=`, which is last in the list. E.g. `+=`  
+### **136 - Associativity**
+
+> - any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`  
+
 **137 -** `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
 
 ## Functional Objects
@@ -118,7 +122,8 @@ val f = _ + _  // error: missing parameter type for expanded function...
 val f = (_: Int) + (_: Int)  // OK: f(5, 10) = 15
 ```
 
-**192 - Partially applied function (PAF)** is an expression in which you don't supply all of the arguments needed by the function. Instead, you supply some, or none:
+### **192 - Partially applied function (PAF)**
+> - an expression in which you don't supply all of the arguments needed by the function. Instead, you supply some, or none:
 
 ```scala
 someNums.foreach(println _)  
@@ -173,7 +178,7 @@ printTime()
 printTime(Console.err)
 ```
 
-**202 - Tail recursion (Tail call optimization)**
+### **202 - Tail recursion (Tail call optimization)**
 
 > - if the recursive call is the last action in the function body, compiler is able to replace the call with a jump back to the beginning of the function, after updating param values
 > - because of the JVM instruction set, tail call optimization cannot be applied for two mutually recursive functions nor if the final call goes to a function value (function wraps the recursive call):
@@ -186,7 +191,9 @@ def nestedFun(x: Int) {
 ```
 
 ## Control Abstractions
-**207 - Higher order functions** - functions that take other functions as parameters:
+### **207 - Higher order functions**
+
+> - functions that take other functions as parameters:
 
 ```scala
 /** 
@@ -225,7 +232,9 @@ def filesRegex(query: String) =
   filesMatching(_.matches(query))  // 'matches' closes over free variable 'query'
 ```
 
-**213 - Currying**: A curried function is applied to multiple argument lists, instead of just one:
+### **213 - Currying**
+
+> - a curried function is applied to multiple argument lists, instead of just one:
 
 ```scala
 def curriedSum(x: Int)(y: Int) = x + y
@@ -270,9 +279,9 @@ twice(_ + 1, 5)  // f(f(x)) = x + 1 + 1, where x = 5
 // Double = 7.0
 ```
 
-**216 - Loan pattern**
+### **216 - The Loan pattern**
 
-> - some control abstraction function opens a resource and *loans* it to a function:
+> - when some control abstraction function opens a resource and *loans* it to a function:
 
 ```scala
 // opening a resource and loaning it to 'op'
@@ -305,7 +314,7 @@ withPrintWriter(file) { // this curly brace is the second parameter
 }
 ```
 
-**218 - By-name parameters**
+### **218 - By-name parameters**
 
 > - typically, parameters to functions are *by-value* parameters, meaning, the value of the parameter is determined before it is passed to the function
 > - to write a function that accepts an expression that is not evaluated until it's called within a function, you use *call-by-name* mechanism, which passes a code block to the callee and each time the callee accesses the parameter, the code block is executed and the value is calculated:
@@ -347,7 +356,10 @@ field to override a parameterless method, but it forbids defining a field and a 
         *Scala* has two namespaces:  
           **values** (fields, methods, packages and singleton objects)  
           **types** (classes and traits)  
-**231 - Parametric field** is a shorthand definition for *parameter* and *field*, where *field* gets assigned a *parameter's* value (the parametric field's name mustn't clash with an existing element in the same namespace, like field or method):
+
+### **231 - Parametric field**
+
+> - a shorthand definition for _parameter_ and _field_, where _field_ gets assigned a _parameter's_ value (the parametric field's name must not clash with an existing element in the same namespace, like a field or a method):
 
 ```scala
 class ArrayElement(
@@ -428,7 +440,9 @@ def divide(x: Int, y: Int): Int =     // must return 'Int'
 ```
 
 ## Traits
-**258 - Trait** encapsulates method and field definitions, which can then be reused by mixing them into classes
+### **258 - Trait**
+
+> - encapsulates method and field definitions, which can then be reused by mixing them into classes
 
 > - *trait* can be mixed in using keywords `extends` or `with`. The difference is that, by using `extends`, you implicitly inherit the trait's superclass (`AnyRef` if a trait has no explicit superclass)
 > - *trait* also defines a type which can be used as a regular class
@@ -453,13 +467,14 @@ class Frog extends Animal with Philosophical with HasLegs {
 >   - the implementation to invoke is determined each time the trait is mixed into class
 >   - key to allowing traits to work as *stackable modifications*
 
-**266 - Ordered trait** allows you to implement all comparison operations on a class
+### **266 - Ordered trait**
 
+> - allows you to implement all comparison operations on a class
 > - requires you to specify a *type parameter* when you mix it in (`extends Ordered[TypeYouCompare]`)
 > - requires you to implement the `compare` method, which should return `Int`, `0` if the object are the same, negative if receiver is less than the argument and positive if the receiver is greater than the argument
 > - does not provide `equals` (because of "type erasure")
 
-**267 - Stackable modifications**
+### **267 - Stackable modifications**
 
 > - traits let you modify the methods of a class in a way that allows you to stack those modifications together, by mixing in multiple traits
 > - when a trait extends a superclass, it means that the trait can only be mixed in in classes that also extend the same superclass
@@ -480,7 +495,7 @@ queue.get()  // Int = 20
 ![Scala Linearization](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization-example.png?raw=true)
 ![Linearization order](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization.png?raw=true)
 
-**275 - When to use a _trait_ and when an _abstract class_**
+### **275 - When to use a `trait` and when an `abstract class`**
 
 > - if the behavior will not be reused make a concrete class
 > - if it might be used in multiple, unrelated classes, use a trait
@@ -491,8 +506,9 @@ queue.get()  // Int = 20
 > - if none of the above fits your case, use trait
 
 ## Packages and Imports
-**278 - Packages** can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
+### **278 - Packages**
 
+> - can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
 > - a package represents a scope, whose contents is accessed relative to current location
 > - a top level package that's outside all packages any user can write is called `_root_`
 > - all names accessible outside packages can be access from inside the package in the same way
@@ -539,22 +555,22 @@ import scala._
 import Predef._
 ```
 
-**288 - Access modifiers** available in Scala: `Private` and `Protected`
+### **288 - Access modifiers** available in Scala: `Private` and `Protected`
 
 > - outer class's access to `private` members of its inner class is forbidden
 > - Java allows access to `protected` members to classes in the same package even if they don't inherit from the class that declares protected members. Scala don't
 
-**289 - Access qualifiers**
+### **289 - Access qualifiers**
 
 > - a modifier in the form `private[X]` or `protected[X]` means that access is applied "up to X", where `X` designates some enclosing package, class or a singleton
 > - **object-private** `private[this]` means that access is allowed only from within the the object that contains definition itself, not its instances (`ObjName.privMember` will fail in this case)
 
-**291 - Companion objects** or **Singletons**
+### **291 - Companion objects** or **Singletons**
 
 > - a class shares all its access rights with its companion object and vice versa
 > - `protected` modifier makes no sense since *Companion objects* cannot be subclassed
 
-**292 - Package objects**
+### **292 - Package objects**
 
 > - any kind of definition you can put in a class can go in a *package object*
 > - each package is allowed to have one *package object*
@@ -586,7 +602,7 @@ object ViewDialog {
 ```
 
 ## Assertions and Unit Testing
-**295 - Assertions**
+### **295 - Assertions**
 
 > - written as calls of a predefined method `assert` (defined in the `Predef` singleton)
 > - assertions and ensuring checks can be enabled/disabled with JVM's `-ea`/`-da` flags
@@ -611,7 +627,7 @@ def widen(w: Int): Element =
 // throws AssertionError if predicate returns 'false'
 ```
 
-**297 - Unit testing**
+### **297 - Unit testing**
 
 > - there are many options for unit testing in Scala, e.g. Java `JUnit` and `TestNG` tools or tools written in Scala, e.g. `ScalaTest`, `specs` and `ScalaCheck`  
 
@@ -691,7 +707,7 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 ```
 
 ## Case Classes and Pattern Matching
-**310 - Case classes**
+### **310 - Case classes**
 
 > - for classes with `case` modifier, Scala compiler adds some syntactic sugar:
 >   - a factory method with the same name as the class, which allows you to create new object without keyword `new` (`val m = MyCls("x")`)
@@ -713,7 +729,7 @@ op.copy(operator = "-")
 // BinOp = BinOp(-,Number(1.0),Var(x))
 ```
 
-**312 - Pattern matching**
+### **312 - Pattern matching**
 
 > - the biggest advantage of *case classes* is that they support *pattern matching*
 
@@ -735,7 +751,7 @@ case _ =>
 > - there is _no *fall through*_ behavior into the next case
 > - if _none of the patterns match_, an exception `MatchError` is thrown
 
-**315 - Constant patterns**
+### **315 - Constant patterns**
 
 > - matches only itself (comparison is done using `==`)
 > - any literal, `val` or singleton object can be used as a constant
@@ -750,7 +766,7 @@ def describe(x: Any) = x match {
 }
 ```
 
-**316 - Variable patterns**
+### **316 - Variable patterns**
 
 > - matches any object, like wildcard
 > - unlike the wildcard, Scala binds the variable to whatever the object is and then a variable refers to that value in the right hand side of the `case` clause
@@ -776,7 +792,7 @@ E match {
  */
 ```
 
-**314 - Wildcard patterns**
+### **314 - Wildcard patterns**
 
 > - `_` matches every value, but it doesn't result with a variable
 
@@ -789,7 +805,7 @@ expr match {
 }
 ```
 
-**318 - Constructor patterns**
+### **318 - Constructor patterns**
  
 > - Scala first checks whether the object is a member of the named *case class* and then checks that the constructor params of the object match the patterns in parentheses
 > - **Deep matching** means that it looks for patterns arbitrarily deep
@@ -803,7 +819,7 @@ expr match {
 }
 ```
 
-**318 - Sequence patterns**
+### **318 - Sequence patterns**
  
 > - `List` and `Array` can be matched against, just like *case classes*
 
@@ -820,7 +836,7 @@ expr match {
 }
 ```
 
-**319 - Tuple patterns**
+### **319 - Tuple patterns**
 
 ```scala
 ("a ", 3, "-tuple") match {
@@ -829,7 +845,7 @@ expr match {
   }
 ```
 
-**319 - Typed patterns**
+### **319 - Typed patterns**
 
 > - used for convenient type checks and type casts
 
@@ -864,7 +880,7 @@ isIntToIntMap(Map("aei" -> "aei"))              //> Boolean = true !!!
 > - **Type erasure**
 >   - erasure model of generics, like in Java, means that no information about type arguments is maintained at runtime. Consequently, there is no way to determine at runtime whether a given Map object has been created with two Int arguments, rather than with arguments of any other type. All the system can do is determine that a value is a Map of some arbitrary type parameters
 
-**323 - Variable binding**
+### **323 - Variable binding**
 
 > - allows you to, if the pattern matches, assign a variable to a matched object
 > - the syntax is `var_name @ some_pattern'
@@ -873,7 +889,7 @@ isIntToIntMap(Map("aei" -> "aei"))              //> Boolean = true !!!
 case UnOp("abs", e @ UnOp("abs", _)) => e  // if matched, 'e' will be 'UnOp("abs", _)'
 ```
 
-**324 - Pattern guards**
+### **324 - Pattern guards**
 
 > - in some circumstances, syntactic pattern matching is not precise enough
 > - a pattern guard comes after a pattern and starts with an `if`
@@ -909,7 +925,7 @@ def simplifyAdd(e: Expr) = e match {
                         //> timesTwo  : Expr = BinOp(*,Number(24.0),Number(2.0))
 ```
 
-**325 - Pattern overlaps**
+### **325 - Pattern overlaps**
 
 > - patterns are tried in the order in which they are written
 
@@ -941,7 +957,7 @@ simplifyAll(allAdd)   //> Expr = Number(244.0)
 simplifyAll(allMul)   //> Expr = Number(24.0)
 ```
 
-**326 - Sealed classes**
+### **326 - Sealed classes**
 
 > - how can you be sure you covered all the cases when using pattern matching, since a new `case class` may be created in any time, in another compilation unit?
 > - you make the _superclass_ of your _case class_ `sealed`, which then means that a class cannot have any new subclasses added except the ones in the same file
@@ -980,7 +996,7 @@ def describe(e: Expr): String = (e: @unchecked) match {
 }
 ```
 
-**328 - The Option type**
+### **328 - The Option type**
 
 > - `Option` is type for optional values, which can be of two forms:
 >   - `Some(x)`, where `x` is the actual value
@@ -995,7 +1011,7 @@ def show(x: Option[String]) = x match {
 }
 ```
 
-**330 - Patterns in variable definitions**
+### **330 - Patterns in variable definitions**
 
 > - patterns could be used for `Tuple` destructuring:
 
@@ -1016,7 +1032,7 @@ val BinOp(op, left, right) = exp
 */
 ```
 
-**331 - Case sequences as partial functions**
+### **331 - Case sequences as partial functions**
 
 > - a sequence of cases can be used anywhere a function literal can
 > - essentially, a case sequence is a function literal, only more general
@@ -1086,7 +1102,7 @@ new PartialFunction[List[Int], Int] {
 //   always check 'isDefinedAt' before calling the function
 ```
 
-**334 - Patterns in `for` expressions**
+### **334 - Patterns in `for` expressions**
 
 ```scala
 for((country, city) <- capitals)
@@ -1105,7 +1121,7 @@ for(Some(fruit) <- results) println(fruit)
 ```
 
 ## Working with Lists
-**344 - List literals**
+### **344 - List literals**
 
 > - lists are _immutable_ (list elements cannot be changed by assignment)
 > - lists are _homogeneous_ (all list elements have the same type)
@@ -1115,7 +1131,7 @@ for(Some(fruit) <- results) println(fruit)
 > - they have two fundamental building blocks, `Nil` and `::` (cons), where `Nil` represents an empty list  
 ```val nums = 1 :: 2 :: 3 :: 4 :: Nil```
 
-**346 - Basic operations on lists**
+### **346 - Basic operations on lists**
 
 > - all operations on lists can be expressed in terms of the following three methods:
 >   - `head`    - returns the first list element (defined for non-empty lists)
@@ -1134,7 +1150,7 @@ def insert(x: Int, xs: List[Int]): List[Int] =
   else xs.head :: insert(x, xs.tail)
 ```
 
-**347 - List patterns**
+### **347 - List patterns**
 
 > - lists can be deconstructed with pattern matching, instead of with `head`, `tail` and `isEmpty`
 
@@ -1175,7 +1191,7 @@ def insert(x: Int, xs: List[Int]): List[Int] = xs match {
 }
 ```
 
-**349 - First-order methods on class List**
+### **349 - First-order methods on class List**
 
 > - a method is _first order_ if it doesn't take any functions as arguments
 > - **Concatenating two lists**
@@ -1336,7 +1352,7 @@ val reverseIntSort = msort((x: Int, y: Int) => x > y) _
 reverseIntSort(9 :: 1 :: 8 :: 3 :: 2 :: Nil)
 ```
 
-**361 - Higher-order methods on class List**
+### **361 - Higher-order methods on class List**
 
 > - allow you to express useful list operation patterns in a more concise way
 
@@ -1492,7 +1508,7 @@ words sortWith (_.length > _.length)
 // List(quick, brown, the, fox)
 ```
 
-**369 - Methods of the `List` object**
+### **369 - Methods of the `List` object**
 
 > - all the methods above are implemented in class `List`, whereas the following ones are defined in globally accessible, `List` class's companion object `scala.List`
 
@@ -1545,7 +1561,7 @@ List.concat(List(), List('b'), List('c'))  // List(b, c)
 List.concat()  // List()
 ```
 
-**371 - Processing multiple lists together**
+### **371 - Processing multiple lists together**
 
 > - `zipped`, `map`, `forall`, `exists`
 > - `zipped` method (defined on tuples) combines the tuple elements sequentially, same as `zip`, first with first, second with second, ...
@@ -1562,7 +1578,7 @@ List.concat()  // List()
     .exists(_.length != _)                      // false (all matches)
 ```
 
-**372 - Understanding Scala's type inference algorithm**
+### **372 - Understanding Scala's type inference algorithm**
 
 > - the goal of type inference is to enable users of your method to give as less type information possible, so that function literals are written in more concise way
 > - type inference is flow based
@@ -1600,7 +1616,7 @@ msortSwapped(abcde)(_ > _)  // succeeds to compile
 >     - that way, the method's correct instance type can be inferred from the non-function arguments, and then that type can be used to type-check the function argument
 
 ## Collections
-**377 - Sequences**
+### **377 - Sequences**
 
 > - groups of data lined up in order, which allows you to get the 'n-th' element
 > - **Lists** (immutable linked list)
@@ -1666,7 +1682,7 @@ hasUpperCaseLetter("glupson 1")  // false
 hasUpperCaseLetter("glupsoN 1")  // true
 ```
 
-**381 - Sets and maps**
+### **381 - Sets and maps**
 
 > - by default, when you write `Set` or `Map`, you get an immutable object
 > - for mutable objects, you need explicit import
@@ -1816,7 +1832,7 @@ val tm = TreeMap(8 -> 'e', 7 -> 'a', 1 -> 'w')  // Map(1 -> w, 7 -> a, 8 -> e)
 val otm = tm + (2 -> 'u')  // Map(1 -> w, 2 -> u, 7 -> a, 8 -> e)
 ```
 
-**390 - Selecting mutable versus immutable collections**
+### **390 - Selecting mutable versus immutable collections**
 
 > - immutable collections can usually be stored more compactly, especially small maps and sets, e.g. empty mutable map, in its default representation, HashMap, takes around 80 bytes, with 16 bytes for every new element, while immutable Map1 takes only 16 bytes, and Map4 around 40 bytes
 > - immutable map is a single object that's shared between all references, so referring to it costs just a single pointer field
@@ -1837,7 +1853,7 @@ import scala.collection.mutable.Set
 // this works with any type, not just collections
 ```
 
-**392 - Initializing collections**
+### **392 - Initializing collections**
 
 > - the common way to create and initialize a collection is to pass the initial elements to a factory method on the companion object (invokes `apply`)
 > - when an inferred type is not what you need, explicitly set type of your collection:
@@ -1847,7 +1863,7 @@ val stuff = mutable.Set[Any](42)
 stuff += "green"  // scala.collection.mutable.Set[Any] = Set(42, green)
 ```
 
-**394 - Converting to array or list**
+### **394 - Converting to array or list**
 
 > - to convert a collection to array, simply call `toArray`
 > - to convert a collection to list, simply call `toList`
@@ -1861,7 +1877,7 @@ val a = ts.toArray  // Array(1, 3, 4, 8)
 val l = ts.toList   // List(1, 3, 4, 8)
 ```
 
-**395 - Converting between mutable and immutable sets and maps**
+### **395 - Converting between mutable and immutable sets and maps**
 
 > - create a collection of the new type using the `empty` method and then add the new elements using method for adding multiple entries (`++` for mutable and `++=` for immutable)
 
@@ -1872,7 +1888,7 @@ val ms = mutable.Set.empty ++= ts  // mutable.Set[Int] = Set(9, 1, 5, 2, 6, 3, 4
 val is = Set.empty ++ mts        // immutable.Set[Int] = Set(5, 1, 6, 9, 2, 3, 8, 4)
 ```
 
-**396 - Tuples**
+### **396 - Tuples**
 
 > - a tuple combines a fixed number of items together so they can be passed around as a whole
 > - unlike arrays and lists, tuple can hold objects of different types
@@ -1902,7 +1918,7 @@ val tup = findLongest(toys.toArray)  // tup: (String, Int) = (loading truck,3)
 ```
 
 ## Stateful Objects
-**402 - Reassignable variables and properties**
+### **402 - Reassignable variables and properties**
 
 > - every non-private `var x` member of an object implicitly defines getter and setter
 > - getter is named `x` and setter is named `x_=`
@@ -1966,12 +1982,12 @@ class Thermometer {
 >   - `null`    - for reference types
 > - works the same way as uninitialized variables in Java
 
-**405 - Case study: Discrete event simulation**
+### **405 - Case study: Discrete event simulation**
 
 > - internal DSL is a DSL implemented as a library inside another language, rather than being implemented on its own
 
 ## Type Parameterization
-**422 - Information hiding**
+### **422 - Information hiding**
 
 > - to hide a primary constructor add `private` modifier in front of the class parameter list
 > - private constructor can only be accessed from withing the class itself or its companion object
@@ -2004,7 +2020,7 @@ object ImmutableQueue {
 ImmutableQueue(1, 2, 3)  // expands to ImmutableQueue.apply(1, 2, 3)
 ```
 
-**428 - Private classes**
+### **428 - Private classes**
 
 > - more radical way of information hiding that hides a class itself
 > - then, you export a trait that reveals the public interface of a class:
@@ -2046,7 +2062,7 @@ object Queue {
 }
 ```
 
-**429 - Variance annotations**
+### **429 - Variance annotations**
 
 > - `Queue`, as defined in previous listing is a trait, not a type, so you cannot create variables of type `Queue`
 > - instead, trait `Queue` enables you to specify parameterized types, such as `Queue[String]`, `Queue[AnyRef]`
@@ -2066,7 +2082,7 @@ object Queue {
 
 > - then, if `T` is a subtype of `S`, this would imply that `Queue[S]` is a subtype of `Queue[T]`
 
-**432 - Variance and arrays**
+### **432 - Variance and arrays**
 
 > - arrays in Java are treated as covariants:
 
@@ -2091,7 +2107,7 @@ val a2 = Array[Any] = a1  // error: type mismatch, found Array[String], required
 val a2: Array[Object] = a1.asInstanceOf[Array[Object]]
 ```
 
-**433 - Checking variance annotations**
+### **433 - Checking variance annotations**
 
 > - to verify the correctness of variance annotations, the compiler classifies all positions in a class or trait body as **positive**, **negative** or **neutral**
 > - a _position_ is any location in the class (or trait) body where a type parameter may be used
@@ -2113,7 +2129,7 @@ abstract class Cat[-T, +U] {
 // since T is always used in negative position and U in positive, the class type checks
 ```
 
-**437 - Lower bounds**
+### **437 - Lower bounds**
 
 > - `Queue[T]` cannot be made covariant in `T` because `T` appears as a type of a parameter of the `enqueue` method, and that's a negative position
 > - there's still a way to solve that problem by generalizing `enqueue` by making it polymorphic (i.e. giving the method itself a type parameter) and using a **lower bound** for its type parameter:
@@ -2132,7 +2148,7 @@ class Queue[+T](private val leading: List[T]), private val trailing: List[T]) {
 // Queue[Apple] and the result will be of type Queue[Fruit]
 ```
 
-**438 - Contravariance**
+### **438 - Contravariance**
 
 > - **Liskov Substitution Principle** says that it is safe to assume that a type `T` is a subtype of a type `U` if you can substitute a value of type `T` wherever a value of type `U` is required
 > - the principle holds if `T` supports the same operations as `U` and all of `T's` operations require less and provide more than the corresponding operations in `U`
@@ -2168,7 +2184,7 @@ object Customer extends Application {
 relationship of the two result types, shown at the right of the image, is in the same direction as that of the two functions shown in the center
 > - because the parameter type of a `Function1` is defined as _contravariant_, the inheritance relationship of the two parameter types, shown at the left of the image, is in the opposite direction as that of the two functions
 
-**441 - Object private data**
+### **441 - Object private data**
 
 > - object or class components that are declared as `private[this]`
 > - may be accessed only from within their containing object, in which they are defined
@@ -2215,7 +2231,7 @@ class CovariantQueue[+T] private (
 }
 ```
 
-**443 - Upper bounds**
+### **443 - Upper bounds**
 
 > - with the `T <: Ordered[T]` you indicate that the type parameter `T` has an upper bound `Ordered[T]`, which means that the passed element's type must be a subtype of `Ordered`
 > - used e.g. to require that the passed type mixes in a trait (i.e. is a subtype of trait)
@@ -2268,7 +2284,7 @@ class Concrete extends Abstract {
 }
 ```
 
-**448 - Type members**
+### **448 - Type members**
 
 > - **abstract types** are always members of some class or trait
 > - traits are abstract by definition
@@ -2276,7 +2292,7 @@ class Concrete extends Abstract {
 > - one reason to use a type member is to define a short, descriptive alias for a type whose real name is more verbose or less obvious in meaning (helps clarify the code)
 > - the other main use of type members is to declare abstract types that must be defined in subclasses
 
-**449 - Abstract vals**
+### **449 - Abstract vals**
 
 > - have a form like `val initial: String`
 > - `val` is given a name and a type, but not its value
@@ -2285,7 +2301,7 @@ class Concrete extends Abstract {
 > - guaranteed to return always the same value, unlike methods, which could be implemented by a concrete method that returns a different value every time it's called
 > - **abstract method declarations** may be implemented by both, concrete method and concrete `val` definitions
 
-**450 - Abstract vars**
+### **450 - Abstract vars**
 
 > - implicitly declare abstract getters and setters, just like non-abstract `vars` do
 > - reassignable field is not created
@@ -2305,7 +2321,7 @@ trait AbstractTime {
 }
 ```
 
-**451 - Initializing abstract vals**
+### **451 - Initializing abstract vals**
 
 > - abstract vals sometimes play a role of superclass parameters, i.e. they let you provide details in a subclass that are missing in a superclass
 > - that is particularly important for _traits_, because they don't have a constructor to which you could pass parameters
@@ -2356,7 +2372,7 @@ val fun = new ProblematicRationalTrait {
 }
 ```
 
-**453 - Pre-initialized fields**
+### **453 - Pre-initialized fields**
 
 > - let you initialize a field of a subclass before the superclass is called
 > - achieved by putting field definition in braces before superclass constructor call:
@@ -2400,7 +2416,7 @@ object AbsRat {
   // ...
 ```
 
-**455 - Lazy vals**
+### **455 - Lazy vals**
 
 > - evaluated the first time the val is used
 > - never evaluated more than once (the result of first time evaluation is stored in val)
@@ -2447,7 +2463,7 @@ new LazyRationalTrait {
 // 7. - finally, the resulting string "1/2" is constructed and printed
 ```
 
-**459 - Abstract types**
+### **459 - Abstract types**
 
 > - used as a placeholder for a type that will be defined further down the hierarchy
 
@@ -2467,7 +2483,7 @@ class Cow extends Animal {
 }
 ```
 
-**461 - Path-dependent types**
+### **461 - Path-dependent types**
 
 > - objects in Scala can have types as members (e.g. any instance of 'Cow' will have type 'SuitableFood' as its member)
 > - e.g. `milka.SuitableFood` means "the type 'SuitableFood' that is a member of the object referenced from 'milka'", or "the type of 'Food' that suitable for 'milka'"
@@ -2529,7 +2545,7 @@ new out1.Inner  // since 'out1' is a reference to a specific outer object
 new Outer#Inner  // error: Outer is not a legal prefix for a constructor
 ```
 
-**464 - Structural subtyping with Refinement types**
+### **464 - Structural subtyping with Refinement types**
 
 > - when one class inherits from the other, the first one is said to be a **nominal subtype** of the other one (explicit subtype, by name)
 > - Scala additionally supports **structural subtyping**, where you get a subtyping relationship simply because two types have the same members
@@ -2578,7 +2594,7 @@ def using[T <: { def close(): Unit}, S](obj: T)(operation: T => S) = {
 
 > - **Structural type** is a refinement type where the refinements are for members that are not in the base type
 
-**466 - Enumerations**
+### **466 - Enumerations**
 
 > - Scala's _enumerations_ are not a built-in construct
 > - defined in `scala.Enumaration`
@@ -2664,7 +2680,7 @@ button.AddActionListener(  // now this works!
 >   - it finds 'function2ActionListener'
 >   - it tries to use it as a conversion method, sees that it works and moves on
 
-**482 - Rules for implicits**
+### **482 - Rules for implicits**
 
 > - **implicit definitions** are definitions that the compiler is allowed to insert into a program in order to fix a type error
 > - you can use `implicit` to mark any variable, function or object definition  
@@ -2685,7 +2701,7 @@ button.AddActionListener(  // now this works!
 >   - the compiler will not change code that already works
 >   - a consequence of this rule is that you can make trade offs between verbose (explicits) and terse (implicits) code
 
-**484 - Naming an implicit conversion**
+### **484 - Naming an implicit conversion**
 
 > - implicit conversions can have arbitrary names
 > - the name matters only in two situations:
@@ -2704,14 +2720,14 @@ import MyConversions.stringWrapper  // possible only because implicit has a name
 // ... code making use of 'stringWrapper'
 ```
 
-**485 - Where implicits are tried**
+### **485 - Where implicits are tried**
 
 > - there are 3 places where implicits are used:  
 > **1**  conversions to an expected type (use one type where the other is expected)  
 > **2**  conversions of the receiver of a selection (adapts receiver of a method call)  
 > **3**  implicit parameters
 
-**485 - Implicit conversion to an expected type**
+### **485 - Implicit conversion to an expected type**
 
 > - whenever the compiler sees an `X`, but needs a `Y`, it will look for an implicit function that converts `X` to `Y`
 
@@ -2730,7 +2746,7 @@ val i: Int = 3.5  // i: Int = 3
  */
 ```
 
-**486 - Converting the receiver**
+### **486 - Converting the receiver**
 
 > - implicits are applied on an object on which a method is invoked
 > - has 2 main uses: allows smoother integration of a new class into an existing class hierarchy and second, they support writing DSLs withing the Scala language
@@ -2769,7 +2785,7 @@ implicit def intToRational(x: Int) = new Rational(x, 1)
 intToRational(1) + oneHalf
 ```
 
-**489 - Simulating new syntax**
+### **489 - Simulating new syntax**
 
 > - the major use of implicit conversions is to simulate adding new syntax
 
@@ -2796,7 +2812,7 @@ object Predef {
 > - that is called a **rich wrapper pattern**, which is common in libraries that provide syntax-like extensions to the language
 > - classes named 'RichSomething' (e.g. 'RichInt' or 'RichBoolean') are likely using implicits to add the syntax-like methods to type 'Something'
 
-**489 - Implicit parameters**
+### **489 - Implicit parameters**
 
 > - compiler can also insert implicits within argument lists, e.g. replacing `someCall(a)` with `someCall(a)(b)` or `new SomeClass(a)` with `new SomeClass(a)(b)`, thereby adding a missing parameter list to complete a function call
 > - it is the entire last curried parameter that's supplied, not just the last parameter, e.g. compiler might replace `aCall(a)` with `aCall(a)(b, c, d)`
@@ -2895,12 +2911,12 @@ maxListImpParm(List("one", "two", "three"))    // for String
  */
 ```
 
-**495 - A style rule for implicit parameters**
+### **495 - A style rule for implicit parameters**
 
 > - it is best to use a custom named type in the types of implicit parameters (e.g. in the `Prompt` example, the type of `prompt` and `drink` was not `String`, but `PreferredPrompt` and `PreferredDrink`)
 > - use at least one role-determining name within the type of an implicit parameter (in our case `Ordered`)
 
-**495 - View bounds**
+### **495 - View bounds**
 
 > - when you use `implicit` on a parameter, then not only will the compiler try to supply that parameter with an implicit value, but it will also use that parameter as an available implicit in the body of the method:
 
@@ -2949,14 +2965,14 @@ def maxList[T <% Ordered[T]](elements: List[T]): T =
 implicit def identity[A](x: A): A = x  // simply returns received object
 ```
 
-**498 - When multiple conversions apply**
+### **498 - When multiple conversions apply**
 
 > - when multiple implicit conversions are in scope, compiler chooses the most specific one (e.g. if one of the conversions takes `String` and the other takes `Any`, the compiler will choose the one that takes a `String`)
 > - one implicit conversion is **more specific** than the other if one of the following applies:
 >   - the argument type of the former is a subtype of the latter's
 >   - both conversions are methods and the enclosing class of the former extends the enclosing class of the latter one
 
-**501 - Debugging implicits**
+### **501 - Debugging implicits**
 
 > - when you wonder why the compiler did not find an implicit conversion that you think should have been applied, it helps to write the conversion explicitly, which would possibly produce an error message so you'll know the reason why it was not applied
 > - if inserting the conversion explicitly make the error go away, then you know that insertion was prevented by one of the rules (often Scope rule)
@@ -2964,7 +2980,7 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 > - implicits can make code confusing if used too frequently, thus, before writing a new implicit conversion, first try to achieve the same effect using inheritance, mixin composition or method overloading
 
 ## Implementing Lists
-**503 - The List class in principle**
+### **503 - The List class in principle**
 
 > - lists are not built-in as a language construct in Scala, they are defined by an abstract class `scala.List`, which comes with 2 subclasses, `Nil` and `::`
 
@@ -3033,7 +3049,7 @@ def map[U](f: T => U): List[U] =
   else f(head) :: tail.map(f)
 ```
 
-**507 - List construction**
+### **507 - List construction**
 
 > - `::` method should take an element value and yield a new list
 
@@ -3076,7 +3092,7 @@ prefix.head :: (prefix.tail ::: this)
 this.:::(prefix.tail).::(prefix.head)
 ```
 
-**509 - The `ListBuffer` class**
+### **509 - The `ListBuffer` class**
 
 > - the typical access pattern for a list is recursive, e.g. to increment every element without using `map`:
 
@@ -3102,7 +3118,7 @@ def incAll(xs: List[Int]): List[Int] = {
 // both '+=' and 'toList' take constant time
 ```
 
-**511 - The `List` class in practice**
+### **511 - The `List` class in practice**
 
 > - most methods in the real implementation of class `List` avoid recursion (even if it's tail call optimized) and use loops with list buffers instead
 
@@ -3174,7 +3190,7 @@ override def += (x: T) {
 // most use cases add elements incrementally and then do one 'toList' call at the end
 ```
 
-**513 - Functional on the outside**
+### **513 - Functional on the outside**
 
 > - lists are purely functional on the outside, but have an imperative implementation using list buffers on the inside
 > - a typical strategy in Scala programming is to combine purity with efficiency by carefully delimiting the effects of impure operations
@@ -3185,7 +3201,7 @@ override def += (x: T) {
 > - all `for` expressions that `yield` a result are translated by the compiler into combination of higher-order methods `map`, `flatMap` and `withFilter`
 > - all `for` expressions without `yield` are translated into combination of `withFilter` and `foreach`
 
-**518 - For expressions**
+### **518 - For expressions**
 
 > - generally, a `for` expression is of the form `for (seq) yield expr`, where `seq` is a sequence of **generators**, **definitions** and **filters** with semicolon between successive elements
 
@@ -3200,7 +3216,7 @@ for {
 } yield n
 ```
 
-**519 - The n-queens problem**
+### **519 - The n-queens problem**
 
 > - a particularly suitable application area of for expressions are combinatorial puzzles
 > - an example of such a puzzle is the n-queens problem, where 'n' queens are supposed to be placed on a 'n x n' board, each queen in its own row, such that no two queens check one another
@@ -3247,7 +3263,7 @@ def printSolutions(tbls: List[List[(Int, Int)]]) = {
 }
 ```
 
-**522 - Querying with `for` expressions**
+### **522 - Querying with `for` expressions**
 
 > - the `for` notation is essentially equivalent to common operations of database query languages
 
@@ -3312,7 +3328,7 @@ def removeDuplicates[A](xs: List[A]): List[A] = {
 }
 ```
 
-**524 - Translation of `for` expressions**
+### **524 - Translation of `for` expressions**
 
 > - how the compiler translates `for` expressions to higher-order function calls
 > - **Translating `for` expressions with one generator**
@@ -3434,7 +3450,7 @@ xss foreach (xs =>
     sum += x))
 ```
 
-**528 - Going the other way**
+### **528 - Going the other way**
 
 > - every application of a `map`, `flatMap` and `withFilter` can be represented as a `for` expression
 
@@ -3467,7 +3483,7 @@ object ReversedTranslationDemo {
 }
 ```
 
-**529 - Generalizing `for`**
+### **529 - Generalizing `for`**
 
 > - it is possible to apply `for` notation to every type that defines `map`, `flatMap`, `withFilter` or `foreach`
 > - if a type defines:
@@ -3490,7 +3506,7 @@ abstract class C[A] {
 ```
 
 ## The Scala Collections API
-**534 - Mutable an immutable collections**
+### **534 - Mutable an immutable collections**
 
 > - there are 4 packages with collection types:
 >   - **scala.collection** - may be changed by other parties in run time
@@ -3499,7 +3515,7 @@ abstract class C[A] {
 >   - **scala.collection.generic** - provide building blocks for implementing collections
 > - typically, collection classes defer the implementation of some of their operations to classes in `generic`
 
-**535 - Collections consistency**
+### **535 - Collections consistency**
 
 ```scala
 // the most important collection classes:
@@ -3547,7 +3563,7 @@ IndexedSeq(1.0, 2.0)
 LinearSeq(a, b, c)
 ```
 
-**537 - Trait `Traversable`**
+### **537 - Trait `Traversable`**
 
 > - on top of the collection hierarchy
 > - its only _abstract_ operation is `foreach`:
@@ -3663,7 +3679,7 @@ _The following table lists all concrete methods of `Traversable`:_
 > - `xs.view`                  Produces a view over xs
 > - `xs view (from, to)`       Produces a view that represents elems in some index range
 
-**542 - Trait `Iterable`**
+### **542 - Trait `Iterable`**
 
 > - all methods are defined in terms of an abstract method `iterator`, which yields the collection's elements one by one
 > - the `foreach` method from trait `Traversable` is implemented in `Iterable`:
@@ -3719,7 +3735,7 @@ _The summary of operations in trait `Iterable`:_ `Traversable` and
 
 > - `xs sameElement ys`    Tests whether xs and ys have same elements in the same order
 
-**544 - Why both `Traversable` and `Iterable`**
+### **544 - Why both `Traversable` and `Iterable`**
 
 > - often times it's easier or more efficient to implement `foreach` than `iterator`:
 
@@ -3729,8 +3745,8 @@ sealed abstract class PlainTree
 case class Branch(left: Tree, right: Tree) extends Tree
 case class Node(elem: Int) extends Tree
 
-// now assume you want to make trees traversable - O(N + N-1):
-sealed abstract class Tree extends Traversable[Int] {
+// now assume you want to make trees traversable:
+sealed abstract class Tree extends Traversable[Int] {  // O(N + N-1)
   
   def foreach[U](f: Int => U) = this match {
     case Node(elem) => f(elem)
@@ -3749,6 +3765,29 @@ sealed abstract class IterTree extends Iterable[Int] {
 case class IterBranch(left: IterTree, right: IterTree) extends IterTree
 case class IterNode(elem: Int) extends IterTree
 
-// IterTree is much less efficient since iterator concatenation method ++ is O(N log(N))
+// IterTree is much less efficient since iterator concatenation method ++ 
+// makes the traversal O(N log(N))
+```
+
+### **546 - Subcategories of `Iterable`**
+
+> - in the Scala inheritance hierarchy, bellow `Iterable`, there are three traits: `Seq`, `Set` and `Map`
+> - the common characteristic is that they all implement the `PartialFunction` trait, with its `apply` and `isDefinedAt` methods
+> - for sequences, `apply` is positional indexing (elems are numbered from 0):
+
+```scala
+Seq(1, 2, 3)(1) == 2
+```
+
+> - for sets, `apply` is a membership test:
+
+```scala
+Set('a', 'b', 'c')('b') == true
+```
+
+> - for maps, `apply` is a selection:
+
+```scala
+Map('a' -> 1, 'b' -> 10, 'c' -> 100)('b') == 10
 ```
 
