@@ -2,14 +2,14 @@ Shamelessly ripped of from [Programming in Scala, second edition](http://www.art
 Basically, while I'm going through the book, I'm taking notes here, so I can later use it as a quick reference.
 If you, by any incredible chance, find any of this useful, please do buy the book (no, I don't get the kick back. As you can see, the book link is clean :)  
 
-Before you start flipping out:  
-> this is not a tutorial, nor is it pleasant to read
-> It's just a quick reference card
+> Before you start flipping out:  
+> - this is not a tutorial, nor is it pleasant to read
+> - It's just a quick reference card
 
-### Scala type hierarchy
+## Scala type hierarchy
 ![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
 
-### Basic Types and Operations
+## Basic Types and Operations
 **127 -** The convention is to include empty parentheses when invoking a method only if that method has side effects
 
 > - **Pure methods** are methods that don't have any side effects and don't depend on mutable state (226) 
@@ -35,7 +35,7 @@ Before you start flipping out:
 **136 - Associativity**: any method that ends in a `:` character is invoked on its right operand, passing in the left operand. Methods that end in any other character are invoked on their left operand, passing in the right operand. So `a * b` yields `a.*(b)`, but `a ::: b` yields `b.:::(a)`  
 **137 -** `a ::: b ::: c` is treated as `a ::: (b ::: c)` (list concatenation)
 
-### Functional Objects
+## Functional Objects
 **141 - Class parameters**: Any code placed in the class body (outside methods) will be placed in the *primary constructor*. When declaring a class you can drop empty `{}`  
 **143 - Precondition** is a constraint on values passed into a method or constructor (E.g. `require(d != 0)` in the class body will throw `IllegalArgumentException: requirement failed` when `0` is passed as `d`)  
 **144 -** If **Class parameters** are only used inside constructors, the Scala compiler will not create corresponding fields for them  
@@ -54,7 +54,7 @@ implicit def intToRational(x: Int) = new Rational(x)
 ```
 > - for an implicit conversion to work, it needs to be in scope. If you place the implicit method definition inside the class `Rational`, it won't be in scope
 
-### Built-in Control Structures
+## Built-in Control Structures
 **163 - Assignment** always results with the **unit value**, `()`  
 **164 -** In `for (file <- files)` the `<-` is called a **generator**. In each iteration, a new `val` named `file` is initialized with an element value  
 **164 -** The `Range` type: `4 to 8`. If you don't want upper bound: `4 until 8`  
@@ -101,7 +101,7 @@ val target = firstArg match {  // firstArg is a previously initialized val
 **175 -** Scala doesn't have `break`, nor does it have `continue` statement  
 **180 -** Unlike Java, Scala supports *inner scope variable shadowing*
 
-### Functions and Closures
+## Functions and Closures
 **186 - Local functions** are functions inside other functions. They are visible only in their enclosing block  
 **188 - Function literal** example: `(x: Int) => x + 1`  
 **188 -** Every function value is an instance of some class that extends one of `FunctionN` traits that has an `apply` method used to invoke the function (`Function0` for functions with no params, `Function1` for functions with 1 param, ...)  
@@ -185,7 +185,7 @@ def nestedFun(x: Int) {
 }
 ```
 
-### Control Abstractions
+## Control Abstractions
 **207 - Higher order functions** - functions that take other functions as parameters:
 
 ```scala
@@ -326,7 +326,7 @@ def myAssert(predicate: => Boolean) =     // with by-name parameter
 // would get executed before the call to 'boolAssert'
 ```
 
-### Composition and Inheritance
+## Composition and Inheritance
 **222 - Composition** means one class holds a reference to another  
 **224 - `abstract` method** does not have an implementation (i.e., no equals sign or body)
 
@@ -387,7 +387,7 @@ def beside(that: Element): Element =
 override def toString = contents mkString "\n"
 ```
 
-### Scala's Hierarchy
+## Scala's Hierarchy
 **250 -** In Scala hierarchy, **scala.Null** and **scala.Nothing** are the subclasses of every class (thus the name **bottom classes**), just as **Any** is the superclass of every other class  
 **250 -** `Any` contains methods:
 
@@ -427,7 +427,7 @@ def divide(x: Int, y: Int): Int =     // must return 'Int'
   else error("can't divide by zero")  // 'Nothing' is a subtype of 'Int'
 ```
 
-### Traits
+## Traits
 **258 - Trait** encapsulates method and field definitions, which can then be reused by mixing them into classes
 
 > - *trait* can be mixed in using keywords `extends` or `with`. The difference is that, by using `extends`, you implicitly inherit the trait's superclass (`AnyRef` if a trait has no explicit superclass)
@@ -490,7 +490,7 @@ queue.get()  // Int = 20
 > - if efficiency is very, very important, use a class (in Java, a virtual method invocation of a class member is faster than an interface method invocation)
 > - if none of the above fits your case, use trait
 
-### Packages and Imports
+## Packages and Imports
 **278 - Packages** can be used like in C#: `package pkg_name { // source... }`, with more packages in a single source file. Also, they can be nested in one another
 
 > - a package represents a scope, whose contents is accessed relative to current location
@@ -585,7 +585,7 @@ object ViewDialog {
 }
 ```
 
-### Assertions and Unit Testing
+## Assertions and Unit Testing
 **295 - Assertions**
 
 > - written as calls of a predefined method `assert` (defined in the `Predef` singleton)
@@ -690,7 +690,7 @@ class ElementSpec extends FlatSpec with ShouldMatchers {
 }
 ```
 
-### Case Classes and Pattern Matching
+## Case Classes and Pattern Matching
 **310 - Case classes**
 
 > - for classes with `case` modifier, Scala compiler adds some syntactic sugar:
@@ -1104,7 +1104,7 @@ for(Some(fruit) <- results) println(fruit)
 // 'None' does not match pattern 'Some(fruit)'
 ```
 
-### Working with Lists
+## Working with Lists
 **344 - List literals**
 
 > - lists are _immutable_ (list elements cannot be changed by assignment)
@@ -1599,7 +1599,7 @@ msortSwapped(abcde)(_ > _)  // succeeds to compile
 >     - when designing a polymorphic method that takes a non-function and function arguments, place the function argument last in a curried parameter list by its own
 >     - that way, the method's correct instance type can be inferred from the non-function arguments, and then that type can be used to type-check the function argument
 
-### Collections
+## Collections
 **377 - Sequences**
 
 > - groups of data lined up in order, which allows you to get the 'n-th' element
@@ -1901,7 +1901,7 @@ var toys = Set("bear", "car", "doll", "loading truck")
 val tup = findLongest(toys.toArray)  // tup: (String, Int) = (loading truck,3)
 ```
 
-### Stateful Objects
+## Stateful Objects
 **402 - Reassignable variables and properties**
 
 > - every non-private `var x` member of an object implicitly defines getter and setter
@@ -1970,7 +1970,7 @@ class Thermometer {
 
 > - internal DSL is a DSL implemented as a library inside another language, rather than being implemented on its own
 
-### Type Parameterization
+## Type Parameterization
 **422 - Information hiding**
 
 > - to hide a primary constructor add `private` modifier in front of the class parameter list
@@ -2243,7 +2243,7 @@ def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = {
 // that's achieved with 'implicit parameters' and 'view bounds' (section 21.6)
 ```
 
-### Abstract Members
+## Abstract Members
 
 > - a member of a class or trait is `abstract` if the member does not have a complete definition in the class
 > - abstract members are intended to be implemented by subclasses
@@ -2617,7 +2617,7 @@ Direction.Right.id  // Int = 1
 Direction(0)  // Direction.Value = Left
 ```
 
-### Implicit Conversions and Parameters
+## Implicit Conversions and Parameters
 
 > - used when working with two bodies of code that were developed separately, thus each may have its own way to represent the same concept
 > - **implicits** help by reducing the number of explicit conversions one has to write
@@ -2963,7 +2963,7 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 > - `-Xprint:typer` option tells the compiler to show what the code looks like after all implicit conversions have been added by the type checker
 > - implicits can make code confusing if used too frequently, thus, before writing a new implicit conversion, first try to achieve the same effect using inheritance, mixin composition or method overloading
 
-### Implementing Lists
+## Implementing Lists
 **503 - The List class in principle**
 
 > - lists are not built-in as a language construct in Scala, they are defined by an abstract class `scala.List`, which comes with 2 subclasses, `Nil` and `::`
@@ -3181,7 +3181,7 @@ override def += (x: T) {
 > - Scala opts for pervasive sharing and no mutation for lists
 > - `ListBuffer` still allows you to build up lists imperatively and incrementally
 
-### For Expressions Revisited
+## For Expressions Revisited
 > - all `for` expressions that `yield` a result are translated by the compiler into combination of higher-order methods `map`, `flatMap` and `withFilter`
 > - all `for` expressions without `yield` are translated into combination of `withFilter` and `foreach`
 
@@ -3489,7 +3489,7 @@ abstract class C[A] {
 }
 ```
 
-### The Scala Collections API
+## The Scala Collections API
 **534 - Mutable an immutable collections**
 
 > - there are 4 packages with collection types:
@@ -3692,7 +3692,7 @@ sit.next()  // List(2, 3, 4)
 sit.next()  // List(3, 4, 5)
 ```
 
-_The summary of operations in trait `Iterable`:_  
+_The summary of operations in trait `Iterable`:_ `Traversable` and  
 
  - **Abstract method**
 
@@ -3718,4 +3718,37 @@ _The summary of operations in trait `Iterable`:_
  - **Comparison**
 
 > - `xs sameElement ys`    Tests whether xs and ys have same elements in the same order
+
+**544 - Why both `Traversable` and `Iterable`**
+
+> - often times it's easier or more efficient to implement `foreach` than `iterator`:
+
+```scala
+// a class hierarchy for binary trees that have integers at the leaves:
+sealed abstract class PlainTree
+case class Branch(left: Tree, right: Tree) extends Tree
+case class Node(elem: Int) extends Tree
+
+// now assume you want to make trees traversable - O(N + N-1):
+sealed abstract class Tree extends Traversable[Int] {
+  
+  def foreach[U](f: Int => U) = this match {
+    case Node(elem) => f(elem)
+    case Branch(l, r) => l foreach f; r foreach f
+  }
+}
+
+// less efficient IterTree, to make iterable
+sealed abstract class IterTree extends Iterable[Int] {
+  def iterator: Iterator[Int] = this match {
+    case IterNode(elem) => Iterator.single(elem)
+    case IterBranch(l, r) => l.iterator ++ r.iterator
+  }
+}
+
+case class IterBranch(left: IterTree, right: IterTree) extends IterTree
+case class IterNode(elem: Int) extends IterTree
+
+// IterTree is much less efficient since iterator concatenation method ++ is O(N log(N))
+```
 
