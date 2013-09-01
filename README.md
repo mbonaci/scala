@@ -3506,7 +3506,7 @@ abstract class C[A] {
 ```
 
 ## The Scala Collections API
-### **534 - Mutable an immutable collections**
+### **534 - Mutable and immutable collections**
 
 > - there are 4 packages with collection types:
 >   - **scala.collection** - may be changed by other parties in run time
@@ -3851,4 +3851,35 @@ _Operations in trait `Seq`:_
 > - `xs diff ys`        The multi-set difference of xs and ys that preserves the order of elements in xs
 > - `xs union ys`       (or xs ++ ys) Multiset union
 > - `xs.distinct`       A subsequence of xs that contains no duplicates
+
+### **550 - Buffers**
+
+> - buffers allow not only updates of existing elements, but also element insertions, removals, and efficient additions of new elements at the end of the buffer
+> - buffers support element addition at the end and at the front, element insertions and element removal
+> - two most common buffer implementations are `ListBuffer` and `ArrayBuffer`
+
+_Operations in trait `Buffer`:_  
+
+ - **Additions**
+
+> - `buf += x`               Appends element x to buffer buf and returns buf
+> - `buf += (x, y)`          Appends given elements to buf
+> - `buf ++= xs`             Appends all elements in xs to buf
+> - `x +=: buf`              Prepends element x to buf
+> - `xs ++=: buf`            Prepends all elements in xs to buf
+> - `buf insert (i, x)`      Inserts element x at index i in buf
+> - `buf insertAll (i, xs)`  Inserts all elements in xs at index i in buf
+
+ - **Removals**
+
+> - `buf -= x`           Removes element x from buffer buf
+> - `buf remove i`       Removes element at index i from buf
+> - `buf remove (i, n)`  Removes n elements starting at index i from buf
+> - `buf trimStart n`    Removes first n elements from buf
+> - `buf trimEnd n`      Removes last n elements from buf
+> - `buf.clear()`        Removes all elements from buf
+
+ - **Cloning**
+
+> - `buf.clone`          A new buffer with the same elements as buf
 
