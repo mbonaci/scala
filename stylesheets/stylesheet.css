@@ -57,6 +57,10 @@ body {
   color: #666;
 }
 
+strong {
+  font-wight: bold;
+}
+
 a {
   color: #2879d0;
 }
@@ -112,7 +116,7 @@ header h2 {
 }
 
 aside#sidebar {
-  width: 200px;
+  width: 230px;
   padding-left: 20px;
   min-height: 504px;
   float: right;
@@ -136,10 +140,10 @@ aside#sidebar p.index-title,
 aside#sidebar p.index a {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
 }
-s
+
 aside#sidebar p.index-title {
     font-weight: bold;
-    font-size: 13px;
+    font-size: 25px;
     margin-bottom: 0px;
 }
 
