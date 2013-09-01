@@ -3589,10 +3589,8 @@ _The following table lists all concrete methods of `Traversable`:_
  - **Maps**
 
 > - `xs map f`        The collection obtained from applying f to every element of xs
-> - `xs flatMap f`    The collection obtained by applying f to every element of xs and
->                     concatenating the results
-> - `xs collect f`    The collection obtained by applying partial function f to every
->                     element in xs for which it is defined and collecting the results
+> - `xs flatMap f`    The collection obtained by applying f to every element of xs and concatenating the results
+> - `xs collect f`    The collection obtained by applying partial function f to every element in xs for which it is defined and collecting the results
 
  - **Conversions**
 
@@ -3646,16 +3644,12 @@ _The following table lists all concrete methods of `Traversable`:_
 
 - **Folds**
 
-> - `(z /: xs)(op)`        Applies operation op between successive elements, going
->                          left to right, starting with z
-> - `(xs :\ z)(op)`        Applies operation op between successive elements, going
->                          right to left, starting with z
+> - `(z /: xs)(op)`        Applies operation op between successive elements, going left to right, starting with z
+> - `(xs :\ z)(op)`        Applies operation op between successive elements, going right to left, starting with z
 > - `xs.foldLeft(z)(op)`   Same as (z /: xs)(op)
 > - `xs.foldRight(z)(op)`  Same as (xs :\ z)(op)
-> - `xs reduceLeft op`     Applies binary operation op between successive elements of
->                          non-empty collection xs, going left to right
-> - `xs reduceRight op`    Applies binary operation op between successive elements of
->                          non-empty collection xs, going right to left
+> - `xs reduceLeft op`     Applies binary operation op between successive elements of non-empty collection xs, going left to right
+> - `xs reduceRight op`    Applies binary operation op between successive elements of non-empty collection xs, going right to left
 
 - **Specific folds**
 
@@ -3667,11 +3661,9 @@ _The following table lists all concrete methods of `Traversable`:_
 - **Strings**
 
 > - `xs addString (b, start, sep, end)` Adds a string to StringBuilder b that allows
->                                       all elems between sep enclosed in strings start
->                                       and end (start, sep and end are all optional)
+all elems between sep enclosed in strings start and end (start, sep and end are all optional)
 > - `xs mkString (start, sep, end)`     Converts the collection to a string that shows
->                                       all elems between sep enclosed in strings
->                                       start and end (start, sep and end are optional)
+all elems between sep enclosed in strings start and end (start, sep and end are optional)
 > - `xs.stringPrefix`                   The collection name returned from xs.toString
 
 - **Views**
@@ -3708,7 +3700,7 @@ sit.next()  // List(2, 3, 4)
 sit.next()  // List(3, 4, 5)
 ```
 
-_The summary of operations in trait `Iterable`:_ `Traversable` and  
+_The summary of operations in trait `Iterable`:_  
 
  - **Abstract method**
 
@@ -3728,7 +3720,7 @@ _The summary of operations in trait `Iterable`:_ `Traversable` and
 
 > - `xs zip ys`            An iterable of pairs of corresponding elems from xs and ys
 > - `xs zipAll (ys, x, y)` An iterable of pairs, where shorter sequence is extended to
->                          match the longer one by appending elements x or y
+match the longer one by appending elements x or y
 > - `xs.zipWithIndex`      An iterable of pairs from xs with their indices
 
  - **Comparison**
@@ -3790,4 +3782,73 @@ Set('a', 'b', 'c')('b') == true
 ```scala
 Map('a' -> 1, 'b' -> 10, 'c' -> 100)('b') == 10
 ```
+
+### **546 - The sequence traits `Seq`, `IndexedSeq` and `LinearSeq`**
+
+> - **`seq`** trait represents a kind of `iterable` that has a `length` and whose elements have fixed index positions, starting from `0` up to `length - 1`
+> - the `update` method is only available on mutable sequences, since it changes the sequence in place
+> - the `updated` method always returns a new sequence and it is available on all sequences 
+> - each `Seq` trait has two subtraits, `LinearSeq` and `IndexedSeq`, which do not add any new operations, but each offers different performance characteristics
+> - a linear sequence (e.g. `List` or `Stream`) has efficient `head` and `tail` operations
+> - an indexed sequence (e.g. `Array` or `ArrayBuffer`) has efficient `apply`, `length` and (if mutable) `update` operations
+> - the `Vector` class provides an interesting compromise between indexed and linear access, since it has both effectively constant time indexing overhead and constant time linear access overhead
+
+_Operations in trait `Seq`:_  
+
+ - **Indexing and length**
+
+> - `xs(i)`                 (or `xs apply i`) The element of xs at index i
+> - `xs isDefinedAt i`      Tests whether i is contained in xs.indices
+> - `xs.length`             The length of the sequence (same as `size`)
+> - `xs.lengthCompare ys`   Returns -1 if xs is shorter than ys, +1 if it's longer, and 0 if they have the same length. Works even if one of sequences is infinite
+> - `xs.indices`            The index range of xs, extending from 0 to xs.length - 1
+
+- **Index search**
+
+> - `xs indexOf x`             The index of the first element in xs equal to x
+> - `xs lastIndexOf x`         The index of the last element in xs equal to x
+> - `xs indexOfSlice ys`       The first index of xs that begins the ys sequence
+> - `xs lastIndexOfSlice ys`   The last index of xs that begins the ys sequence
+> - `xs indexWhere p`          The index of the first element in xs that satisfies p
+> - `xs segmentLength (p, i)`  The length of the longest uninterrupted segment of elements in xs, starting with xs(i), that all satisfy the predicate p
+> - `xs prefixLength p`        The length of the longest prefix in xs that all satisfy p
+
+- **Additions**
+
+> - `xs += xs`            A new sequence consisting of x prepended to xs
+> - `xs :+ x`             A new sequence consisting of x appended to xs
+> - `xs padTo (len, x)`   The sequence resulting from appending the value x to xs until length len is reached
+
+- **Updates**
+
+> - `xs patch (i, ys, r)`  The sequence resulting from replacing r elements of xs starting with i by the patch ys
+> - `xs updated (i, x)`    A copy of xs with the element at index i replaced with x
+> - `xs(i) = x`            (or xs.update(i, x) - available only for mutable.Seqs) Changes the element of xs at index i to y
+
+- **Sorting**
+
+> - `xs.sorted`             A new sequence obtained by sorting xs using the standard ordering of the element type of xs
+> - `xs sortWith lessThan`  A new sequence obtained by sorting xs using lessThan as comparison operation
+> - `xs sortBy f`           A new sequence obtained by sorting xs in a way that the function f is first applied to two elements and then results are compared
+
+- **Reversals**
+
+> - `xs.reverse`          A sequence with the elements of xs in reverse order
+> - `xs.reverseIterator`  An iterator yielding all the elements of xs in reverse order
+> - `xs reverseMap f`     A sequence obtained by mapping f over elements of xs in reverse order
+
+- **Comparisons**
+
+> - `xs startsWith ys`        Tests whether xs starts with sequence ys
+> - `xs endsWith ys`          Tests whether xs ends with sequence ys
+> - `xs contains x`           Tests whether xs has an element equal to x
+> - `xs containsSlice ys`     Tests whether xs has a continuous subsequence ys
+> - `(xs corresponds ys)(p)`  Tests whether corresponding elements of xs and ys satisfy the binary predicate p
+
+- **Multiset operations**
+
+> - `xs intersect ys`   The multi-set intersection of xs and ys that preserves the order of elements in xs
+> - `xs diff ys`        The multi-set difference of xs and ys that preserves the order of elements in xs
+> - `xs union ys`       (or xs ++ ys) Multiset union
+> - `xs.distinct`       A subsequence of xs that contains no duplicates
 
