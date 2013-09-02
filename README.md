@@ -3578,21 +3578,21 @@ def foreach[U](f: Elem => U)  // 'U` - arbitrary result type
 
 _The following table lists all concrete methods of `Traversable`:_
 
- - **Abstract method**
+- **Abstract method**
 
 > - `xs foreach f`    Executes function f for every element of xs
 
- - **Addition**
+- **Addition**
 
 > - `xs ++ ys`        A collection consisting of the elements of both xs and ys
 
- - **Maps**
+- **Maps**
 
 > - `xs map f`        The collection obtained from applying f to every element of xs
 > - `xs flatMap f`    The collection obtained by applying f to every element of xs and concatenating the results
 > - `xs collect f`    The collection obtained by applying partial function f to every element in xs for which it is defined and collecting the results
 
- - **Conversions**
+- **Conversions**
 
 > - `xs.toArray`      Converts the collection to an array
 > - `xs.toList`       Converts the collection to a list
@@ -3603,12 +3603,12 @@ _The following table lists all concrete methods of `Traversable`:_
 > - `xs.toSet`        Converts the collection to a set
 > - `xs.toMap`        Converts the collection of key/value pairs to a map
 
- - **Copying**
+- **Copying**
 
 > - `xs copyToBuffer buf`         Copies all elements to buffer 'buf'
 > - `xs copyToArray(arr, s, len)` Copies at most 'len' elements of 'arr', starting at 's'
 
- - **Element retrieval**
+- **Element retrieval**
 
 > - `xs.head`         Retrieves the first element of the collection
 > - `xs.headOption`   The first element of xs in an option value, or None if xs is empty
@@ -3616,7 +3616,7 @@ _The following table lists all concrete methods of `Traversable`:_
 > - `xs.lastOption`   The last element of xs in an option value, or None if xs is empty
 > - `xs find p`       An option containing the first element in xs that satisfies p
 
- - **Subcollections**
+- **Subcollections**
 
 > - `xs.tail`             Returns the rest of the collection (except xs.head)
 > - `xs.init`             The rest of the collection except xs.last
@@ -3629,7 +3629,7 @@ _The following table lists all concrete methods of `Traversable`:_
 > - `xs withFilter p`     A non-strict filter
 > - `xs filterNot p`      The collection of all elements that do not satisfy p
 
- - **Subdivisions**
+- **Subdivisions**
 
 > - `xs splitAt n`    Splits xs returning pair of collections (xs take n, xs drop n)
 > - `xs span p`       Splits xs returning (xs takeWhile p, xs dropWhile p)
@@ -3702,28 +3702,28 @@ sit.next()  // List(3, 4, 5)
 
 _The summary of operations in trait `Iterable`:_  
 
- - **Abstract method**
+- **Abstract method**
 
 > - `xs.iterator`     Iterator that yields every element in the same order as `foreach`
 
- - **Other iterators**
+- **Other iterators**
 
 > - `xs grouped size` Iterator that yields fixed-size chunks of the collection
 > - `xs sliding size` Iterator that yields a sliding fixed-size window of elements
 
- - **Subcollections**
+- **Subcollections**
 
 > - `xs takeRight n`  Collection consisting of last n elems of xs (or arbitrary)
 > - `xs dropRight n`  The rest of the collection except `xs takeRight n`
 
- - **Zippers**
+- **Zippers**
 
 > - `xs zip ys`            An iterable of pairs of corresponding elems from xs and ys
 > - `xs zipAll (ys, x, y)` An iterable of pairs, where shorter sequence is extended to
 match the longer one by appending elements x or y
 > - `xs.zipWithIndex`      An iterable of pairs from xs with their indices
 
- - **Comparison**
+- **Comparison**
 
 > - `xs sameElement ys`    Tests whether xs and ys have same elements in the same order
 
@@ -3795,7 +3795,7 @@ Map('a' -> 1, 'b' -> 10, 'c' -> 100)('b') == 10
 
 _Operations in trait `Seq`:_  
 
- - **Indexing and length**
+- **Indexing and length**
 
 > - `xs(i)`                 (or `xs apply i`) The element of xs at index i
 > - `xs isDefinedAt i`      Tests whether i is contained in xs.indices
@@ -3860,7 +3860,7 @@ _Operations in trait `Seq`:_
 
 _Operations in trait `Buffer`:_  
 
- - **Additions**
+- **Additions**
 
 > - `buf += x`               Appends element x to buffer buf and returns buf
 > - `buf += (x, y)`          Appends given elements to buf
@@ -3870,7 +3870,7 @@ _Operations in trait `Buffer`:_
 > - `buf insert (i, x)`      Inserts element x at index i in buf
 > - `buf insertAll (i, xs)`  Inserts all elements in xs at index i in buf
 
- - **Removals**
+- **Removals**
 
 > - `buf -= x`           Removes element x from buffer buf
 > - `buf remove i`       Removes element at index i from buf
@@ -3879,7 +3879,67 @@ _Operations in trait `Buffer`:_
 > - `buf trimEnd n`      Removes last n elements from buf
 > - `buf.clear()`        Removes all elements from buf
 
- - **Cloning**
+- **Cloning**
 
 > - `buf.clone`          A new buffer with the same elements as buf
+
+### **551 - Sets**
+
+> - Sets are iterables that contain no duplicate elements
+
+_Operations in trait `Set`:_  
+
+- **Tests**
+
+> - `xs contains x`   Tests whether x is an element of xs
+> - `xs(x)`           Same as `xs contains x`
+> - `xs subsetOf ys`  Tests whether xs is a subset of ys
+
+- **Additions**
+
+> - `xs + x`          The set containing all elements of xs as well as x
+> - `xs + (x, y, z)`  The set containing all elements of xs as well as x, y and z
+> - `xs ++ ys`        The set containing all elements of xs and of ys
+
+- **Removals**
+
+> - `xs - x`          The set containing all elements of xs except x
+> - `xs - (x, y, z)`  The set containing all elements of xs except x, y and z
+> - `xs -- ys`        The set containing all elements of xs except elements of ys
+> - `xs.empty`        An empty set of the same class as xs
+
+- **Binary operations**
+
+> - `xs & ys`          The set intersection of xs and ys
+> - `xs intersect ys`  Same as `xs & ys`
+> - `xs | ys`          The set union of xs and ys
+> - `xs union ys`      Same as `xs | ys`
+> - `xs &~ ys`         The set difference of xs and ys
+> - `xs diff ys`       Same as `xs &~ ys`
+
+_Operations in trait `mutable.Set`:_  
+
+- **Additions**
+
+> - `xs += x`          Adds x to xs as a side effect and returns xs
+> - `xs += (x, y, z)`  Adds x, y and z to set xs and returns xs
+> - `xs ++= ys`        Adds elements of ys to xs and returns xs
+> - `xs add x`         Adds x to xs and returns true if x was not previously contained in the set, false if it was already in the set
+
+- **Removals**
+
+> - `xs -= x`          Removes x from xs and returns xs
+> - `xs -= (x, y, z)`  Removes x, y and z from xs and returns xs
+> - `xs --= ys`        Removes all elements from xs that are in ys and returns xs
+> - `xs remove x`      Removes x from xs and returns true if x was previously contained in the set or false if it wasn't
+> - `xs retain p`      Keeps only those elements in xs that satisfy predicate p
+> - `xs.clear()`       Removes all elements from xs
+
+- **Update**
+
+> - `xs(x) = b`        (or `xs.update(x, b)`) If boolean argument b is true, adds x to xs, otherwise removes x from xs
+
+- **Cloning**
+
+> - `xs.clone`          A new mutable set with the same elements as xs
 
