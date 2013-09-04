@@ -7,7 +7,7 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 > - It's just a quick reference card
 
 ## Scala type hierarchy
-![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.png?raw=true)
+![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.gif?raw=true)
 
 ## Basic Types and Operations
 **127 -** The convention is to include empty parentheses when invoking a method only if that method has side effects
@@ -492,8 +492,8 @@ queue.put(-1)  // not placed in the queue (negative number filter trait applied)
 queue.get()  // Int = 20
 ```
 
-![Scala Linearization](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization-example.png?raw=true)
-![Linearization order](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization.png?raw=true)
+![Scala Linearization](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization-example.gif?raw=true)
+![Linearization order](https://github.com/mbonaci/scala/blob/master/resources/Scala-linearization.gif?raw=true)
 
 ### **275 - When to use a `trait` and when an `abstract class`**
 
@@ -1451,13 +1451,13 @@ def product(xs: List[Int]): Int = (1 /: xs) (_ * _)  // equals 1 * el1 * el2 * .
 >     - binary operation `op`
 >   - `(z /: List(a, b, c))(op)` equals `op(op(op(z, a), b), c)`
 
-![List fold left image](https://github.com/mbonaci/scala/blob/master/resources/Scala-fold-left.png?raw=true)
+![List fold left image](https://github.com/mbonaci/scala/blob/master/resources/Scala-fold-left.gif?raw=true)
 
 >   - **fold right** operation `(z \: xs)(op)` is the reflection of _fold left_
 >   - consists of the same 3 operands, but the first two are reversed, list comes first
 >   - `(List(a, b, c) :\ z)(op)` equals `op(a, op(b, op(c, z)))`
 
-![List fold right image](https://github.com/mbonaci/scala/blob/master/resources/Scala-fold-right.png?raw=true)
+![List fold right image](https://github.com/mbonaci/scala/blob/master/resources/Scala-fold-right.gif?raw=true)
 
 ```scala
 // implementation of the 'flatten' methods with folding:
@@ -1720,7 +1720,7 @@ for(word <- wordsArray)
 set  // Set(it, run, that's, forest)
 ```
 
-![Set hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-sets-hierarchy.png?raw=true)
+![Set hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-sets-hierarchy.gif?raw=true)
 
 ```scala
 /********************************************************************************/
@@ -1772,7 +1772,7 @@ def countWords(text: String): mutable.Map[String, Int] = {
 }
 ```
 
-![Map hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-maps-hierarchy.png?raw=true)
+![Map hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-maps-hierarchy.gif?raw=true)
 
 ```scala
 /********************************************************************************/
@@ -2178,7 +2178,7 @@ object Customer extends Application {
 // Publication => String is a subtype of Book => AnyRef
 ```
 
-![Map hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-covariance-contravariance.png?raw=true)
+![Map hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-covariance-contravariance.gif?raw=true)
 
 > - because the result type of a `Function1` is defined as _covariant_, the inheritance
 relationship of the two result types, shown at the right of the image, is in the same direction as that of the two functions shown in the center
@@ -2984,7 +2984,7 @@ implicit def identity[A](x: A): A = x  // simply returns received object
 
 > - lists are not built-in as a language construct in Scala, they are defined by an abstract class `scala.List`, which comes with 2 subclasses, `Nil` and `::`
 
-![Lists hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-lists-hierarchy.png?raw=true)
+![Lists hierarchy](https://github.com/mbonaci/scala/blob/master/resources/Scala-lists-hierarchy.gif?raw=true)
 
 ```scala
 package scala
@@ -3070,7 +3070,7 @@ def ::[U >: T](x: U): List[U] = new scala.::(x, this)
 
 > - when the code above is executed the result type is widened as necessary to include the types of all list elements
 
-![Polymorphic list construction](https://github.com/mbonaci/scala/blob/master/resources/Scala-polymorphic-list-construction.png?raw=true)
+![Polymorphic list construction](https://github.com/mbonaci/scala/blob/master/resources/Scala-polymorphic-list-construction.gif?raw=true)
 
 > - first, the type parameter `U` of `::` is instantiated to `Fruit`
 > - the lower-bound constraint of `U` is satisfied, because the list `apples` has type `List[Apple]` and `Fruit` is supertype of `Apple`
