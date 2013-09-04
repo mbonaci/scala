@@ -95,6 +95,7 @@ header h2 {
   letter-spacing: 0;
 }
 
+
 .inner {
   position: relative;
   width: 940px;
@@ -128,10 +129,15 @@ aside#sidebar {
 aside#sidebar p.repo-owner,
 aside#sidebar p.repo-owner a {
   font-weight: bold;
+  margin-bottom: 5px;
 }
 
 aside#sidebar p a:hover {
   color: #9ddcff;
+}
+
+aside#sidebar .twitter-follow-button {
+  margin-bottom: 10px;
 }
 
 aside#sidebar p.page-built,
