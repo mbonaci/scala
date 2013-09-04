@@ -3943,3 +3943,11 @@ _Operations in trait `mutable.Set`:_
 
 > - `xs.clone`          A new mutable set with the same elements as xs
 
+> - mutable set also has `+`, `++`, `-` and `--` methods, but they are rarely used because they involve copying the set
+> - the current default implementation of a mutable set uses a hash table to store the set's elements
+> - the default implementation of an immutable set uses a representation that adapts to the number of element of the set:
+>   - empty set is represented as a singleton
+>   - sets of up to four elements are represented by a single object with elems as fields
+>   - beyond 4 elements, immutable sets are represented as **hash tries**
+> - this decision results in more compact and efficient small (up to 4) immutable sets (compared to small mutable sets)
+
