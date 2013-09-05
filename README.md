@@ -3980,3 +3980,12 @@ numbers range ("eight", "one")  // TreeSet(eight, four)
 numbers from "four"  // TreeSet(four, one)
 ```
 
+### **557 - Bit sets**
+
+> - sets of non-negative integer elements, that are implemented as one or more words of packed bits
+> - internal representation uses an array of `Longs`, where the first long covers elements from 0 to 63, the second from 64 to 127, and so on
+> - for every long, each of its 64 bits is set to 1 if the corresponding element is contained in the set and otherwise it contains zero (the size of a bit set depends on the largest integer that's stored in it)
+> - if N is the largest integer, then the size of the set is N/64 Long words, or N/8 bytes, plus a small number of extra bytes that carry status information
+> - hence, bit sets are convenient for storing many small elements
+> - another advantage of bit sets is that operations `contains`, `+=` and `-=` are extremely efficient
+
