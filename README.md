@@ -3989,3 +3989,110 @@ numbers from "four"  // TreeSet(four, one)
 > - hence, bit sets are convenient for storing many small elements
 > - another advantage of bit sets is that operations `contains`, `+=` and `-=` are extremely efficient
 
+### **557 - Maps**
+
+> - `Iterables` of pairs of keys and values (mappings, associations)
+
+_Operations in trait `Map`:_  
+
+- **Lookups**
+
+> - `ms get k`             The value associated with key 'k' as an 'option', or 'None' if 'k' is not found
+> - `ms(k)`                (or `ms apply k`) The value associated with key 'k', or a thrown exception if not found
+> - `ms getOrElse (k, d)`  The value associated with key 'k', or the default value 'd' if not found
+> - `ms contains k`        Tests whether 'ms' contains a mapping for key 'k'
+> - `ms isDefinedAt k`     Same as `contains`
+
+- **Additions and updates**
+
+> - `ms + (k -> v)`          The map containing 'ms' and the mapping 'k -> v'
+> - `ms + (k -> v, l -> w)`  The map containing 'ms' and given key value pairs
+> - `ms ++ kvs`              The map containing 'ms' and all key value pairs of 'kvs'
+> - `ms updated (k, v)`      Same as `ms + (k -> v)`
+
+- **Removals**
+
+> - `ms - k`          The map containing 'ms' except for any mapping of key 'k'
+> - `ms - (k, l, m)`  The map containing 'ms' except for any mappings with the given keys
+> - `ms -- ks`        The map containing 'ms' except for any mapping with a key in 'ks'
+
+- **Subcollections**
+
+> - `ms.keys`            An iterable containing each key of 'ms'
+> - `ms.keySet`          A set containing each key in 'ms'
+> - `ms.keysIterator`    An iterator yielding each key in ms
+> - `ms.values`          An iterable containing each value associated with a key in 'ms'
+> - `ms.valuesIterator`  An iterator yielding each value associated with a key in 'ms'
+
+- **Transformation**
+
+> - `ms filterKeys p`  A map view containing only those mappings in 'ms' where the key satisfies predicate 'p'
+> - `ms mapValues f`   A map view resulting from applying function 'f' to each value associated with a key in 'ms'
+
+_Operations in trait `mutable.Map`:_  
+
+- **Additions and updates**
+
+> - `ms(k) = v`                  (or `ms.update(k, v)`) Adds 'k -> v' as a side effect, overwriting any previous mapping of 'k'
+> - `ms += (k -> v)`             Adds mapping 'k -> v' and returns the altered 'ms'
+> - `ms += (k -> v, l -> w)`     Adds the given mappings to 'ms' and returns 'ms'
+> - `ms ++= kvs`                 Adds all mappings in 'kvs' to 'ms' and returns 'ms'
+> - `ms put (k, v)`              Adds mapping 'k -> v' and returns any value previously associated with 'k' as an 'option'
+> - `ms getOrElseUpdate (k, d)`  If key 'k' is defined, returns its value. Otherwise updates 'ms' with the mapping 'k -> d' and returns 'd'
+
+- **Removals**
+
+> - `ms -= k`          Removes mapping with key 'k' and returns 'ms'
+> - `ms -= (k, l, m)`  Removes mappings with the given keys and returns 'ms'
+> - `ms --= ks`        Removes all keys contained in 'ks' and returns 'ms'
+> - `ms remove k`      Removes any mapping with key 'k' and returns any value previously associated with 'k' as an 'option'
+> - `ms retain p`      Keeps only those mappings that have a key in satisfying predicate 'p'
+> - `ms clear()`       Removes all mappings from 'ms'
+
+- **Transformation and cloning**
+
+> - `ms transform f`  Transforms all associated values in 'ms' with function 'f'
+> - `ms.clone`        Returns a new mutable map with the same mappings as 'ms'
+
+> - same as with sets, mutable maps also support `+`, `-` and `updated`, but they are also rarely used since they involve copying of the mutable map
+
+```scala
+// getOrElseUpdate is useful for accessing maps that act as caches:
+// if you were to have an expensive operation triggered by invoking a function 'f':
+def f(x: String) = {
+  println("taking my time slow."); Thread.sleep(100)
+  x.reverse
+}
+
+// assume further that 'f' has no side-effects, so invoking it again with the same
+// argument will always yield the same result
+// in that case, you could save time by storing previously computed bindings of
+// arguments and results of 'f' in a map, and only computing the result of 'f' if
+// a result of an argument was not found there:
+val cache = collection.mutable.Map[String, String]()  // Map()
+
+// the more efficient version of function 'f':
+def cachedF(s: String) = cache.getOrElseUpdate(s, f(s))
+
+cachedF("ijk")
+// taking my time
+// String = kji
+
+cachedF("ijk")
+// String = kji
+
+// the second argument to 'getOrElseUpdate' is "by-name", so the computation of f("ijk")
+// is only performed if 'getOrElseUpdate' requires the value of its second argument
+// which happens only if its first argument is not found in the map
+
+// the alternative is to implement 'cachedF' directly, using just basic map operations
+// but that would've taken more code:
+def cachedF(arg: String) = cache get arg match {
+  case Some(result) => result
+  case None =>
+    val result = f(arg)
+    cache(arg) = result
+    result
+}
+```
+
