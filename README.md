@@ -3951,3 +3951,32 @@ _Operations in trait `mutable.Set`:_
 >   - beyond 4 elements, immutable sets are represented as **hash tries**
 > - this decision results in more compact and efficient small (up to 4) immutable sets (compared to small mutable sets)
 
+### **556 - Sorted sets**
+
+> - `SortedSet` is a subtrait of `Set` in which elements are traversed in sorted order, regardless of the order in which elements were added to the set 
+> - the default representation of a `SortedSet` is an ordered binary tree, maintaining the invariant that all elements in the left subtree of any node are smaller than all elements in the right subtree (thus, simple, in-order traversal yields elements in the ascending order)
+> - `immutable.TreeSet` uses a red-black tree implementation to maintain that order and at the same time keep the tree balanced
+
+```scala
+// to create an empty tree set, we may want to first specify the desired ordering:
+val myOrdering = Ordering.fromLessThan[String](_ > _)  // scala.math.Ordering[String]
+
+// then, to create an empty tree set with that ordering:
+import scala.collection.immutable.TreeSet
+TreeSet.empty(myOrdering)  // TreeSet()
+
+// or we can leave out the ordering, but give an element type of the empty set
+// in which case the default ordering will be used (ascending - (_ < _)):
+val set = TreeSet.empty[String]
+
+// if you make new sets from a tree set (e.g. by concatenation or filtering)
+// in the new set, the elements will stay in the same order:
+val numbers = set + ("one", "four", "eight")  // TreeSet(eight, four, one)
+
+// sorted sets also support ranges of elements (including start and up to end, excluded):
+numbers range ("eight", "one")  // TreeSet(eight, four)
+
+// they also support 'from' method, which returns elements >= to argument received:
+numbers from "four"  // TreeSet(four, one)
+```
+
