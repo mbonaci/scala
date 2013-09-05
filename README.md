@@ -4096,3 +4096,43 @@ def cachedF(arg: String) = cache get arg match {
 }
 ```
 
+### **562 - Synchronized sets and maps**
+
+> - if you need a thread-safe map, you could mix the `SynchronizedMap` trait into a map implementation, e.g. `HashMap`
+
+```scala
+import scala.collection.mutable.{Map, SynchronizedMap, HashMap}
+
+object MapMaker {
+  
+  def makeMap(): Map[String, String] = {
+
+    // a synthetic subclass of HashMap that mixes in SynchronizedMap trait
+    // is generated, an instance of it is created and then returned
+    new HashMap[String, String] with SynchronizedMap[String, String] {
+
+      // if you ask a map to give you a key that doesn't exist you'll get
+      // NoSuchElementException, but if you override 'default', you'll get 
+      // a value returned by 'default' method
+      override def default(key: String) = "Why?"
+    }    
+  }
+  
+  def main(args: Array[String]): Unit = {
+    // because our map mixes in SynchronizedMap it may be used
+    // by multiple threads at the same time
+    val capital = makeMap
+    capital ++= List("US" -> "Washington", "Croatia" -> "Zagreb")
+    
+    println(capital("Croatia"))      // Zagreb
+    println(capital("New Zealand"))  // Why?
+    
+    capital += ("New Zealand" -> "Wellington")
+    
+    println(capital("New Zealand"))  // Wellington
+  }
+}
+```
+
+> - regardless of `Synchronized` collections, you're encouraged to use immutable collections with Scala actors instead
+
