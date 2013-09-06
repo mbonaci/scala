@@ -4229,4 +4229,15 @@ val (element, has23) = has123.dequeue  // element: Int = 1; has23: Queue(2, 3)
 // dequeue returns a pair consisting of the element removed and the rest of the queue
 ```
 
+- **Ranges**
+
+> - ordered sequence of integers that are equally spaced apart
+> - represented in constant space, since they can be defined by just 3 numbers: start, end and step, thus making most operations on ranges extremely fast
+> - to create a range, use predefined methods `to` and `by`:
+
+```scala
+1 to 3  // immutable.Range.Inclusive with immutable.Range.ByOne = Range(1, 2, 3)
+5 to 14 by 3  // immutable.Range = Range(5, 8, 11, 14)
+1 until 3  // immutable.Range = Range(1, 2)
+```
 
