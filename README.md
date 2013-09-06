@@ -4250,3 +4250,16 @@ val (element, has23) = has123.dequeue  // element: Int = 1; has23: Queue(2, 3)
 > - strike a nice balance between reasonably fast lookups and reasonably efficient functional insertions (`+`) and deletions (`-`)
 > - sets and maps that contain less than five elements are stored as single objects that just contain the elements as fields
 
+- **Red-black trees**
+
+> - a form of balanced binary trees where some nodes are designated "red" and others "black"
+> - like any other balanced binary tree, operations on them take _log(n)_
+> - `TreeSet` and `TreeMap` use a red-black tree internally
+
+```scala
+val set = collection.immutable.TreeSet.empty[Int]  // TreeSet[Int] = TreeSet()
+set + 1 + 3 + 3  // TreeSet[Int] = TreeSet(1, 3)
+```
+
+> - they are also the standard implementation of `SortedSet`, because they provide efficient iterator that returns all elements of the set in sorted order
+
