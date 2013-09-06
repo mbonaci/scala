@@ -4345,3 +4345,9 @@ LinkedList.empty.isEmpty // in Java something like this would throw NullPointerE
 
 > - the same as single linked lists, except that besides `next`, they have another mutable field, `prev`, which points to the element preceding the current node
 > - the main benefit of that additional link is that it makes element removal very fast
+
+- **Mutable lists**
+
+> - a `MutableList` consists of a single linked list together with a pointer that refers to the terminal empty node of that list, which makes list append operation take constant time, because it avoids having to traverse the list in search for its terminal node
+> - it is the standard implementation of `mutable.LinearSeq`
+
