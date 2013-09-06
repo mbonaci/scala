@@ -4351,3 +4351,17 @@ LinkedList.empty.isEmpty // in Java something like this would throw NullPointerE
 > - a `MutableList` consists of a single linked list together with a pointer that refers to the terminal empty node of that list, which makes list append operation take constant time, because it avoids having to traverse the list in search for its terminal node
 > - it is the standard implementation of `mutable.LinearSeq`
 
+- **Queues**
+
+> - instead of immutable queue's `enqueue` method, we use `+=` and `++=` to append
+> - also, on mutable queue, `dequeue` method just removes the head element from the queue and returns it
+
+```scala
+val q = new scala.collection.mutable.Queue[String]  // Queue[String] = Queue()
+q += "a"              // q.type = Queue(a)
+q ++= List("b", "c")  // q.type = Queue(a, b, c)
+q                     // mutable.Queue[String] = Queue(a, b, c)
+q.dequeue             // String = a
+q                     // mutable.Queue[String] = Queue(b, c)
+```
+
