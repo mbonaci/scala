@@ -4277,3 +4277,16 @@ moreBits(3)  // true
 moreBits(0)  // false
 ```
 
+- **List maps**
+
+> - represents a map as a linked list of key-value pairs
+> - in general, operations might have to iterate through the entire list, thus taking time linear in the size of the map
+> - rarely used, since regular immutable maps are almost always faster
+> - the one exception is a case when a map is constructed in such a way that the first elements in the list are selected much more often than the other elements
+
+```scala
+val map = collection.immutable.ListMap(1 -> "one", 2 -> "two")
+// immutable.ListMap[Int, java.lang.String] = Map((1, one), (2, two))
+map(2)  // java.lang.String = two
+```
+
