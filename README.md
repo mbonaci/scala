@@ -4303,6 +4303,9 @@ val buf = collection.mutable.ArrayBuffer.empty[Int] // ArrayBuffer[Int] = ArrayB
 buf += 1     // buf.type = ArrayBuffer(1)
 buf += 10    // buf.type = ArrayBuffer(1, 10)
 buf.toArray  // Array[Int] = Array(1, 10)
+
+// buf.type - a singleton type
+// means that the variable holds exactly the object referred to by buf
 ```
 
 - **List buffers**
@@ -4315,5 +4318,16 @@ val buf = collection.mutable.ListBuffer.empty[Int]  // ListBuffer[Int] = ListBuf
 buf += 1    // buf.type = ListBuffer(1)
 buf += 10   // buf.type = ListBuffer(1, 10)
 buf.toList  // List[Int] = List(1, 10)
+```
+
+- **String builders**
+
+> - imported in the default namespace, so they may be created: `new StringBuilder`
+
+```scala
+val buf = new StringBuilder  // StringBuilder = StringBuilder()
+buf += 'a'       // StringBuilder(a)
+buf ++= "bcdef"  // StringBuilder(a, b, c, d, e, f)
+buf.toString     // String = abcdef
 ```
 
