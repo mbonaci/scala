@@ -4290,3 +4290,18 @@ val map = collection.immutable.ListMap(1 -> "one", 2 -> "two")
 map(2)  // java.lang.String = two
 ```
 
+### **571 - Concrete mutable collection classes**
+
+- **Array buffers**
+
+> - holds an array and a size
+> - most operations have the same speed as arrays' counterparts, because the operations simply access and modify the underlying array
+> - additionally, they support efficient addition of elements to the end, which take "amortized constant time", thus making them useful for building a large collections, as long as new items are always added to the end:
+
+```scala
+val buf = collection.mutable.ArrayBuffer.empty[Int] // ArrayBuffer[Int] = ArrayBuffer()
+buf += 1     // buf.type = ArrayBuffer(1)
+buf += 10    // buf.type = ArrayBuffer(1, 10)
+buf.toArray  // Array[Int] = Array(1, 10)
+```
+
