@@ -4386,3 +4386,8 @@ stack.pop      // Int = 2
 stack          // mutable.Stack[Int] = Stack(1)
 ```
 
+- **Array stacks**
+
+> - an alternative implementation of a mutable stack, which is backed by an `Array` that gets resized as needed
+> - provides fast indexing and is slightly more efficient than a normal mutable stack
+
