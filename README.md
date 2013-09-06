@@ -4219,3 +4219,14 @@ hasOne.top  // Int = 1
 hasOne.pop  // Stack()  - returns the stack, not the popped element (like list's tail)
 ```
 
+- **Immutable queues**
+
+```scala
+val empty = scala.collection.immutable.Queue[Int]()  // Queue[Int] = Queue()
+val hasOne = empty.enqueue(1)                        // Queue[Int] = Queue(1)
+val has123 = hasOne.enqueue(List(2, 3))              // Queue[Int] = Queue(1, 2, 3)
+val (element, has23) = has123.dequeue  // element: Int = 1; has23: Queue(2, 3)
+// dequeue returns a pair consisting of the element removed and the rest of the queue
+```
+
+
