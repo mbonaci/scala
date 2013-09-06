@@ -4263,3 +4263,17 @@ set + 1 + 3 + 3  // TreeSet[Int] = TreeSet(1, 3)
 
 > - they are also the standard implementation of `SortedSet`, because they provide efficient iterator that returns all elements of the set in sorted order
 
+- **Immutable bit sets**
+
+> - represent collections of small integers as the bits of a larger integer, e.g. the bit set containing `3, 2 and 0` would be represented as integer `1101` in binary, which is `13` in decimal
+> - internally, they use an array of 64-bit Longs, where the first Long in the array is for integers 0 through 63, second for 64 to 127, and so on, thus they are very compact as long as the largest integer in the set is less than a few hundred or so
+> - testing for inclusion takes constant time
+> - adding an item to a set takes time proportional to the number of Longs in the array
+
+```scala
+val bits = scala.collection.immutable.BitSet.empty  // BitSet = BitSet()
+val moreBits = bits + 3 + 4 + 4  // BitSet = BitSet(3, 4)
+moreBits(3)  // true
+moreBits(0)  // false
+```
+
