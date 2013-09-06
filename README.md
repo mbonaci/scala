@@ -4143,3 +4143,27 @@ object MapMaker {
 > - finite immutable sequences that provide constant time access to their first element and they have a constant time _cons_ operation for adding a new element to the front
 > - most other operations take linear time (e.g. accessing "non-head" elements)
 
+- **Streams**
+
+> - like a list, except that its elements are computed lazily
+> - because of it laziness, a stream can be infinitely long (only requested elements are computed)
+> - they have the same performance characteristics as lists
+> - whereas lists are constructed with the `::` operator, streams are constructed with `#::`:
+
+```scala
+val str = 1 #:: 2 #:: 3 #:: Stream.empty  // Stream[Int] = Stream(1, ?)
+
+// the head of the stream is '1', and the tail has '2' and '3'
+// the tail is not printed because it hasn't been computed yet
+// 'toString' method of a stream is careful not to force any extra evaluation
+
+// computing a Fibonacci sequence starting with the given two numbers
+def fibFrom(a: Int, b: Int): Stream[Int] =
+  a #:: fibFrom(b, a + b)
+
+// if the function used '::' instead of '#::', it would cause an infinite recursion
+// since it uses a stream, the right hand side is not evaluated until it is requested
+val fibs = fibFrom(1, 2).take(7)  // Stream[Int] = Stream(1, ?)
+fibs.toList                       // List(1, 1, 2, 3, 5, 8, 13)
+```
+
