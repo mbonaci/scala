@@ -4331,3 +4331,13 @@ buf ++= "bcdef"  // StringBuilder(a, b, c, d, e, f)
 buf.toString     // String = abcdef
 ```
 
+- **Linked lists**
+
+> - mutable sequences that consist of nodes that are linked with `next` pointers
+> - in most languages empty linked list would be represented with `null`, but in Scala, which makes even empty sequences support all sequence methods, empty linked list is encoded in a special way. Their `next` pointer points back to the node itself
+
+```scala
+// otherwise this would happen:
+LinkedList.empty.isEmpty // in Java something like this would throw NullPointerException
+```
+
