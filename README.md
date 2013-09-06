@@ -4365,3 +4365,8 @@ q.dequeue             // String = a
 q                     // mutable.Queue[String] = Queue(b, c)
 ```
 
+- **Array sequences**
+
+> - `ArraySeq` is a mutable sequence of fixed size, implemented as `Array[AnyRef]`
+> - used for its performance characteristics (array), when you want to create generic instances of a sequence, but do not know the type of elements and do not have a `ClassManifest` to provide at runtime
+
