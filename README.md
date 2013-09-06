@@ -4391,3 +4391,19 @@ stack          // mutable.Stack[Int] = Stack(1)
 > - an alternative implementation of a mutable stack, which is backed by an `Array` that gets resized as needed
 > - provides fast indexing and is slightly more efficient than a normal mutable stack
 
+- **Hash tables**
+
+> - stores its elements in an underlying array, placing each item at a position in the array determined by the hash code of that item
+> - element addition takes constant time, so long as there isn't already another element in the array that has the same hash code
+> - since it's very fast (as long as the objects placed in them have a good distribution of hash codes), the default mutable map and set types are based on hash tables
+
+```scala
+val map = collection.mutable.HashMap.empty[Int, String] // HashMap[Int, String] = Map()
+map += (5 -> "html5")  // map.type = Map((5, html5))
+map += (3 -> "css3")   // map.type = Map((5, html5), (3, css3))
+map(5)                 // html5
+map contains 2         // false
+```
+
+> - iteration over a hash table is not guaranteed to occur in any particular order, it simply iterates through the underlying array in whichever order it happens to be
+> - to get a guaranteed iteration order, use a linked hash map or set instead, which is just like a regular hash map or set, except that it also includes a linked list of the elements in the order in which they were added
