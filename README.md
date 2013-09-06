@@ -4206,3 +4206,16 @@ println(vec)        // Vector[Int] = Vector(1, 2, 3)
 scala.collection.immutable.IndexedSeq(1, 2, 3)  // IndexedSeq[Int] = Vector(1, 2, 3)
 ```
 
+- **Immutable stacks**
+
+> - `push`, `pop` and `top` all take constant time
+> - rarely used because their functionality is subsumed by lists
+
+```scala
+val stack = scala.collection.immutable.Stack.empty  // Stack[Nothing] = Stack()
+val hasOne = stack.push(1)  // Stack[Int] = Stack(1)
+stack       // Stack()
+hasOne.top  // Int = 1
+hasOne.pop  // Stack()  - returns the stack, not the popped element (like list's tail)
+```
+
