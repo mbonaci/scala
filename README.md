@@ -4167,3 +4167,42 @@ val fibs = fibFrom(1, 2).take(7)  // Stream[Int] = Stream(1, ?)
 fibs.toList                       // List(1, 1, 2, 3, 5, 8, 13)
 ```
 
+- **Vectors**
+
+> - introduced in Scala 2.8
+> - provide efficient access to elements beyond the head
+> - access to any element take "effectively constant time" (larger constant than list's head or array's element, but constant nonetheless)
+
+```scala
+// used as any other sequence:
+val vec1 = scala.collection.immutable.Vector.empty  // Vector[Nothing] = Vector()
+val vec2 = vec1 :+ 1 :+ 2  // Vector[Int] = Vector(1, 2)
+val vec3 = 100 +: vec2     // Vector[Int] = Vector(100, 1, 2)
+val third = vec3(0)        // Int = 100
+```
+
+> - vectors are represented as broad, shallow trees, where every tree node contains up to 32 elements of the vector or up to 32 other tree nodes
+> - so vectors with up to 32 elements can be represented in a single tree node
+> - vectors with up to 32 * 32 (1024) elements can be represented with a single indirection
+> - 2^15 (approx 32.77k) elements can be stored within two hops from the root
+> - 2^20 (approx 1M) - 3 hops,  2^25 (approx 33.5M) - 4 hops,  2^30 (approx 1B) - 5 hops
+> - so for all vectors of up to 1.074B elements, an element selection involves up to five primitive array selections (thus constant time)
+
+```scala
+// we cannot change an element of a vector in place
+// but we can use 'updated' method which returns a new vector that differs from
+// the original vector only in a single element:
+val vec = Vector(1, 2, 3)
+vec updated (2, 4)  // Vector[Int] = Vector(1, 2, 4)
+println(vec)        // Vector[Int] = Vector(1, 2, 3)
+```
+
+> - like selection, functional vector updates also take "effectively constant time"
+> - implementation, to update an element in the middle of a vector, copies the node that contains the element and all nodes that point to it, starting from the root
+> - that is certainly more expensive than in-place update of a mutable array, but it's still a lot cheaper than copying the whole vector
+> - because of this characteristics, vectors strike a good balance between fast random selections and fast random functional updates and are, thus, the current default implementation of immutable indexed sequences:
+
+```scala
+scala.collection.immutable.IndexedSeq(1, 2, 3)  // IndexedSeq[Int] = Vector(1, 2, 3)
+```
+
