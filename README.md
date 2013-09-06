@@ -4416,3 +4416,15 @@ map contains 2         // false
 > - in `WeakHashMap`, as soon as a key object becomes unreachable, its entry is removed from the weak hash map
 > - implemented as a wrapper of `java.util.WeakHashMap`
 
+- **Concurrent maps**
+
+> - can be safely accessed by several threads at once
+> - `ConcurrentMap` is a trait in collections library, whose current implementation is Java's `java.util.concurrent.ConcurrentMap`, which can be automatically converted to Scala map using the standard Java/Scala collection conversion
+
+_Operations in trait `ConcurrentMap`:_  
+
+> - `m putIfAbsent (k, v)`     Adds key/value binding 'k -> v' unless 'k' exists in 'm'
+> - `m remove (k, v)`          Removes entry for 'k' if it is currently mapped to 'v'
+> - `m replace (k, old, new)`  Replaces value of key 'k' to 'new', if it is set to 'old'
+> - `m replace (k, v)`         Replaces value of 'k' with 'v' if it was previously bound to some value
+
