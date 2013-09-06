@@ -4370,3 +4370,19 @@ q                     // mutable.Queue[String] = Queue(b, c)
 > - `ArraySeq` is a mutable sequence of fixed size, implemented as `Array[AnyRef]`
 > - used for its performance characteristics (array), when you want to create generic instances of a sequence, but do not know the type of elements and do not have a `ClassManifest` to provide at runtime
 
+- **Stacks**
+
+> - works exactly the same as the immutable version, except that modifications happen in place
+
+```scala
+val stack = new scala.collection.mutable.Stack[Int]  // mutable.Stack[Int] = Stack()
+stack.push(1)  // stack.type = Stack(1)
+stack          // mutable.Stack[Int] = Stack(1)
+stack.push(2)  // stack.type = Stack(2, 1)
+stack          // mutable.Stack[Int] = Stack(2, 1)
+stack.top      // Int = 2
+stack          // mutable.Stack[Int] = Stack(2, 1)
+stack.pop      // Int = 2
+stack          // mutable.Stack[Int] = Stack(1)
+```
+
