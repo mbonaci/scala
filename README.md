@@ -4198,7 +4198,7 @@ println(vec)        // Vector[Int] = Vector(1, 2, 3)
 ```
 
 > - like selection, functional vector updates also take "effectively constant time"
-> - implementation, to update an element in the middle of a vector, copies the node that contains the element and all nodes that point to it, starting from the root
+> - implementation, to update an element in the middle of a vector, copies the node that contains the element and all nodes that point to it, starting from the root (so it creates between 1 and 5 nodes that each contain up to 32 elements or subtrees)
 > - that is certainly more expensive than in-place update of a mutable array, but it's still a lot cheaper than copying the whole vector
 > - because of this characteristics, vectors strike a good balance between fast random selections and fast random functional updates and are, thus, the current default implementation of immutable indexed sequences:
 
