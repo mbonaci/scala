@@ -4407,3 +4407,12 @@ map contains 2         // false
 
 > - iteration over a hash table is not guaranteed to occur in any particular order, it simply iterates through the underlying array in whichever order it happens to be
 > - to get a guaranteed iteration order, use a linked hash map or set instead, which is just like a regular hash map or set, except that it also includes a linked list of the elements in the order in which they were added
+
+- **Weak hash maps**
+
+> - a special kind of hash map in which the garbage collector does not follow links from the map to the keys stored in it, which means that a key and its associated value will disappear from the map if there is no other reference to that key
+> - useful for tasks such as caching, where you want to reuse an expensive function's result if the function is called again on the same key
+> - if keys and function results were stored in a regular hash map, the map could grow without bounds, since no key would ever become eligible for garbage collection
+> - in `WeakHashMap`, as soon as a key object becomes unreachable, its entry is removed from the weak hash map
+> - implemented as a wrapper of `java.util.WeakHashMap`
+
