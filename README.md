@@ -4136,3 +4136,10 @@ object MapMaker {
 
 > - regardless of `Synchronized` collections, you're encouraged to use immutable collections with Scala actors instead
 
+### 564 - Concrete immutable collection classes
+
+- **Lists**
+
+> - finite immutable sequences that provide constant time access to their first element and they have a constant time _cons_ operation for adding a new element to the front
+> - most other operations take linear time (e.g. accessing "non-head" elements)
+
