@@ -4341,3 +4341,7 @@ buf.toString     // String = abcdef
 LinkedList.empty.isEmpty // in Java something like this would throw NullPointerException
 ```
 
+- **Double linked lists**
+
+> - the same as single linked lists, except that besides `next`, they have another mutable field, `prev`, which points to the element preceding the current node
+> - the main benefit of that additional link is that it makes element removal very fast
