@@ -4241,3 +4241,12 @@ val (element, has23) = has123.dequeue  // element: Int = 1; has23: Queue(2, 3)
 1 until 3  // immutable.Range = Range(1, 2)
 ```
 
+- **Hash tries**
+
+> - a standard way to implement immutable sets and maps efficiently
+> - represented similar to vectors, in that they are also trees where every node has 32 elements or subtrees, but selection is done based on a hash code
+> - e.g. to find a given key in a map, we use the lowest five bits of the hash code of the key to select the first subtree, the next five bits for the next subtree, and so on
+> - selection stops once all elements stored in a node have hash codes that differ from each other in the bits that are selected so far, thus not all the bits of the hash code are always used
+> - strike a nice balance between reasonably fast lookups and reasonably efficient functional insertions (`+`) and deletions (`-`)
+> - sets and maps that contain less than five elements are stored as single objects that just contain the elements as fields
+
