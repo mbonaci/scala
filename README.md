@@ -4305,3 +4305,15 @@ buf += 10    // buf.type = ArrayBuffer(1, 10)
 buf.toArray  // Array[Int] = Array(1, 10)
 ```
 
+- **List buffers**
+
+> - like an array buffer, except that it uses a linked list internally instead of array
+> - if you plan to convert the buffer to a list once it's built up, use a list buffer instead of an array buffer
+
+```scala
+val buf = collection.mutable.ListBuffer.empty[Int]  // ListBuffer[Int] = ListBuffer()
+buf += 1    // buf.type = ListBuffer(1)
+buf += 10   // buf.type = ListBuffer(1, 10)
+buf.toList  // List[Int] = List(1, 10)
+```
+
