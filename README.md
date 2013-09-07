@@ -4587,20 +4587,36 @@ val s: Seq[Char] = str  // Seq[Char] = WrappedString(h, e, l, l, 0)
 
 _Performance characteristics of some common operations on collections:_
 
-> - the legend:
-> **C**    - the operation takes (fast) **constant** time
-> **eC**   - **effectively constant** time (may depend on assumptions, e.g. max length)
-> **aC**   - **amortized constant** time (some invocations might take longer)
-> **Log**  - time **proportional to the logarithm of the collection size**
-> **L**    - **linear** time (proportional to the collection size)
-> **-**    - the operation is not supported
+> - **the legend:**  
+>   - **C**    - the operation takes (fast) **constant** time
+>   - **eC**   - **effectively constant** time (depends on assumptions, e.g. max length)
+>   - **aC**   - **amortized constant** time (some invocations might take longer)
+>   - **Log**  - time **proportional to the logarithm of the collection size**
+>   - **L**    - **linear** time (proportional to the collection size)
+>   - **-**    - the operation is not supported
 
-> _______________| head | tail | apply | update | prepend | append | insert_____________
-> **immutable**  
->   List           C      C      
->   Stream         C      C      
->   Vector         eC     eC     
->   Stack          C      C      
->   Queue          aC     aC     
->   Range          C      C      
->   String         C      L      
+_Performance characteristics of sequence types:_
+
+```scala
+/*
+               | head | tail | apply | update | prepend | append | insert
+ immutable  
+   List           C      C      L        L        C         L        -
+   Stream         C      C      L        L        C         L        -
+   Vector        eC     eC     eC       eC       eC        eC        -
+   Stack          C      C      L        L        C         L        -
+   Queue         aC     aC      L        L        L         C        -
+   Range          C      C      C        -        -         -        -
+   String         C      L      C        L        L         L        -
+ mutable  
+   ArrayBuffer    C      L      C        C        L        aC        L
+   ListBuffer     C      L      L        L        C         C        L
+   StringBuilder  C      L      C        C        L        aC        L
+   MutableList    C      L      L        L        C         C        L
+   Queue          C      L      L        L        C         C        L
+   ArraySeq       C      L      C        C        -         -        -
+   Stack          C      L      L        L        C         L        L
+   ArrayStack     C      L      C        C       aC         L        L
+   Array          C      L      C        C        -         -        -
+*/
+```
