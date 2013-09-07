@@ -4439,3 +4439,50 @@ bits += 3  // bits.type = BitSet(1, 3)
 bits       // mutable.BitSet = BitSet(1, 3)
 ```
 
+### **578 - Arrays**
+
+> - a special kind of collection
+> - Scala arrays correspond one-to-one to Java arrays (e.g. `Array[Int]` is represented as `int[]`), but at the same time they offer much more, Scala arrays:
+>   - can be generic
+>   - are compatible with sequences (you can pass `Array[T]` where `Seq[T]` is required)
+>   - support all sequence operations:
+
+```scala
+val a1 = Array(1, 2, 3)          // Array[Int] = Array(1, 2, 3)
+val a2 = a1 map (_ * 3)          // Array[Int] = Array(3, 6, 9)
+val a3 = a2 filter (_ % 2 != 0)  // Array[Int] = Array(3, 9)
+val a4 = a3.reverse              // Array[Int] = Array(9, 3)
+```
+
+> - all this is possible because of systematic use of implicit conversions in the implementation
+> - representation of native array is not a subtype of `Seq`, instead there is implicit _wrapping_ conversion between arrays and instances of `scala.collection.mutable.WrappedArray`, which is a subclass of `Seq`:
+
+```scala
+val seq: Seq[Int] = a1            // Seq[Int] = WrappedArray(1, 2, 3)
+val a4: Array[Int] = seq.toArray  // Array[Int] = Array(1, 2, 3)
+a1 eq a4                          // true
+```
+
+> - there is another implicit conversion that gets applied to arrays, but this one does not turn arrays into sequences, it simply _adds_ all sequence methods to it
+> - _adding_ means that the array is wrapped in another object, of type `ArrayOps`, which is typically short-lived (usually inaccessible after the call to the sequence method). Modern VMs often avoid creating this object entirely
+
+```scala
+// the difference between two implicit conversions:
+val seq: Seq[Int] = a1  // Seq[Int] = WrappedArray(1, 2, 3)
+seq.reverse             // Seq[Int] = WrappedArray(3, 2, 1)
+val ops: collection.mutable.ArrayOps[Int] = a1  // mutable.ArrayOps[Int] = [I(1, 2, 3)]
+ops.reverse             // Array[Int] = Array(3, 2, 1)
+
+// calling reverse on 'seq', which is a 'WrappedArray', gives again a 'WrappedArray'
+// that's logical because wrapped arrays are 'Seqs' and calling reverse on any 'Seq'
+// will give again a 'Seq'
+// calling 'reverse' on the 'ArrayOps' results in an 'Array', not a 'Seq'
+// this was only demonstration, you'd never define a value of class 'ArrayOps'
+// you'd simply call a 'seq' method on an array:
+a1.reverse  // Array[Int] = Array(3, 2, 1)
+```
+
+> - this raises the one question, though, how the compiler picked `ArrayOps` (`intArrayOps`, to be more precise) over the other implicit conversion, to `WrappedArray`, since both conversions map an array to a type that supports a `reverse` method? 
+> - the two implicit conversions are prioritized, and the `ArrayOps` conversion has the higher priority, since it is defined in the `Predef` object, whereas the other is defined in a class `scala.LowPriorityImplicits`, which is a superclass of `Predef`
+> - implicits in subclasses and subobjects take precedence over implicits in base classes
+
