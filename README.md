@@ -4662,3 +4662,120 @@ buf(0) += 1
 map(buf)  // java.util.NoSuchElementException: key not found: ArrayBuffer(2, 2, 3)
 ```
 
+### **587 - Views**
+
+> - methods that construct new collections are called **transformers**, because they take at least one collection as their receiver object and produce another collection (e.g. `map`, `filter`, `++`)
+> - transformers can be implemented in two principal ways, **strict** and **non-strict (lazy)**
+> - a strict transformers construct a new collection with all of its elements, whereas lazy transformers construct only a proxy for the result collection, where its elements are constructed on demand:
+
+```scala
+def lazyMap[T, U](coll: Iterable[T], f: T => U) =
+  new Iterable[U] {
+    def iterator = coll.iterator map f
+  }
+
+// lazyMap constructs a new 'Iterable' without stepping through all elements of the
+// given collection
+// the given function 'f' is instead applied to the elements of the new collection's
+// 'iterator' as they are demanded
+```
+
+> - Scala collections are by default strict in all their transformers, except `Stream`, which implements all its transformer methods lazily
+> - there is a systematic way to turn every collection into a lazy one and vice versa, which is base on collection views
+> - a **view** is a special kind of collection that represents some base collection, but implements all its transformers lazily
+> - to go from a collection to its view, you use the collection's `view` method
+> - to get back from a view to a strict collection, you use the `force` method
+
+```scala
+val v = Vector(1 to 5: _*)  // immutable.Vector[Int] = Vector(1, 2, 3, 4, 5)
+v map (_ + 1) map (_ * 2)   // immutable.Vector[Int] = Vector(4, 6, 8, 10, 12)
+
+// a note about vector creation:
+// if we had created the vector like this, we would've get 'Range':
+val v = Vector(1 to 5)  // Vector[immutable.Range.Inclusive] = Vector(Range(1,2,3,4,5))
+
+// the expression 'v map (_ + 1)' constructs a new vector that is then transformed
+// into a third vector by the second 'map' expression
+
+// we could've used a single 'map' with the composition of the two functions,
+// but that often isn't possible, since the code resides in different modules
+// a more general way to avoid the intermediate results is by first turning the 
+// vector into a view, applying transformations to it, and forcing the view to a vector
+(v.view map (_ + 1) map (_ * 2)).force
+
+// or one by one:
+val vv = v.view  // collection.SeqView[Int, Vector[Int]] = SeqView(...)
+// the 'v.view' gives us a 'SeqView', i.e. a lazily evaluated 'Seq'
+// the type 'SeqView' has two type parameters, 'Int' shows the type of view's elems
+// and the 'Vector[Int]' shows the type constructor we get back when forcing the view
+
+// applying the first map to the view gives us:
+val resInter = vv map (_ + 1)  // SeqView[Int,Seq[_]] = SeqViewM(...)
+// 'SeqView(...)' is in essence a wrapper that records the fact that a 'map' with
+// function (_ + 1) needs to be applied on the vector 'v'
+// it does not apply that 'map' until the view is 'forced'
+// the "M" after 'SeqView' is an indication that the view encapsulates a 'map' operation
+// other letters indicate other delayed operations, "S" for 'slice', "R" for 'reverse'
+
+// we now apply the second 'map' to the last result:
+val res = resInter map (_ * 2)  // SeqView[Int, Seq[_]] = SeqViewMM(...)
+// we now get a 'SeqView' that contains two map operations, so it prints with double "M"
+
+// finally, forcing the last result gives:
+res.force  // Seq[Int] = Vector(4, 6, 8, 10, 12)
+
+// both stored functions get applied as part of the execution of the 'force' operation
+// that way, no intermediate data structure is needed
+
+// one detail to note is that the static type of the final result is a 'Seq',
+// not a 'Vector'
+// tracing the types back we see that as soon as the first delayed 'map' was applied,
+// the result had static type 'SeqViewM[Int, Seq[_]]', that is, the knowledge that
+// the view was applied to the specific sequence type 'Vector' got lost
+// the implementation of a view, for any particular class, requires quite a bit of code,
+// so the Scala collection libraries provide view mostly only for general collection
+// types, not for specific implementations (exception is 'Array': applying delayed
+// operations on array will again give results with static type 'Array')
+```
+
+> - there are two reasons why you might want to consider using views, the first, obviously, performance and the second:
+
+```scala
+// the problem of finding the first palindrome in a list of words:
+def isPalindrome(x: String) = x == x.reverse
+def findPalindrome(s: Seq[String]) = s find isPalindrome
+// if 'words' is a previously defined (very long) list of words:
+findPalindrome(words take 1000000)
+// this always constructs an intermediary sequence consisting of million words
+// so, if the first word is a palindrome, this would copy 999 999 words into the
+// intermediary result without being inspected at all afterwards
+
+// with views:
+findPalindrome(words.view take 1000000)
+// this would only construct a single lightweight view object
+
+// ##### views over mutable sequences: #####
+// many transformer functions on such views provide a window into the original sequence
+// that can then be used to update selectively some elements of that sequence:
+val arr = (0 to 4).toArray  // Array[Int] = Array(0, 1, 2, 3, 4)
+
+// we can create a subwindow into that array by creating a slice of a view of the array:
+val subarr = arr.view.slice(2, 5) //IndexedSeqView[Int,Array[Int]] = IndexedSeqViewS(...)
+// this gives a view which refers to elements at position 2 through 4 of the array 'arr'
+// the view does not copy these elements, it simply provides a reference to them
+
+// now assume you have a method that modifies some elements of a sequence
+// e.g. the 'negate' method would negate all elements of the sequence it receives:
+def negate(xs: collection.mutable.Seq[Int]) = 
+  for (i <- 0 until xs.length) xs(i) = -xs(i)
+
+// if you wanted to negate elements from positions 2 through 4:
+negate(subarr)
+arr  // Array[Int] = Array(0, 1, -2, -3, -4, 5)
+// 'negate' changed all elements which were a slice of the elements of 'arr'
+```
+
+> - for smaller collections, the added overhead of forming and applying closures in views is often greater than the gain from avoiding the intermediary data structures
+> - evaluation in views can be very confusing if the delayed operation have side effects
+> - it is recommended that you use views either in purely functional code, where the collection transformations do not have side effects, or that you apply them over mutable collections where all modifications are done explicitly
+
