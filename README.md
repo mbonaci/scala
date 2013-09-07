@@ -4489,9 +4489,9 @@ a1.reverse  // Array[Int] = Array(3, 2, 1)
 **What's the story on generic arrays?**
 
 > - in Java, you cannot write `T[]`, how then Scala's `Array[T]` is represented?
-> - a generic array could be at runtime any of Java's primitive array types, or it could be an array of objects and the only common runtime type encompassing all that is `AnyRef`, so that's the type Scala compiler maps `Array[T]`
+> - a generic array could be at runtime any of Java's primitive array types, or it could be an array of objects and the only common runtime type encompassing all that is `AnyRef`, so that's the type Scala compiler maps `Array[T]` to
 > - at runtime, when an element of an array of type `Array[T]` is accessed or updated, there is a sequence of type tests that determine the actual array type, followed by the correct array operation on the Java array
-> - since these tests slow down operations a bit, so you can expect access to generic arrays to be 3 to 4 times slower than to primitive or object arrays
+> - since these tests slow down operations a bit, you can expect access to generic arrays to be 3 to 4 times slower than to primitive or object arrays
 
 > - representing a generic array type is not enough, there must also be a way to _create_ generic arrays, which is an even harder problem:
 
@@ -4587,19 +4587,23 @@ val s: Seq[Char] = str  // Seq[Char] = WrappedString(h, e, l, l, 0)
 
 _Performance characteristics of some common operations on collections:_
 
-> - **the legend:**  
->   - **C**    - the operation takes (fast) **constant** time
->   - **eC**   - **effectively constant** time (depends on assumptions, e.g. max length)
->   - **aC**   - **amortized constant** time (some invocations might take longer)
->   - **Log**  - time **proportional to the logarithm of the collection size**
->   - **L**    - **linear** time (proportional to the collection size)
->   - **-**    - the operation is not supported
+```scala
+/*
+The meaning of symbols:
+   C      the operation takes (fast) constant time
+   eC     effectively constant time (depends on assumptions, e.g. hash key distribution)
+   aC     amortized constant time (in average, but some invocations might take longer)
+   Log    time proportional to the logarithm of the collection size
+   L      linear time (proportional to the collection size)
+   -      the operation is not supported
+*/
+```
 
 _Performance characteristics of sequence types:_
 
 ```scala
 /*
-               | head | tail | apply | update | prepend | append | insert
+                 head   tail   apply   update   prepend   append   insert
  immutable  
    List           C      C      L        L        C         L        -
    Stream         C      C      L        L        C         L        -
@@ -4620,3 +4624,23 @@ _Performance characteristics of sequence types:_
    Array          C      L      C        C        -         -        -
 */
 ```
+
+_Performance characteristics of sets and maps:_
+
+```scala
+/*
+                     lookup   add   remove   min
+ immutable  
+   HashSet/HashMap    eC      eC     eC       L
+   TreeSet/TreeMap    Log     Log    Log     Log
+   BitSet              C       L      L      eCa
+   ListMap             L       L      L       L
+ mutable
+   HashSet/HashMap    eC      eC     eC       L
+   WeakHashMap        eC      eC     eC       L
+   BitSet              C      aC      C      eCa
+
+ eCa - assumption that bits are densely packed
+*/
+```
+
