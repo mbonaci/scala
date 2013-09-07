@@ -4428,3 +4428,14 @@ _Operations in trait `ConcurrentMap`:_
 > - `m replace (k, old, new)`  Replaces value of key 'k' to 'new', if it is set to 'old'
 > - `m replace (k, v)`         Replaces value of 'k' with 'v' if it was previously bound to some value
 
+- **Mutable bit sets**
+
+> - slightly more efficient at updating than immutable ones, because they don't have to copy around Longs that haven't changed
+
+```scala
+val bits = scala.collection.mutable.BitSet.empty  // mutable.BitSet = BitSet()
+bits += 1  // bits.type = BitSet(1)
+bits += 3  // bits.type = BitSet(1, 3)
+bits       // mutable.BitSet = BitSet(1, 3)
+```
+
