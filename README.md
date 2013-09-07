@@ -4486,3 +4486,80 @@ a1.reverse  // Array[Int] = Array(3, 2, 1)
 > - the two implicit conversions are prioritized, and the `ArrayOps` conversion has the higher priority, since it is defined in the `Predef` object, whereas the other is defined in a class `scala.LowPriorityImplicits`, which is a superclass of `Predef`
 > - implicits in subclasses and subobjects take precedence over implicits in base classes
 
+**What's the story on generic arrays?**
+
+> - in Java, you cannot write `T[]`, how then Scala's `Array[T]` is represented?
+> - a generic array could be at runtime any of Java's primitive array types, or it could be an array of objects and the only common runtime type encompassing all that is `AnyRef`, so that's the type Scala compiler maps `Array[T]`
+> - at runtime, when an element of an array of type `Array[T]` is accessed or updated, there is a sequence of type tests that determine the actual array type, followed by the correct array operation on the Java array
+> - since these tests slow down operations a bit, so you can expect access to generic arrays to be 3 to 4 times slower than to primitive or object arrays
+
+> - representing a generic array type is not enough, there must also be a way to _create_ generic arrays, which is an even harder problem:
+
+```scala
+// This is not enough - doesn't compile!
+def evenElems[T](xs: Vector[T]): Array[T] = {
+  // this could be e.g. an Array[Int], or an Array[Boolean]
+  // or an array of some of the Java primitive, or an array of some reference type
+  // which all have different runtime representations 
+  val arr = new Array[T]((xs.length + 1) / 2)  // cannot find a class tag for type T
+  for (i <- 0 until xs.length by 2)
+    arr(i / 2) = xs(i)
+  arr
+}
+
+// the reason why Scala runtime cannot pick the type is type erasure
+// the actual type that corresponds to the type T is erased at runtime
+
+// it is required that you provide a runtime type hint to the compiler
+// this hint takes the form of a 'class manifest' of type 'scala.reflect.ClassManifest'
+// a class manifest is a type descriptor object that describes what the top-level class
+// of a type is
+// there's also a full manifest (scala.reflect.Manifest), that describes all aspects
+// of a type, but for array creation, only a class manifest is needed
+
+// the compiler will generate code to construct and pass class manifests automatically
+// if you demand a class manifest as an implicit parameter:
+def evenElems[T](xs: Vector[T])(implicit m: ClassManifest[T]): Array[T] = {
+  val arr = new Array[T]((xs.length + 1) / 2)
+  for (i <- 0 until xs.length by 2)
+    arr(i / 2) = xs(i)
+  arr
+}  //> evenElems: [T](xs: Vector[T])(implicit m: ClassManifest[T])Array[T]
+
+// or written shorter, with type 'context bound':
+def evenElems[T: ClassManifest](xs: Vector[T]): Array[T] = {
+  val arr = new Array[T]((xs.length + 1) / 2)
+  for (i <- 0 until xs.length by 2)
+    arr(i / 2) = xs(i)
+  arr
+}  //> evenElems: [T](xs: Vector[T])(implicit evidence$1: ClassManifest[T])Array[T]
+
+// the two versions of 'evenElems' are exactly the same
+// when the 'Array[T]' is constructed, the compiler looks for a class manifest for
+// the type parameter 'T', that is, it looks for an implicit value of type
+// 'ClassManifest[T]' and if such a value is found, the manifest is used to construct
+// the right kind of array
+evenElems(Vector(1, 2, 3, 4, 5))  //Array[Int] = Array(1, 3, 5)
+evenElems(Vector("compiler", "of Scala", "is", "not", "a bitch"))
+
+// compiler automatically constructed a class manifest for the element type
+// and passed it to the implicit parameter of 'evenElems'
+
+// compiler can do that for all the concrete types, but not if the argument is itself
+// another type parameter without its class manifest:
+def wrap[U](xs: Vector[U]) = evenElems(xs)  // No ClassManifest available for U
+// not enough arguments for method evenElems
+// unspecified value parameter evidence$1
+
+def wrap[U: ClassManifest](xs: Vector[U]) = evenElems(xs)
+// wrap: [U](xs: Vector[U])(implicit evidence$1: ClassManifest[U])Array[U]
+
+// the context bound in the definition of 'U' is just a shorthand for an implicit
+// parameter named here 'evidence$1' of type 'ClassManifest[U]'
+```
+
+> - so generic array creation demands class manifests
+> - whenever you create an array of type parameter 'T', you also need to provide an implicit class manifest for 'T'
+> - the easiest way to do that is to declare the type parameter with a 'ClassManifest' context bound
+
+
