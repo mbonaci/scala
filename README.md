@@ -4562,4 +4562,45 @@ def wrap[U: ClassManifest](xs: Vector[U]) = evenElems(xs)
 > - whenever you create an array of type parameter 'T', you also need to provide an implicit class manifest for 'T'
 > - the easiest way to do that is to declare the type parameter with a 'ClassManifest' context bound
 
+### **583 - Strings**
 
+> - like arrays, strings are not directly sequences, but they can be converted to them
+
+```scala
+val str = "hell0"       // java.lang.String = hello
+str.reverse             // 0lleh
+str.map(_.toUpper)      // HELL0
+str drop 3              // l0
+str slice (1, 4)        // ell
+val s: Seq[Char] = str  // Seq[Char] = WrappedString(h, e, l, l, 0)
+
+// these operations are supported by two implicit conversions:
+// low-priority conversion to 'WrappedString', a subclass of 'immutable.IndexedSeq'
+//   which was applied in the last line above
+// high-priority conversion to 'StringOps' object, which adds all immutable seq methods
+//   which was applied to support 'reverse', 'map', 'drop' and 'slice'
+```
+
+### **548 - Performance characteristics**
+
+> - different collection types have different performance characteristics, which is often the primary reason for picking one over another
+
+_Performance characteristics of some common operations on collections:_
+
+> - the legend:
+> **C**    - the operation takes (fast) **constant** time
+> **eC**   - **effectively constant** time (may depend on assumptions, e.g. max length)
+> **aC**   - **amortized constant** time (some invocations might take longer)
+> **Log**  - time **proportional to the logarithm of the collection size**
+> **L**    - **linear** time (proportional to the collection size)
+> **-**    - the operation is not supported
+
+> _______________| head | tail | apply | update | prepend | append | insert_____________
+> **immutable**  
+>   List           C      C      
+>   Stream         C      C      
+>   Vector         eC     eC     
+>   Stack          C      C      
+>   Queue          aC     aC     
+>   Range          C      C      
+>   String         C      L      
