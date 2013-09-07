@@ -4644,3 +4644,21 @@ _Performance characteristics of sets and maps:_
 */
 ```
 
+### **585 - Equality**
+
+> - the collection libraries have a uniform approach to equality and hashing
+> - when checking equality, Scala first divides collections into sets, maps and sequences (collections of different categories are always unequal, even if they contain the same elements)
+> - withing a category, collections are equal only if they have the same elements (for sequences, elements must be in the same order), e.g. `List(1, 2, 3) == Vector(1, 2, 3)`
+> - for equality check, it's irrelevant whether a collection is mutable of immutable
+> - you have to be careful not to use mutable collections as a key in a hash map:
+
+```scala
+import collection.mutable.{HashMap, ArrayBuffer}
+val buf = ArrayBuffer(1, 2, 3)  // mutable.ArrayBuffer[Int] = ArrayBuffer(1, 2, 3)
+val map = HashMap(buf -> 3)
+// mutable.HashMap[mutable.ArrayBuffer[Int], Int] = Map((ArrayBuffer(1, 2, 3), 3))
+map(buf)  // 3
+buf(0) += 1
+map(buf)  // java.util.NoSuchElementException: key not found: ArrayBuffer(2, 2, 3)
+```
+
