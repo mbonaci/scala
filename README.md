@@ -5008,3 +5008,43 @@ _Factory methods for sequences:_
 > - `S.range(start, end, step)`  The sequence of integers starting with 'start' and progressing by 'step' increments up to, and excluding 'end'
 > - `S.iterate(x, n)(f)`         The sequence of length 'n' with elems 'x, f(x), f(f(x)), ...'
 
+### **603 - Conversions between Java and Scala collections**
+
+> - Scala offers implicit conversions between all major collection types in the `JavaConversions` object
+
+```scala
+// two-way conversions:
+Iterator           <->       java.util.Iterator
+Iterator           <->       java.util.Enumeration
+Iterable           <->       java.util.Iterable
+Iterable           <->       java.util.Collection
+mutable.Buffer     <->       java.util.List
+mutable.Set        <->       java.util.Set
+mutable.Map        <->       java.util.Map
+
+// to enable these automatic conversions:
+import collection.JavaConversions._
+
+import collection.mutable._
+val jul: java.util.List[Int] = ArrayBuffer(1, 2, 3)  // java.util.List[Int] = [1, 2, 3]
+val buf: Seq[Int] = jul  // mutable.Seq[Int] = ArrayBuffer(1, 2, 3)
+val m: java.util.Map[String, Int] = HashMap("a" -> 1, "ab" -> 2)
+// java.util.Map[String, Int] = {ab=2, a=1}
+
+// internally, these work by setting up a "wrapper" object that forwards all operations
+// to the underlying collection object, so collections are never copied
+
+// one-way conversion to Java types:
+Seq                 ->       java.util.List
+mutable.Seq         ->       java.util.List
+Set                 ->       java.util.Set
+Map                 ->       java.util.Map
+
+// because Java does not distinguish between mutable and immutable collection in their
+// type, a conversion from, say, 'immutable.List' will yield a 'java.util.List',
+// on which all attempted mutations will throw an 'UnsupportedOperationException':
+val jul: java.util.List[Int] = List(1, 2, 3)  // java.util.List[Int] = [1, 2, 3]
+jul.add(8)  // java.lang.UnsupportedOperationException at java.util.AbstractList.add
+```
+
+
