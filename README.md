@@ -4964,3 +4964,47 @@ bit.next()  // Int = 1
 bit.next()  // Int = 2
 ```
 
+### **601 - Creating collections from scratch**
+
+> - as with lists, `List(1, 2)` and maps, `Map('a' -> 1, 'b' -> 2)`, you can create any collection type by appending list of elements in parentheses to a collection name, which is, under the cover, a call to the `apply` method of some object:
+
+```scala
+Traversable()             // empty traversable object
+List()                    // empty list
+List(1.0, 2.0)            // list with two elements
+Vector(1.0, 2.0)          // vector with two elements
+Iterator(1, 2, 3)         // iterator returning three integers
+Set(dog, cat, bird)       // a set of three animals
+HashSet(dog, cat)         // a hash set of two animal
+Map('a' -> 8, 'b' -> 0 )  // a map from characters to integers
+
+// under the cover:
+List(1.0, 2.0)
+// expands to
+List.apply(1.0, 2.0)
+// where 'List' is the companion object of the 'List' class, which takes an arbitrary
+// number of arguments and constructs a list from them
+
+// every collection class has a companion object with 'apply' method
+// no matter if a collection is a concrete class or a trait
+
+// if it's a trait, calling apply will product some default implementation of the trait:
+Traversable(1, 2, 3)          // Traversable[Int] = List(1, 2, 3)
+mutable.Traversable(1, 2, 3)  // mutable.Traversable[Int] = ArrayBuffer(1, 2, 3)
+
+// besides 'apply', every collection companion object also defines 'empty'
+```
+
+_Factory methods for sequences:_
+
+> - `S.empty`                    The empty sequence
+> - `S(x, y, z)`                 A sequence consisting of elements x, y and z
+> - `S.concat(xs, ys, zs)`       The sequence obtained by concatenating elems of xs, ys and zs
+> - `S.fill(n)(e)`               A sequence of length 'n' where each elem is computed by expression 'e'
+> - `S.fill(m, n)(e)`            A sequence of sequences of dimension 'm x n', where each elem is computed by expression 'e'
+> - `S.tabulate(n)(f)`           A sequence of length 'n' where the elem at each index 'i' is computed by 'f(i)'
+> - `S.tabulate(m, n)(f)`        A sequence of sequences of dimension 'm x n', where the elem at each index '(i, j)' is computed by 'f(i, j)'
+> - `S.range(start, end)`        The sequence of integers 'start ... end - 1'
+> - `S.range(start, end, step)`  The sequence of integers starting with 'start' and progressing by 'step' increments up to, and excluding 'end'
+> - `S.iterate(x, n)(f)`         The sequence of length 'n' with elems 'x, f(x), f(f(x)), ...'
+
