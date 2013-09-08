@@ -5047,4 +5047,19 @@ val jul: java.util.List[Int] = List(1, 2, 3)  // java.util.List[Int] = [1, 2, 3]
 jul.add(8)  // java.lang.UnsupportedOperationException at java.util.AbstractList.add
 ```
 
+## The Architecture of Scala Collections
+
+> - the design approach was to implement most operations in collection "templates" that can be flexibly inherited from individual base classes and implementations
+
+```scala
+// an outline of the 'Builder' class
+package scala.collection.generic
+
+class Builder[-Elem, +To] {
+  def +=(elem: Elem): this.type
+  def result(): To
+  def clear()
+  def mapResult(f: To => NewTo): Bulder[Elem, NewTo] = //...
+}
+```
 
