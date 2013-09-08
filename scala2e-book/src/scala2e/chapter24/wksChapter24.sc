@@ -60,6 +60,13 @@ object wksChapter24 {
   
 
 
-
+  val it = Iterator("a", "member", "of", "words") //> it  : Iterator[String] = non-empty iterator
+  val it2 = it dropWhile (_.length < 2)           //> it2  : Iterator[String] = non-empty iterator
+  it2.next                                        //> res5: String = member
+  it2.next                                        //> res6: String = of
+  it.next                                         //> res7: String = words
+  
+  
+  
 
 }
