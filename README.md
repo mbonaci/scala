@@ -4779,3 +4779,165 @@ arr  // Array[Int] = Array(0, 1, -2, -3, -4, 5)
 > - evaluation in views can be very confusing if the delayed operation have side effects
 > - it is recommended that you use views either in purely functional code, where the collection transformations do not have side effects, or that you apply them over mutable collections where all modifications are done explicitly
 
+### **593 - Iterators**
+
+> - a way to access elements of a collection one by one
+> - a call to `it.next()` returns the next element and advances the state of the iterator
+> - if there are no more elements, `next` throws `NoSuchElementException`
+> - to avoid that, we use `hasNext` method
+
+```scala
+// the most straightforward way to step through the elements returned by an iterator:
+while (it.hasNext)
+  println(it.next())
+
+// iterators provide analogues of most of the methods of 'Traversable', 'Iterable'
+// and 'Seq' traits:
+it foreach println
+
+// for can be used instead of 'foreach', 'map', 'filter' and 'flatMap':
+for (elem <- it) println(elem)
+```
+
+> - there is an important difference between `foreach` on iterators and the same method on traversable collections: when called on an iterator, `foreach` will leave the iterator at its end when it's done (calling `next` yields 'NoSuchElementException'), but when called on a collection, it leaves the number of elements in the collection unchanged
+> - the other operations that `Iterator` has in common with `Traversable` all have the same property of leaving the iterator at its end when done iterating:
+
+```scala
+val it = Iterator("a", "b", "is a", "b")  // Iterator[String] = non-empty iterator
+val res = it.map(_.length)  // Iterator[Int] = non-empty iterator
+res foreach print  // 1141
+it.next()  // java.util.NoSuchElementException: next on empty iterator
+
+// a method that finds the first word in an iterator that has at least two characters:
+val it = Iterator("a", "member", "of", "words")  // Iterator[String] = non-empty iterator
+val it2 = it dropWhile (_.length < 2)  // Iterator[String] = non-empty iterator
+it2.next  // String = member
+it2.next  // String = of
+it.next   // String = words
+
+// there's only one standard operation, 'duplicate', that allows reuse of an iterator:
+val (it1, it2) = it.duplicate
+// 'duplicate' returns a pair of iterators that work independently
+// the original iterator 'it' is advanced to its end by the 'duplicate' operation
+```
+
+> - iterators behave like collections **if you never access an iterator again after invoking a method on it**
+> - Scala makes this explicit, by providing an abstraction called `TraversableOnce`, which is a common supertrait of `Traversable` and `Iterator`
+> - `TraversableOnce` object can be traversed using `foreach`, but the state of that object after the traversal is not specified
+> - if the `TraversableOnce` object is an `Iterator`, it will be at its end, but if it's a `Traversable`, it will still exist as before
+> - a common use case for `TraversableOnce` is to use it as an argument type for methods that can take either an iterator or traversable, e.g. appending method `++` in trait `Traversable`, which takes a `TraversableOnce` parameter, so you can append elements coming from either an iterator or a traversable collection
+
+_All operations in trait `Iterator`:_
+
+- **Abstract methods**
+
+> - `it.next()`     Returns the next element and advances iter past it
+> - `it.hasNext`    Returns 'true' if 'it' can return another element
+
+- **Variations**
+
+> - `it.buffered`      A buffered iter returning all elements of 'it'
+> - `it grouped size`  An iter that yields elems returned by 'it' in fixed-sized sequence chunks
+> - `xs sliding size`  An iter that yields elems returned by 'it' in sequences representing a sliding fixed-sized window
+
+- **Copying**
+
+> - `it copyToBuffer buf`        Copies all elems returned by 'it' to buffer 'buf'
+> - `it copyToArray(arr, s, l)`  Copies at most 'l' elems returned by 'it' to array 'arr' starting at index 's' (last 2 args are optional)
+
+- **Duplication**
+
+> - `it.duplicate`     A pair of iters that each independently return all elements of 'it'
+
+- **Additions**
+
+> - `it ++ jt`           An iter returning all elems returned by 'it' followed by all elems returned by 'jt'
+> - `it padTo (len, x)`  An iter that returns all elems of 'it' followed by copies of 'x' until length 'len' elems are returned overall
+
+- **Maps**
+
+> - `it map f`      The iter obtained from applying 'f' to every elem
+> - `it flatMap f`  The iter obtained from applying the iter-valued function 'f' to every elem and appending the result
+> - `it collect f`  The iter obtained from applying the partial function 'f' to every elem for which it is defined and collecting the results
+
+- **Conversions**
+
+> - `it.toArray`       Collects the elements returned by 'it' in an array
+> - `it.toList`        Collects the elements returned by 'it' in a list
+> - `it.toIterable`    Collects the elements returned by 'it' in an iterable
+> - `it.toSeq`         Collects the elements returned by 'it' in a sequence
+> - `it.toIndexedSeq`  Collects the elements returned by 'it' in an indexed sequence
+> - `it.toStream`      Collects the elements returned by 'it' in a stream
+> - `it.toSet`         Collects the elements returned by 'it' in a set
+> - `it.toMap`         Collects the key/value pairs returned by 'it' in a map
+
+- **Size info**
+
+> - `it.isEmpty`          Tests whether 'it' is empty (opposite of 'hasNext')
+> - `it.nonEmpty`         Tests whether the collection contains elems (alias of hasNext)
+> - `it.size`             The number of elems returned by 'it' (waists 'it')
+> - `it.length`           Same as 'it.size'
+> - `it.hasDefiniteSize`  Returns true if 'it' is known to return finitely many elems
+
+- **Element retrieval index search**
+
+> - `it find p`        An option containing the first elem that satisfies 'p', or 'None' if no element qualifies (advances 'it' to just after the elem or to end)
+> - `it indexOf x`     The index of the first elem returned by 'it' that equals 'x' (advances past the position of 'x')
+> - `it indexWhere p`  The index of the first elem that satisfies 'p' (advances 'it' past the position of that elem)
+
+- **Subiterators**
+
+> - `it take n`        An iter returning the first 'n' elems ('it' advances past n'th elem, or its end)
+> - `it drop n`        The iter that starts with the (n + 1)'th elem (advances 'it' to that same position)
+> - `it slice (m, n)`  The iter that returns a slice of the elems of 'it', starting with the m'th and ending before n'th
+> - `it takeWhile p`   An iter returning elems from 'it' as long as 'p' is true
+> - `it dropWhile p`   An iter skipping elems from 'it' as long as 'p' is true, and returning the remainder
+> - `it filter p`      An iter returning all elems from 'it' that satisfy 'p'
+> - `it withFilter p`  Same as 'filter' (needed so that iters can be used in 'for' expressions)
+> - `it filterNot p`   An iter returning all elems from 'it' that don't satisfy 'p'
+
+- **Subdivisions**
+
+> - `it partition p`   Splits 'it' into a pair of two iters, based on whether elems satisfy 'p'
+
+- **Element conditions**
+
+> - `it forall p`      A boolean indicating whether 'p' holds for all elems
+> - `it exists p`      A boolean indicating whether 'p' holds for some element
+> - `it count p`       The number of elems that satisfy predicate 'p'
+
+- **Folds**
+
+> - `(z /: it)(op)`        Applies binary operation 'op' between successive elems, going left to right, starting with 'z'
+> - `(z :\ it)(op)`        Applies binary operation 'op' between successive elems, going right to left, starting with 'z'
+> - `it.foldLeft(z)(op)`   Same as `(z /: it)(op)`
+> - `it.foldRight(z)(op)`  Same as `(z :\ it)(op)`
+> - `it reduceLeft op`     Applies binary operation 'op' between successive elems returned by non-empty iter 'it', going left to right
+> - `it reduceRight op`    Applies binary operation 'op' between successive elems returned by non-empty iter 'it', going right to left
+
+- **Specific folds**
+
+> - `it.sum`           The sum of the numeric elem values returned by 'it'
+> - `it.product`       The product of the numeric elem values returned by 'it'
+> - `it.min`           The minimum of the ordered elem values returned by 'it'
+> - `it.max`           The maximum of the ordered elem values returned by 'it'
+
+- **Zippers**
+
+> - `it zip jt`             Iter of pairs of corresponding elems from 'it' and 'jt'
+> - `it zipAll (jt, x, y)`  Iter of pairs of corresponding elems from 'it' and 'jt', where the shorter iter is extended to match the longer one, by appending elems x or y
+> - `it.zipWithIndex`       Iter of pairs of elems returned from 'it' with their indices
+
+- **Update**
+
+> - `it patch (i, jt, r)`   Iter resulting from 'it' by replacing 'r' elems starting with 'i', by the patch iter 'jt'
+
+- **Comparison**
+
+> - `it sameElements jt`    A test whether iters 'it' and 'jt' return the same elems in the same order (at least one of two iters ends up advancing to its end)
+
+- **Strings**
+
+> - `it addString (b, start, sep, end)`  Adds a string to 'StringBuilder b'  that shows all elems of 'it' between separators 'sep', enclosed in strings 'start' and 'end' ('start', 'sep', 'end' are all optional)
+> - `it mkString (start, sep, end)`      Converts the collection to a string that shows all elems of 'it' between separators 'sep', enclosed in strings 'start' and 'end' ('start', 'sep', 'end' are all optional)
+
