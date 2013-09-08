@@ -5051,8 +5051,13 @@ jul.add(8)  // java.lang.UnsupportedOperationException at java.util.AbstractList
 
 > - the design approach was to implement most operations in collection "templates" that can be flexibly inherited from individual base classes and implementations
 
+### **608 - Builders**
+
+> - almost all collection operations are implemented in terms of _traversals_ and _builders_
+> - traversals are handled by `Traversable`'s `foreach` method, and building new collections is handled by instances of class `Builder`
+
 ```scala
-// an outline of the 'Builder' class
+// abbreviated outline of the 'Builder' class
 package scala.collection.generic
 
 class Builder[-Elem, +To] {
@@ -5061,5 +5066,22 @@ class Builder[-Elem, +To] {
   def clear()
   def mapResult(f: To => NewTo): Bulder[Elem, NewTo] = //...
 }
+```
+
+> - you can add an element to a builder with `b += x`, or more than one element with `b += (x, y)` or with `b ++= xs` (works same as for buffers, which are, in fact, enriched version of builders)
+> - the `result()` method returns a collection from a builder
+> - the state of builder is undefined after taking its result, but it can be reset into a new clean state using `clear()`
+> - builders are generic in both the element type, `Elem` and in the type `To`, of collections they return
+
+```scala
+// to use 'ArrayBuffer' to produce a builder that builds arrays:
+val buf = new ArrayBuffer[Int]  // mutable.ArrayBuffer[Int] = ArrayBuffer()
+val bldr = buf mapResult (_.toArray)  // mutable.Builder[Int, Array[Int]] = ArrayBuffer()
+
+// the result value, 'bldr' is a builder that uses the array buffer to collect elems
+// when a result is demanded from 'bldr', the result of 'buf' is computed, which
+// yields the array buffer 'but' itself
+// this array buffer is then mapped with '_.toArray' to an array
+// so the end result is that 'bldr' is a builder for arrays
 ```
 
