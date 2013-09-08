@@ -4941,3 +4941,26 @@ _All operations in trait `Iterator`:_
 > - `it addString (b, start, sep, end)`  Adds a string to 'StringBuilder b'  that shows all elems of 'it' between separators 'sep', enclosed in strings 'start' and 'end' ('start', 'sep', 'end' are all optional)
 > - `it mkString (start, sep, end)`      Converts the collection to a string that shows all elems of 'it' between separators 'sep', enclosed in strings 'start' and 'end' ('start', 'sep', 'end' are all optional)
 
+### **600 - Buffered iterators**
+
+> - iterators that can "look ahead" so you can inspect the next element to be returned, without advancing past that element
+> - every iterator can be converted to a buffered iterator by calling its `buffered` method
+
+```scala
+// skip leading empty strings in an iterator (advances past the first non-empty elem)
+def skipEmptyWordsNOT(it: Iterator[String]) {
+  while (it.next().isEmpty) {}
+}
+
+// with buffered iterator (instance of trait 'BufferedIterator'):
+def skipEmptyWords(it: BufferedIterator[String]) =
+  while (it.head.isEmpty) { it.next() }
+
+// converting to buffered:
+val it = Iterator(1, 2, 3, 4)  // Iterator[Int] = non-empty iterator
+val bit = it.buffered  // java.lang.Object with BufferedIterator[Int] = non-empty iter
+bit.head    // Int = 1
+bit.next()  // Int = 1
+bit.next()  // Int = 2
+```
+
