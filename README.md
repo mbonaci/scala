@@ -5201,3 +5201,203 @@ val ys = xs map (x => x * x)           // Iterable[Int] = List(1, 4, 9)
 // constraints
 ```
 
+### **614 - Integrating new collections**
+
+- **Integrating sequences**
+
+```scala
+// sequence type for RNA strands (A, T, G, U)
+abstract class Base
+case object A extends Base
+case object T extends Base
+case object G extends Base
+case object U extends Base
+
+object Base {
+  val fromInt: Int => Base = Array(A, T, G, U)
+  val toInt: Base => Int = Map(A -> 0, T -> 1, G -> 2, U -> 3)
+}
+
+// RNA strands class, v1
+import collection.IndexedSeqLike
+import collection.mutable.{Builder, ArrayBuffer}
+import collection.generic.CanBuildFrom
+
+// RNA strands can be very long, so we're building our own collection to optimize
+// since there are only 4 bases, a base can be uniquely identified with 2 bits
+// so you can store 16 bases in an integer
+// we'll create a specialized subclass of 'Seq[Base]'
+
+// 'groups' represents packed bases (16 in each array elem, except maybe in last)
+// 'length' specifies total number of bases on the array
+// 'private', so clients cannot instantiate it with 'new' (hiding implementation)
+final class RNA1 private (val groups: Array[Int], val length: Int)  // parametric fields
+    extends IndexedSeq[Base] {  // 'IndexedSeq' has 'length' and 'apply' methods
+  import RNA1._
+  def apply(idx: Int): Base = {
+    if (idx < 0 || length <= idx)
+      throw new IndexOutOfBoundsException
+
+    // extract int value from the 'groups', then extract 2-bit number
+    Base.fromInt(groups(idx / N) >> (idx % N * S) & M)
+  }
+}
+
+object RNA1 {
+  private val S = 2             // number of bits necessary to represent group
+  private val N = 32            // number of groups that fit into Int
+  private val M = (1 << S) - 1  // bitmask to isolate a group (lowest S bits in a word)
+
+  // converts given sequence of bases to instance of RNA1
+  def fromSeq(buf: Seq[Base]): RNA1 = {
+    val groups = new Array[Int]((buf.length + N - 1) / N)
+    for (i <- 0 until buf.length)  // packs all the bases
+      groups(i / N) |= Base.toInt(buf(i)) << (i % N * S)  // bitwise-or equals
+
+    new RNA1(groups, buf.length)
+  }
+  def apply(bases: Base*) = fromSeq(bases)
+}
+
+// using RNA:
+val xs = List(A, G, T, A)       // List[Product with Base] = List(A, G, T, A)
+RNA1.fromSeq(xs)                // RNA(A, G, T, A)
+val rna1 = RNA1(A, U, G, G, T)  // RNA1(A, U, G, G, T)
+
+println(rna1.length)            // Int = 5
+println(rna1.last)              // Base = T
+println(rna1.take(3))           // IndexedSeq[Base] = Vector(A, U, G)
+
+// the last line returns 'Vector', as the default implementation of 'IndexedSeq', since
+// all we did in class 'RNA1' was extend 'IndexedSeq', which used its 'take' method,
+// which doesn't know how to handle bases
+
+// we might override method 'take':
+def take(count: Int): RNA1 = RNA1.fromSeq(super.take(count))
+// which would take care of 'take', but what about 'drop', 'filter' or 'init'?
+// we would have to override over 50 methods on sequences that return a sequence
+
+// there is a way, the 'RNA' class needs to inherit not only from 'IndexedSeq', but
+// also from its implementation trait 'IndexedSeqLike':
+final class RNA2 private (val groups: Array[Int], val length: Int)
+    extends IndexedSeq[Base] with IndexedSeqLike[Base, RNA2] {
+  import RNA2._
+  override def newBuilder: Builder[Base, RNA2] =
+    new ArrayBuffer[Base] mapResult fromSeq
+
+  def apply(idx: Int): Base = // ... same as before
+}
+// 'IndexedSeqLike' trait implements all concrete methods of 'IndexedSeq'
+// the return type of methods like 'take', 'drop', 'filter' is the second type parameter
+// passed to class 'IndexedSeqLike', 'RNA2'
+
+// to be able to do this, 'IndexedSeqLike' uses the 'newBuilder' abstraction, which
+// creates a builder of the right kind
+// subclasses of trait 'IndexedSeqLike' have to override 'newBuilder' to return 
+// collections of their own kind ('Builder[Base, RNA2]', in case of RNA2 class)
+
+// it first creates an 'ArrayBuffer', which is itself a 'Builder[Base, ArrayBuffer]'
+// it then transforms the 'ArrayBuffer' builder to an 'RNA2' builder, by calling its
+// 'mapResult' method
+// 'mapResult' expects a transformation function from 'ArrayBuffer' to 'RNA2' as param
+// the function we send is simply 'RNA2.fromSeq', which converts an arbitrary base
+// sequence to an 'RNA2' value (array buffer is a kind of sequence, so 'fromSeq' works)
+```
+
+> - there are methods that might return the same kind of collection, but with a different element type, e.g. `map`. If `s` is a `Seq[Int]`, and `f` is a function from `Int` to `String`, then `s.map(f)` would return a `Seq[String]`, meaning that the element type changes between the receiver and the result, but the type of collection stays the same
+> - there are a number of methods that behave the same as `map`, like `flatMap`, `collect`, and even the append, `++` method, which also may return a result of a different type, e.g. appending a list of `String` to a list of `Int` would give a list of `Any`
+> - we can accept the rule that mapping bases to bases over an `RNA` strand would yield again an `RNA` strand, but mapping bases to some other type necessarily results in a different type:
+
+```scala
+// mapping to the same type:
+val rna = RNA(A, U, G, G, T)
+rna map { case A => T case b => b}  // Vector(A, U, G, G, T)
+rna ++ rna  // Vector(A, U, G, G, T, A, U, G, G, T)
+
+// but mapping to some other type:
+rna map Base.toInt  // IndexedSeq[Int] = Vector(0, 3, 2, 2, 1)
+rna ++ List("ie", "eg")  // IndexedSeq[java.lang.Object] = Vector(A, U, G, G, T, ie, eg)
+
+// to figure out a better way, first look at the signature of the 'map' method
+// which is originally defined in class 'scala.collection.TraversableLike':
+def map[B, That](f: A => B)
+  (implicit cbf: CanBuildFrom[Repr, B, That]): That
+
+// A    - type of elements of the collection
+// Repr - type of the collection itself (gets passed to TraversableLike, IndexedSeqLike)
+// B    - result type of the mapping function (elem type of the new collection)
+// That - result type of 'map' (type of the new collection, that gets created)
+
+// how is the type of 'That' determined?
+// it is linked to the other types by an implicit parameter 'cbf',
+// these cbf implicits are defined by the individual collection classes
+// 'CanBuildFrom[Repr, B, That]' says: "Here is a way, given a collection of type 'From',
+// to build with elements of type 'Elem' a collection of type 'To'"
+
+// now it's clear, there was no 'CanBuildFrom' instance that creates 'RNA2' sequences,
+// so the next best thing available was used, 'CanBuildFrom' of the companion object
+// of the inherited trait 'IndexedSeq', which creates indexed seqs
+
+// to address this, we need to define an implicit instance of 'CanBuildFrom' in the
+// companion object of the 'RNA' class, which should be 'CanBuildFrom[RNA, Base, RNA]'
+// which states that, given an 'RNA' and a new element type 'Base', we can build
+// another collection which is again 'RNA':
+final class RNA private (val groups: Array[Int], val length: Int)
+    extends IndexedSeq[Base] with IndexedSeqLike[Base, RNA] {
+
+  import RNA._
+  // mandatory re-implementation of 'newBuilder' in 'IndexedSeq'
+  override protected[this] def newBuilder: Builder[Base, RNA] = RNA.newBuilder
+  // Mandatory implementation of 'apply' in 'IndexedSeq'
+  def apply(idx: Int): Base = {
+    if (idx < 0 || length <= idx)
+      throw new IndexOutOfBoundsException
+
+    Base.fromInt(groups(idx / N) >> (idx % N * S) & M)
+  }
+
+  // optional implementation of 'foreach' to make it more efficient
+  // for every selected array elem it immediately applies given function to all bases
+  // contained in it (as opposed to default 'foreach', which simply selects every i-th
+  // elem using 'apply')
+  override def foreach[U](f: Base => U): Unit = {
+    var i = 0
+    var b = 0
+    while (i < length) {
+      b = if (i % N == 0) groups(i / N) else b >>> S
+      f(Base.fromInt(b & M))
+      i += 1
+    }
+  }
+}
+
+object RNA {
+  private val S = 2
+  private val M = (1 << S) - 1
+  private val N = 32 / S
+
+  def fromSeq(buf: Seq[Base]): RNA = {
+    val groups = new Array[Int]((buf.length + N - 1) / N)
+    for (i <- 0 until buf.length)
+      groups(i / N) |= Base.toInt(buf(i)) << (i % N * S)
+
+    new RNA(groups, buf.length)
+  }
+
+  def apply(bases: Base*) = fromSeq(bases)
+
+  // implementation moved here from the RNA class (only a call to this one left there)
+  def newBuilder: Builder[Base, RNA] = new ArrayBuffer mapResult fromSeq
+
+  // 
+  implicit def canBuildFrom: CanBuildFrom[RNA, Base, RNA] =
+    new CanBuildFrom[RNA, Base, RNA] {
+      // these two are useful for adapting the dynamic type of builder's return type
+      // to be the same as the dynamic type of the receiver (not in play here - final)
+      def apply(): Builder[Base, RNA] = newBuilder
+      def apply(from: RNA): Builder[Base, RNA] = newBuilder
+    }
+}
+```
+
+
