@@ -5085,3 +5085,119 @@ val bldr = buf mapResult (_.toArray)  // mutable.Builder[Int, Array[Int]] = Arra
 // so the end result is that 'bldr' is a builder for arrays
 ```
 
+## **609 - Factoring out common operations**
+
+> - Scala collection library avoids code duplication and achieves the _same result type_ principle by using generic builders and traversals over collections in so-called **implementation traits**
+> - these traits are named with a **Like** suffix (e.g. `IndexedSeqLike` is the implementation trait for `IndexedSeq`)
+> - collection classes such as `IndexedSeq` or `Traversable` inherit all their concrete method implementations from these traits
+> - _implementation traits_ have two type parameters instead of usual one for collections, because they parameterize not only over the collection's element type, but also over the collection's **representation type** (i.e. the type of the underlying collection, such as `Seq[I]` or `List[T]`)
+
+```scala
+// the header of the trait 'TraversableLike':
+trait TraversableLike[+Elem, +Repr] { ... }
+// type parameter 'Elem' - element type of traversable
+// type parameter 'Repr' - representation type of elements
+```
+
+> - there are no constraints on 'Repr', it might be instantiated to a type that is itself not a subtype of `Traversable` (that way classes like `String` and `Array` can still make use of all operations defined in a collection implementation trait)
+> - e.g. `filter` is implemented once for all collection classes in the trait `TraversableLike`:
+
+```scala
+// implementation of 'filter' in 'TraversableLike'
+package scala.collection
+
+class TraversableLike[+Elem, +Repr] {
+  def newBuilder: Builder[Elem, Repr]  // deferred to concrete implementation classes
+  def foreach[U](f: Elem => U)         // deferred
+
+  def filter(p: Elem => Boolean): Repr = {
+    val b = newBuilder  // first constructs a new builder for the representation type
+    foreach { elem => if (p(elem)) b += elem }  // traverses all elems of the collection
+                     // and if an elem satisfies 'p' adds it to the builder
+    b.result  // finally, all elems collected in the builder are returned
+              // as an instance of the 'Repr' collection type by calling 'result'
+  }
+}
+```
+
+> - a bit more complicated is the `map` operation on collections, for example, if `f` is a function from `String` to `Int`, and `xs` is a `List[String]`, then `xs map f` should give a `List[Int]`, but if `xs` is an `Array[String]`, then the same expression should return `Array[Int]`
+> - how does Scala achieve that without duplicating implementations of the `map` methods in both `List` and `Array`?
+> - the `newBuilder` & `foreach` combination is not enough, since it only allows creation of new instances of the same collection type
+> - on top of that requirement, there's a problem that even the result type constructor of a function like `map` might depend in non trivial ways on the other argument types:
+
+```scala
+import collection.immutable.BitSet
+val bits = BitSet(1, 2, 3)  // immutable.BitSet = BitSet(1, 2, 3)
+bits map (_ * 2)            // BitSet(2, 4, 6)
+bits map (_.toFloat)        // immutable.Set[Float] = Set(1.0, 2.0, 3.0)
+
+// if you map the doubling function over a bit set, you get another bit set back
+// but if you map the function 'toFloat' over the same bit set, you get 'Set[Float]'
+// because bit sets can only contain ints
+```
+
+> - the map's result type depends on the type of function that's passed to it
+> - if the result type of that function stays int, the result will be bit set, but if the result type of the function argument is something else, the result is just a set
+
+```scala
+// the problem is, of course, not just with bit sets:
+Map("a" -> 1, "b" -> 2) map { case (x, y) => (y, x)} // Map[Int, String] = Map(1->a,2->b)
+Map("a" -> 1, "b" -> 2) map { case (x, y) => y} // Iterable[Int] = List(1, 2)
+
+// second function maps key/value pair to integer, in which case we cannot form a map
+// but we can still form an iterable, a supertrait of map
+// every operation that's legal on iterable, must also be legal on a map
+```
+
+> - Scala solves this problem with overloading that's provided by implicit parameters:
+
+```scala
+// implementation of 'map' in 'TraversableLike':
+def map[B, That](p: Elem => B)(implicit bf: CanBuildFrom[B, That, This]): That = {
+  val b = bf(this)
+  for (x <- this) b += f(x)
+  b.result
+}
+
+// where 'filter' used the 'newBuilder' method, 'map' uses a 'builder factory' that's
+// passed as an additional implicit parameter of type 'CanBuildFrom':
+package scala.collection.generic
+
+trait CanBuildFrom[-From, -Elem, +To] {
+  def apply(from: From): Builder[Elem, To]  // creates a new builder
+}
+
+// Elem - indicates the element type of the collection to be built
+// To   - indicates the type of collection to be built
+// From - indicates the type for which this builder factory applies
+
+// e.g. BitSet's companion object would contain a builder factory of type
+// CanBuildFrom[BitSet, Int, BitSet], which means that
+// when operating on BitSet, you can construct another BitSet provided the type of the
+// collection to build is 'Int'
+// if this is not the case, you can always fall back to different, more general
+// implicit builder factory implemented in mutable.Set's companion object:
+CanBuildFrom[Set[_], A, Set[A]]
+
+// which means that, when operating on an arbitrary set (Set[_]), you can build a set
+// again, no matter what the element type 'A' is
+
+// given various implicit instances of `CanBuildFrom`, you can rely on Scala's implicit
+// resolution rules to pick the one that's appropriate and maximally specific
+
+// but what about dynamic types?
+val xs: Iterable[Int] = List(1, 2, 3)  // Iterable[Int] = List(1, 2, 3)
+val ys = xs map (x => x * x)           // Iterable[Int] = List(1, 4, 9)
+
+// the static type 'ys' is iterable, as expected, but its dynamic type is still 'List'
+// this is achieved by one more indirection. The 'apply' method in 'CanBuildFrom' is 
+// passed the source collection as argument
+// all builder factories for generic traversables (except for leaf classes) forward the 
+// call to a method 'genericBuilder' of a collection, which in turn calls the builder
+// that belongs to the collection in which it is defined
+
+// so Scala uses static implicit resolution to resolve constraints on the types of 'map'
+// and virtual dispatch to pick the best dynamic type that corresponds to these 
+// constraints
+```
+
