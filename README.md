@@ -5400,4 +5400,59 @@ object RNA {
 }
 ```
 
+- **Integrating new sets and maps**
+
+> - how to integrate new kind of map into the collection framework?
+> - e.g. a mutable map with `String` as the key type, by a **Patricia trie**, where "Patricia" stands for _"Practical Algorithm To Retrieve Information Coded in Alphanumerics"_ 
+> - the idea is to store a set or a map as a tree where subsequent character in a search key uniquely determines a descendant tree
+> - e.g. Patricia trie that stores strings `abc`, `abd`, `al`, `all` and `xy` would look like the following image:
+
+![Patricia trie image](https://github.com/mbonaci/scala/blob/master/resources/Scala-patricia-trie.gif?raw=true)
+
+> - to find a node corresponding to the string `abc`, you'd simply follow the subtree labeled "a", then proceed to subtree "b", to finally reach its subtree "c"
+> - if it's used as a map, the value associated with a key is stored in nodes that can be reached by that key
+> - if it's a set, you simply store a marker saying that the node is present in the set
+> - _Patricia tries_ support very efficient lookups and updates
+> - another great feature is that they support selecting a subcollection by giving a prefix (e.g. to find a subcollection of all keys that start with an "a", you simply follow the "a" link from the root of the tree)
+
+```scala
+// PrefixMap implementation (Patricia trie based)
+import collection._
+class PrefixMap[T]
+extends mutable.Map[String, T] with mutable.MapLike[String, T, PrefixMap[T]] {
+  var suffixes: immutable.Map[Char, PrefixMap[T]] = Map.empty
+  var value: Option[T] = None
+
+  def get(s: String): Option[T] =
+    if (s.isEmpty) value
+    else suffixes get (s(0)) flatMap (_.get(s substring 1))
+
+  def withPrefix(s: String): PrefixMap[T] =
+    if (s.isEmpty) this
+    else {
+      val leading = s(0)
+      suffixes get leading match {
+        case None => suffixes = suffixes + (leading -> empty)
+        case _ =>
+      }
+      suffixes(leading) withPrefix (s substring 1)
+    }
+
+  override def update(s: String, elem: T) =
+    withPrefix(s).value = Some(elem)
+  override def remove(s: String): Option[T] =
+    if (s.isEmpty) { val prev = value; value = None; prev}
+    else suffixes get (s(0)) flatMap (_.remove(s substring 1))
+    
+  def iterator: Iterator[(String, T)] =
+    (for (v <- value.iterator) yield ("", v)) ++
+    (for ((chr, m) <- suffixes.iterator;
+        (s, v) <- m.iterator) yield (chr +: s, v))
+
+  def += (kv: (String, T)): this.type = { update(kv._1, kv._2); this }
+  def -= (s: String): this.type = { remove(s); this }
+  override def emtpy = new PrefixMap[T]
+
+}
+```
 
