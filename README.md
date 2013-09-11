@@ -5417,14 +5417,26 @@ object RNA {
 
 ```scala
 // PrefixMap implementation (Patricia trie based)
+// by 'Prefix' we want to say that our map has method 'withPrefix', that selects
+// a submap of all keys starting with a given prefix
 import collection._
-class PrefixMap[T]
-extends mutable.Map[String, T] with mutable.MapLike[String, T, PrefixMap[T]] {
+class PrefixMap[T] 
+    extends mutable.Map[String, T] with mutable.MapLike[String, T, PrefixMap[T]] {
+    // inheriting 'MapLike' serves to get the right result type for transformations
+    // such as 'filter'
   var suffixes: immutable.Map[Char, PrefixMap[T]] = Map.empty
+  // immutable maps with small number of elems are more efficient than mutable maps
   var value: Option[T] = None
 
+  // 
   def get(s: String): Option[T] =
-    if (s.isEmpty) value
+    if (s.isEmpty) value  // simply select the optional value stored in the root
+    // try to select the submap corresponding to the first char or the string
+    // if that yields a submap, follow up by looking up the remainder of the key
+    // after its first char and if the key is not found return 'None'
+    // When a 'flatMap' is applied to an optional value and a closure (which returns
+    // an optional value), 'ov flatMap f' will succeed if both 'ov' and 'f' return a
+    // defined value, otherwise it returns 'None'
     else suffixes get (s(0)) flatMap (_.get(s substring 1))
 
   def withPrefix(s: String): PrefixMap[T] =
@@ -5439,9 +5451,11 @@ extends mutable.Map[String, T] with mutable.MapLike[String, T, PrefixMap[T]] {
     }
 
   override def update(s: String, elem: T) =
+    // first locates the elem by calling 'withPrefix' and in the process 
     withPrefix(s).value = Some(elem)
-  override def remove(s: String): Option[T] =
-    if (s.isEmpty) { val prev = value; value = None; prev}
+
+  override def remove(s: String): Option[T] =  // similar to 'get', only it
+    if (s.isEmpty) { val prev = value; value = None; prev}  // first sets the key to None
     else suffixes get (s(0)) flatMap (_.remove(s substring 1))
     
   def iterator: Iterator[(String, T)] =
@@ -5452,7 +5466,29 @@ extends mutable.Map[String, T] with mutable.MapLike[String, T, PrefixMap[T]] {
   def += (kv: (String, T)): this.type = { update(kv._1, kv._2); this }
   def -= (s: String): this.type = { remove(s); this }
   override def emtpy = new PrefixMap[T]
+}
 
+
+import scala.collection.mutable.{Builder, MapBuilder}
+import scala.collection.generic.CanBuildFrom
+
+object PrefixMap extends {
+  def empty[T] = new PrefixMap[T]
+  
+  def apply[T](kvs: (String, T)*): PrefixMap[T] = {
+    val m: PrefixMap[T] = empty
+    for (kv <- kvs) m += kv
+    m
+  }
+  
+  def newBuilder[T]: Builder[(String, T), PrefixMap[T]] =
+    new MapBuilder[String, T, PrefixMap[T]](empty)
+    
+  implicit def canBuildFrom[T]: CanBuildFrom[PrefixMap[_], (String, T), PrefixMap[T]] =
+    new CanBuildFrom[PrefixMap[_], (String, T), PrefixMap[T]] {
+      def apply(from: PrefixMap[_]) = newBuilder[T]
+      def apply() = newBuilder[T]
+  }
 }
 ```
 
