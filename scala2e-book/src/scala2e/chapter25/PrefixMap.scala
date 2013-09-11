@@ -1,14 +1,16 @@
 package scala2e.chapter25
 
-object PrefixMap {
+object PreMap {
 
   def main(args: Array[String]): Unit = {
-    
+    val m = PrefixMap("abc" -> 0, "abd" -> 1, "al" -> 2, "all" -> 2, "xy" -> 4)
   }
 
   // PrefixMap implementation (Patricia trie based)
   import collection._
-  class PrefixMap[T] extends mutable.Map[String, T] with mutable.MapLike[String, T, PrefixMap[T]] {
+  class PrefixMap[T] 
+      extends mutable.Map[String, T] 
+      with mutable.MapLike[String, T, PrefixMap[T]] {
     var suffixes: immutable.Map[Char, PrefixMap[T]] = Map.empty
     var value: Option[T] = None
   
@@ -43,4 +45,25 @@ object PrefixMap {
     override def empty = new PrefixMap[T]  
   }
   
+  import scala.collection.mutable.{Builder, MapBuilder}
+  import scala.collection.generic.CanBuildFrom
+  
+  object PrefixMap extends {
+    def empty[T] = new PrefixMap[T]
+    
+    def apply[T](kvs: (String, T)*): PrefixMap[T] = {
+      val m: PrefixMap[T] = empty
+      for (kv <- kvs) m += kv
+      m
+    }
+    
+    def newBuilder[T]: Builder[(String, T), PrefixMap[T]] =
+      new MapBuilder[String, T, PrefixMap[T]](empty)
+      
+    implicit def canBuildFrom[T]: CanBuildFrom[PrefixMap[_], (String, T), PrefixMap[T]] =
+      new CanBuildFrom[PrefixMap[_], (String, T), PrefixMap[T]] {
+        def apply(from: PrefixMap[_]) = newBuilder[T]
+        def apply() = newBuilder[T]
+    }
+  }
 }

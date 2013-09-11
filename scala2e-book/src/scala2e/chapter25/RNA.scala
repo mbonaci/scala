@@ -2,6 +2,7 @@ package scala2e.chapter25
 
 object RNA {
   def main(args: Array[String]): Unit = {
+   
     val xs = List(A, G, T, A)
     RNA1.fromSeq(xs)
     val rna1 = RNA1(A, U, G, G, T)
