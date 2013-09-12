@@ -5534,3 +5534,36 @@ pm map { case (k, v) => (k + "!", "x" * v) }
 
 > - until now, constructor patterns were linked to _case classes_, but sometimes you might want to write patterns like this without creating an associated case class, moreover, you may wish to be able to create your own kinds of patterns that are decoupled from an object's representation. Enter **extractors**
 
+### **631 - An example: extracting email address**
+
+```scala
+// given a string, we want to decide whether it's an email address, and it it is
+// we want to extract user and domain parts of the address
+// the traditional way:
+def isEMail(s: String): Boolean
+def domain(s: String): String
+def user(s: String): String
+
+// and then:
+if (isEMail(s)) println(user(s) + " AT " + domain(s))
+else println("wtf?")
+
+// lets assume that we could match a string with a pattern:
+EMail(user, domain)
+// the pattern would match if the string contained an embedded '@' sign, in which case
+// it would bind variable 'user' to the part of the string before it, and variable
+// 'domain' to the part after it
+
+// the previous expression could be written more clearly like this:
+s match {
+  case EMail(user, domain) => println(user + " AT " + domain)
+  case _ => println("wtf?")
+}
+
+// to find two successive emails with the same user part:
+ss match {
+  case EMail(u1, d1) :: EMail(u2, d2) :: _ if (u1 == u2) => ...
+  case _ => ...
+}
+```
+
