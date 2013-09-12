@@ -5567,3 +5567,84 @@ ss match {
 }
 ```
 
+### **632 - Extractors**
+
+> - an **extractor** is an object that has a method called `unapply` as one of it members (whose purpose is to match a value and take it apart)
+> - often times, the extractor object also defines a dual method `apply` for building values, but that's not required
+
+```scala
+// extractor object for e-mail addresses:
+object EMail {
+  // the injection method (optional)
+  def apply(user: String, domain: String) = user + "@" + domain
+
+  // the extraction method (mandatory)
+  def unapply(str: String): Option[(String, String)] = {
+    // returns option type over pair of strings, since it must handle the case where
+    // received param is not an email address
+    val parts = str split "@"
+    if (parts.length == 2) Some(parts(0), parts(1)) else None
+  }
+}
+
+// 'apply' is used to turn EMail into an object that can be applied to arguments in
+// parentheses in the same way a method is applied, so you can write:
+EMail("John", "epfl.ch") // to construct the string "John@epfl.ch"
+
+// to make this more explicit, we could also let 'EMail' inherit from function type:
+object EMail extends ((String, String) => String) { ... }
+
+// '(String, String) => String' is the same as 'Function2[String, String, String]',
+// which declares an abstract 'apply' method that 'EMail' implements
+// As a result of this inheritance declaration, we could pass 'EMail' to a method
+// that expects a 'Function[String, String, String]'
+
+unapply("John@epfl.ch") 'equals' Some("John", "epfl.ch")
+unapply("John Doe") 'equals' None
+// a side note: when passing a tuple to a function that takes a single argument, we
+// can leave off one pair of parentheses, so instead of 'Some((user, domain))' we
+// can write 'Some(user, domain)'
+
+// whenever pattern matching encounters a pattern referring to an extractor object,
+// it invokes  the extractor's 'unapply' method on the selector expression:
+selectorString match { case EMail(user, domain) => ... }
+// will be turned into the call:
+EMail.unapply(selectorString)  // which returns either 'None' or 'Some(u, d)'
+
+// in the 'None' case, the pattern doesn't match and the system tries another pattern
+// or fails with a 'MatchError' exception
+
+
+// in the previous example, 'selectorString' matched the argument type of 'unapply', but
+// that is not necessary and it would also be possible to use the 'EMail' extractor
+// to match selector expressions for more general types:
+val x: Any = ...
+x match { case EMail(user, domain) => ... }
+
+// here, the pattern matcher will first check whether the given value 'x' conforms to 
+// 'String', the parameter type of 'unapply' method, and if it does, the value is cast
+// to 'String' and pattern matching proceeds as normal
+// If it doesn't conform, the pattern fails immediately
+```
+
+> - in object `EMail`, the `apply` method is called **injection**, because it takes some arguments and yields an element of a given set (a set of strings that are email addresses, in this case)
+> - the `unapply` method is called **extraction**, because it takes an element of the same set and extracts some of its parts (the user and domain substrings, in this case)
+> - _injection_ and _extraction_ are often grouped together in one object, because then you can use the object's name for both a constructor and a pattern, which simulates the convention for pattern matching with case classes
+> - it is also possible to define an extraction in an object without a corresponding injection, when the object itself is called an **extractor**, regardless of whether or not it has an `apply` method
+
+```scala
+// if an injection method is included, it should be dual to the extraction method
+// e.g. a call to:
+EMail.unapply(EMail.apply(user, domain))
+// should return
+Some(user, domain)
+// going in the other direction means running first the 'unapply' and then 'apply':
+EMail.unapply(obj) match {
+  case Some(u, d) => EMail.apply(u, d)
+}
+// where, if the match on 'obj' succeeds, we expect to get back that same object from
+// the 'apply'
+```
+
+> - the duality of `apply` and `unapply` is a good design principle, which is not enforced by Scala, of course, but it's recommended when designing extractors
+
