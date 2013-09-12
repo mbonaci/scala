@@ -5451,20 +5451,37 @@ class PrefixMap[T]
     }
 
   override def update(s: String, elem: T) =
-    // first locates the elem by calling 'withPrefix' and in the process 
+    // first locates the key by calling 'withPrefix', creating submaps if not in tree
     withPrefix(s).value = Some(elem)
 
   override def remove(s: String): Option[T] =  // similar to 'get', only it
-    if (s.isEmpty) { val prev = value; value = None; prev}  // first sets the key to None
+    if (s.isEmpty) { val prev = value; value = None; prev}  // first sets nodes to None
     else suffixes get (s(0)) flatMap (_.remove(s substring 1))
-    
+  
+  // returns iterator that yields all key-value pairs from the map
+  // If the map contains a defined value, 'Some(x)', in the value field at its root,
+  // then '("", x)' is the first element returned from the iterator
+  // The iterator needs to traverse the iterators of all submaps stored in the suffixes
+  // field, but it needs to add a character in front of every key string returned by
+  // those iterators
+  // If 'm' is the submap reached from the root through a character 'chr', and '(s, v)'
+  // is an element returned from 'm.iterator', then the root’s iterator will return 
+  // '(chr +: s, v)' instead
   def iterator: Iterator[(String, T)] =
+    // 'Option' values define an iterator method that returns either no element, if the
+    // option value is 'None', or exactly one element, 'x', if the option is 'Some(x)'
     (for (v <- value.iterator) yield ("", v)) ++
     (for ((chr, m) <- suffixes.iterator;
         (s, v) <- m.iterator) yield (chr +: s, v))
 
+// since maps and sets come with default builders, which are instances of 'MapBuilder',
+// there's no need to implement the 'newBuilder' method
+
   def += (kv: (String, T)): this.type = { update(kv._1, kv._2); this }
   def -= (s: String): this.type = { remove(s); this }
+
+  // to build the right kind of set or map, we need to start with an empty set or map of
+  // this kind, thus the 'empty' method
   override def emtpy = new PrefixMap[T]
 }
 
@@ -5472,9 +5489,11 @@ class PrefixMap[T]
 import scala.collection.mutable.{Builder, MapBuilder}
 import scala.collection.generic.CanBuildFrom
 
+// the main purpose of this object is to define some convenience factory methods
+// and to define a 'CanBuildFrom' implicit to make typing work better
 object PrefixMap extends {
   def empty[T] = new PrefixMap[T]
-  
+  // methods 'empty' and 'apply' allow us to write 'PrefixMap' literals
   def apply[T](kvs: (String, T)*): PrefixMap[T] = {
     val m: PrefixMap[T] = empty
     for (kv <- kvs) m += kv
@@ -5484,11 +5503,29 @@ object PrefixMap extends {
   def newBuilder[T]: Builder[(String, T), PrefixMap[T]] =
     new MapBuilder[String, T, PrefixMap[T]](empty)
     
+  // makes methods like 'map' return best possible type
   implicit def canBuildFrom[T]: CanBuildFrom[PrefixMap[_], (String, T), PrefixMap[T]] =
     new CanBuildFrom[PrefixMap[_], (String, T), PrefixMap[T]] {
       def apply(from: PrefixMap[_]) = newBuilder[T]
       def apply() = newBuilder[T]
   }
 }
+
+// made possible by methods 'empty' and 'apply':
+val pm = PrefixMap("hello" -> 5, "hi" -> 2)  // PrefixMap[Int] = Map((hello. 5), (hi, 2))
+val epm = PrefixMap.empty[String]            // PrefixMap[String] = Map()
+
+// made possible by 'CanBuildFrom'
+// consider mapping a function over the key-value pairs of a 'PrefixMap'
+// as long as that function produces pairs of strings and some other type, the resulting
+// collection will again be a 'PrefixMap'
+// Without 'canBuildFrom' implicit, the result would have been a general mutable map:
+pm map { case (k, v) => (k + "!", "x" * v) }
+    // PrefixMap[String] = Map((hello!, xxxxx), (hi!, xx))
 ```
 
+> - to summarize, if you want to fully integrate a new collection class into the collection framework, you need to pay attention to the following:
+>   - decide whether the collection should be mutable or immutable
+>   - pick the right traits for the collection
+>   - inherit from the right implementation trait to implement most collection operations
+>   - if you want `map` and similar operations to return instances of your collection type, provide an implicit **`CanBuildFrom`** in your class's companion object
