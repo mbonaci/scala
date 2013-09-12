@@ -5529,3 +5529,8 @@ pm map { case (k, v) => (k + "!", "x" * v) }
 >   - pick the right traits for the collection
 >   - inherit from the right implementation trait to implement most collection operations
 >   - if you want `map` and similar operations to return instances of your collection type, provide an implicit **`CanBuildFrom`** in your class's companion object
+
+## Extractors
+
+> - until now, constructor patterns were linked to _case classes_, but sometimes you might want to write patterns like this without creating an associated case class, moreover, you may wish to be able to create your own kinds of patterns that are decoupled from an object's representation. Enter **extractors**
+
