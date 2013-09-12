@@ -5648,3 +5648,43 @@ EMail.unapply(obj) match {
 
 > - the duality of `apply` and `unapply` is a good design principle, which is not enforced by Scala, of course, but it's recommended when designing extractors
 
+### **635 - Patterns with zero or one variable**
+
+> - to bind `n` variables, `unapply` returns an _N-element tuple_ wrapped in a `Some`
+> - the case when a pattern binds just one variable is treated differently, since there's no one-tuple in Scala, so to return just one pattern element, the `unapply` method simply wraps the element itself in a `Some`:
+
+```scala
+// extractor object for strings that consist of a substring appearing twice in a row 
+object Twice {
+  def apply(s: String): String = s + s
+  def unapply(s: String): Option[String] = {
+    val length = s.length / 2
+    val half = s.substring(0, length)
+    if (half == s.substring(length)) Some(half) else None
+  }
+}
+```
+
+> - it is also possible that an extractor pattern does not bind any variables, in which case the corresponding `unapply` returns a boolean, `true` for success and `false` for failure:
+
+```scala
+// extractor object that characterizes strings consisting of all uppercase letters:
+object UpperCase {
+  def unapply(s: String): Boolean = s.toUpperCase == s
+  // it would make no sense to define 'apply', because there's nothing to construct
+}
+
+// function that applies all previously defined extractors:
+def userTwiceUpper(s: String) = s match {
+  case EMail(Twice(x @ UpperCase()), domain) => "match: " + x + " in domain " + domain
+  case _ => "no match"
+  // UpperCase is written with parentheses since without them, the match would test for
+  // equality with the object 'UpperCase'
+  // 'x @ UpperCase()' associates variable 'x' with the pattern matched by 'UpperCase()'
+}
+
+userTwiceUpper("CANCAN@gmail.com")  // match: CAN in domain gmail.com
+userTwiceUpper("CANCAM@gmail.com")  // no match
+userTwiceUpper("cancan@gmail.com")  // no match
+```
+
