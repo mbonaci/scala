@@ -5,6 +5,7 @@ object PreMap {
   def main(args: Array[String]): Unit = {
     val m = PrefixMap("abc" -> 0, "abd" -> 1, "al" -> 2, "all" -> 2, "xy" -> 4)
   }
+  
 
   // PrefixMap implementation (Patricia trie based)
   import collection._
@@ -44,6 +45,8 @@ object PreMap {
     def -= (s: String): this.type = { remove(s); this }
     override def empty = new PrefixMap[T]  
   }
+  
+  
   
   import scala.collection.mutable.{Builder, MapBuilder}
   import scala.collection.generic.CanBuildFrom
