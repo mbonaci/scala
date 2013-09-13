@@ -5837,3 +5837,8 @@ for (Decimal(s, i, d) <- Decimal findAllIn input)
   println("sign: " + s + ", integer: " + i + ", decimal: " + d)
 ```
 
+## Annotations
+
+> - structured information added to program source code
+> - may be added to any variable, method, expression, or other program element
+
