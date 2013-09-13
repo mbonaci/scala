@@ -5776,3 +5776,64 @@ object List {
 >   - if your case classes inherit from a `sealed` base class, the compiler will check your pattern matches for exhaustiveness and will complain if some combination of possible values is not covered by a set of patterns, which is not available with extractors
 > - if you're writing a closed application, you should prefer case classes, but if you need to expose an API to clients, extractors might be preferable
 
+### **642 - Regular expressions**
+
+> - a particularly useful application area of extractors, since they make it much nicer to interact with regular expressions library `scala.util.matching`
+
+_Forming regular expressions_
+
+> - Scala inherits its regex syntax from Java, which in turn inherits it from Perl
+
+```scala
+import scala.util.matching.Regex
+val Decimal = new Regex("(-)?(\\d+)(\\.\\d*)?")  // Regex = (-)?(\d+)(\.\d*)?
+
+// like in Java, we need to escape backslashes, which can be painful to write and read
+// Scala provides raw strings to help with that
+// the difference between raw and normal string is that all characters in a raw string
+// appear exactly as they are typed, so we can write:
+val Decimal = new Regex("""(-)?(\d+)(\.\d*)?""") // Regex = (-)?(\d+)(\.\d*)?
+
+// another, even shorter way:
+val Decimal = """(-)?(\d+)(\.\d*)?""".r          // Regex = (-)?(\d+)(\.\d*)?
+
+// appending '.r' to a string creates regular expression (method of 'StringOps')
+```
+
+_Searching for regular expressions_
+
+```scala
+val input = "for -1.0 to 99 by 3"
+for (s <- Decimal findAllIn input)
+  println(s + "   ")        // -1.0   99   3   
+
+Decimal findFirstIn input   // Option[String] = Some(-1.0)
+Decimal findPrefixOf input  // Option[String] = None  (must be at the start of a string)
+```
+
+_Extracting with regular expressions_
+
+> - every regex defines an extractor, which is used to identify substrings that are matched by the groups of the regular expression:
+
+```scala
+// we could decompose a decimal number like this:
+val Decimal(sign, integerpart, decimalpart) = "-1.23"
+// sign: String = -
+// integerpart: String = 1
+// decimalpart: String = .23
+
+// the 'Decimal' regex value defines 'unapplySeq', which matches every string that
+// corresponds to the regex syntax for decimal numbers
+// If the string matches, the parts that correspond to the 3 groups in the regex
+// are returned as elements of the pattern and are then matched by the 3 pattern
+// variables 'sign', 'integerpart' and 'decimalpart'
+// If a group is missing, the element value is set to 'null':
+val Decimal(sign, integerpart, decimalpart) = "1.0"
+// sign: String = null      integerpart = 1      decimalpart = .0
+
+// it is also possible to mix extractors with regular expression searches in a for
+// expression:
+for (Decimal(s, i, d) <- Decimal findAllIn input)
+  println("sign: " + s + ", integer: " + i + ", decimal: " + d)
+```
+
