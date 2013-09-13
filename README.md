@@ -5688,3 +5688,65 @@ userTwiceUpper("CANCAM@gmail.com")  // no match
 userTwiceUpper("cancan@gmail.com")  // no match
 ```
 
+### **637 - Variable argument extractors**
+
+> - if you don't know the number of element values in advance, the previous method is not flexible enough
+
+```scala
+// match on a string representing domain name and extract all domain parts
+// in the end, we should be able to use it like this:
+dom match {  // domains are in reverse order so it better fits sequence patterns
+  case Domain("org", "acm") => println("acm.org")
+  case Domain("com", "sun", "java") => println("java.sun.com")
+  case Domain("net", _*) => println("a .net domain")
+}
+
+// a sequence wildcard pattern '_*', at the end of an argument list matches any remaining
+// elements in a sequence, which is more useful if top level domains come first
+// because then we can use wildcard to match sub-domains of arbitrary length
+```
+
+> - the question of supporting _vararg matching_ remains, since the `unapply` methods are not sufficient, because they return a fixed number of sub-elements in the success case
+> - to handle this case, Scala lets you define a different extraction method, specifically for _vararg_ matching, which is called `unapplySeq`
+
+```scala
+object Domain {
+  // the injection (optional)
+  def apply(parts: String*): String =
+    parts.reverse.mkString(".")
+
+  // the extraction (mandatory)
+  // first splits on periods, then reverses and wraps in 'Some'
+  def unapplySeq(whole: String): Option[Seq[String]] =  // must return 'Option[Seq[T]]'
+    Some(whole.split("\\.").reverse)
+}
+
+// to search for an email address named "luka" in some ".hr" domain:
+def isLukaInDotHr(s: String): Boolean = s match {
+  case EMail("luka", Domain("hr", _*)) => true
+  case _ => false
+}
+
+// it's also possible to return some fixed elements from 'unapplySeq', together with the
+// variable part, which is expressed by returning all elements in a tuple, where the
+// variable part comes last, as usual
+// e.g. extractor for emails where the domain part is already expanded into sequence:
+object ExpandedEMail {
+  // returns optional value of a pair (Tuple2), where the first part is the user, and 
+  // the second part is a sequence of names representing the domain
+  def unapplySeq(email: String): Option[(String, Seq[String])] = {
+    val parts = email split "@"
+    if (parts.length == 2)
+      Some(parts(0), parts(1).split("\\.").reverse)
+    else
+      None
+  }
+}
+
+val s = "luka@support.epfl.hr"
+val ExpandedEMail(name, topdom, subdoms @ _*) = s
+// name: String = luka
+// topdom: String = hr
+// subdoms: Seq[String] = WrappedArray(epfl, support)
+```
+
