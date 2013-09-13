@@ -5842,3 +5842,13 @@ for (Decimal(s, i, d) <- Decimal findAllIn input)
 > - structured information added to program source code
 > - may be added to any variable, method, expression, or other program element
 
+### **647 - Why have annotations?**
+
+> - a **meta-programming** tool (program that take other programs as input)
+> - the compiler understands just one feature, annotations, but it doesn't attach any meaning to individual annotations
+> - example use cases:
+>   - a documentation generator instructed to document certain methods as deprecated
+>   - a pretty printer instructed to skip over parts of the program that have been carefully hand formatted
+>   - a checker for non-closed files instructed to ignore a particular file that has been manually verified to be closed
+>   - a side-effects checker instructed to verify that a specified method has no side effects
+
