@@ -5721,9 +5721,9 @@ object Domain {
     Some(whole.split("\\.").reverse)
 }
 
-// to search for an email address named "luka" in some ".hr" domain:
-def isLukaInDotHr(s: String): Boolean = s match {
-  case EMail("luka", Domain("hr", _*)) => true
+// to search for an email address "luka.bonaci" in some ".hr" domain:
+def isLukaBonaciInDotHr(s: String): Boolean = s match {
+  case EMail("luka.bonaci", Domain("hr", _*)) => true
   case _ => false
 }
 
@@ -5748,5 +5748,19 @@ val ExpandedEMail(name, topdom, subdoms @ _*) = s
 // name: String = luka
 // topdom: String = hr
 // subdoms: Seq[String] = WrappedArray(epfl, support)
+```
+
+### **640 - Extractors and sequence patterns**
+
+> - sequence patterns, such as `List()`, `List(x, y, _*)`, `Array(x, 0, _)` are implemented using extractors in the standard Scala library. E.g. patterns of the form `List(...)` are possible because the `scala.List` companion object is an extractor that defines `unapplySeq` method:
+
+```scala
+// 'List' companion object (similar for 'Array')
+package scala
+object List {
+  def apply[T](elems: T*) = elems.toList  // lets you write e.g. 'List(1, 2)' or 'List()'
+  // returns all elements as a sequence
+  def unapplySeq[T](x: List[T]): Option[Set[T]] = Some(x)
+}
 ```
 
