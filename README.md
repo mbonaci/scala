@@ -5840,6 +5840,7 @@ for (Decimal(s, i, d) <- Decimal findAllIn input)
 ## Annotations
 
 > - structured information added to program source code
+> - not valid Scala expressions
 > - may be added to any variable, method, expression, or other program element
 
 ### **647 - Why have annotations?**
@@ -5851,4 +5852,45 @@ for (Decimal(s, i, d) <- Decimal findAllIn input)
 >   - a pretty printer instructed to skip over parts of the program that have been carefully hand formatted
 >   - a checker for non-closed files instructed to ignore a particular file that has been manually verified to be closed
 >   - a side-effects checker instructed to verify that a specified method has no side effects
+
+### **648 - Syntax of annotations**
+
+> - a typical use of an annotation looks like this:  
+
+```scala
+@deprecated def bigMistake() = // ... applies to the entirety of the 'bigMistake' method
+
+@deprecated class QuickAndDirty { /*...*/ }
+
+(e: @unchecked) match {  // applied to expressions
+  // non-exhaustive cases...
+}
+
+// annotations have a richer general form:
+@annot(exp1, exp2, ...)  // parentheses are optional if annotation has no arguments
+// where 'annot' specifies the class of annotation
+
+// the precise form of the arguments you may give to annotation depends on the particular
+// annotation class (compiler supports arbitrary expressions, as long as they type check)
+
+// some annotation classes can make use of this, e.g. to let you refer to a variable:
+@cool val normal = "Hello"
+@coolerThan(normal) val fonzy = "Hot"
+```
+
+> - internally, Scala represents an annotation as just a constructor call of an annotation class (replace `@` with `new` and you have a valid instance creation expr.)
+> - a somewhat tricky bit concerns annotations that take other annotations as arguments
+
+```scala
+// we cannot write an annotation directly as an argument to an annotation, because they
+// are not valid expressions
+// in such cases we must use 'new' instead of '@':
+import annotation._
+class strategy(arg: Annotation) extends Annotation
+class delayed extends Annotation
+
+@strategy(@delayed) def f(){}     // error: illegal start of simple expression
+
+@strategy(new delayed) def f(){}  // f: ()Unit
+```
 
