@@ -5764,3 +5764,15 @@ object List {
 }
 ```
 
+### **641 - Extractors versus case classes**
+
+> - even though case classes are very useful, they have a shortcoming of exposing the concrete representation of data, because the name of the class in a constructor pattern corresponds to the concrete representation type of the selector object
+> - if a match against `case C(...)` succeeds, you know that the selector expression is an instance of class `C`
+> - extractors break this link between data representation and patterns, by allowing patterns that have nothing to do with the data type the the object that's matched against
+> - this property is called **representation independence**, and it is known to be very important in open systems of large scale, because it allows you to change an implementation type used in a set of components without affecting clients of these components
+> - on the other hand, case classes have their advantages over extractors
+>   - case classes are much easier to set up and define, thus requiring less code
+>   - they usually lead to more efficient pattern matches than extractors, because compiler can optimize patterns over case classes much better than those over extractors, because the mechanisms of case classes are fixed, whereas an `unapply` or `unapplySeq` in an extractor could do almost anything
+>   - if your case classes inherit from a `sealed` base class, the compiler will check your pattern matches for exhaustiveness and will complain if some combination of possible values is not covered by a set of patterns, which is not available with extractors
+> - if you're writing a closed application, you should prefer case classes, but if you need to expose an API to clients, extractors might be preferable
+
