@@ -69,4 +69,19 @@ object wksChapter28 {
 
 	joe \ "@name"                             //> res1: scala.xml.NodeSeq = JR
 	joe \ "@serial"                           //> res2: scala.xml.NodeSeq = 8
+	
+	
+	// To parse back a 'CCTherm' instance:
+	def fromXML(node: scala.xml.Node): CCTherm =
+	  new CCTherm {
+	    val description   = (node \ "description"  ).text
+	    val yearMade      = (node \ "yearMade"     ).text.toInt
+	    val dateObtained  = (node \ "dateObtained" ).text
+	    val bookPrice     = (node \ "bookPrice"    ).text.toInt
+	    val purchasePrice = (node \ "purchasePrice").text.toInt
+	    val condition     = (node \ "condition"    ).text.toInt
+	  }                                       //> fromXML: (node: scala.xml.Node)scala2e.chapter28.wksChapter28.CCTherm
+	  
+	  
+	val th = fromXML (therm.toXML)            //> th  : scala2e.chapter28.wksChapter28.CCTherm = The joy of Clojure
 }
