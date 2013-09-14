@@ -5898,3 +5898,26 @@ class delayed extends Annotation
 
 > - introduced for features that are used widely enough to alter the language specification, yet not fundamental enough to merit their own syntax  
 
+_Deprecation_
+
+> - used when there's a need to purge some classes or methods from the specification
+> - lets us gracefully remove a method or a class that turns out to be a mistake
+> - since we cannot simply delete a language element, because clients' code might stop working, we mark a class or a method as deprecated, by simply writing **@deprecated** before its declaration
+> - such an annotation will cause the compiler to emit deprecation warning whenever Scala code accesses the language element
+
+```scala
+@deprecated def bigMistake() = // ...
+
+// if you provide a string as an argument, that string will be emitted along with warning
+@deprecated("use newShinyMethod() instead")
+def bigMistake() = // ...
+
+// now, any caller will get a message like this:
+$scalac -deprecation Deprecation2.scala
+// Deprecation2.scala:33: warning: method bigMistake in object Deprecation2 is
+// deprecated: use newShinyMethod() instead
+//     bigMistake()
+//     ^
+// one warning found
+```
+
