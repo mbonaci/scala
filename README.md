@@ -6139,3 +6139,95 @@ val load = scala.xml.XML.loadFile("therm1.xml")
 val th1 = fromXML(load)  // CCTherm = The joy of Clojure
 ```
 
+### **665 - Pattern matching on XML**
+
+> - sometimes you may not know what kind of XML structure you're supposed to take apart
+> - an XML pattern looks just like an XML literal, but with one difference. If you insert escape `{}`, the code withing curly braces is not an expression but a pattern
+> - a pattern embedded in curlies can use the full Scala pattern language, including binding new variables, type tests and ignoring content using `_` and `_*` patterns:
+
+```scala
+def proc(node: scala.xml.Node): String =
+  node match {
+    case <a>{contents}</a> => "It's ej " + contents  // looks for <a> with single subnode
+    case <b>{contents}</b> => "It's bi " + contents  // loks
+    case _ => "Is it something?"
+  }
+// expression 'case <a>{contents}</a>' looks for <a> with single sub node
+// if found, it binds the content to variable named 'contents' and then evaluates the
+// code to the right of the fat arrow
+
+// usage:
+proc(<a>apple</a>)   // String = It's ej apple
+proc(<b>banana</b>)  // String = It's bi banana
+
+proc(<a>a <em>red</em> apple</a>)  // String = Is it something?
+proc(<a/>)                         // String = Is it something?
+```
+
+> - if you want the function to match cases like the last two, you'll have to match against a sequence of nodes instead of a single one
+> - the pattern for any sequence is written `_*`:
+
+```scala
+def proc(node: scala.xml.Node): String =
+  node match {
+    case <a>{contents @ _*}</a> => "It's an ej " + contents
+    case <b>{contents @ _*}</b> => "It's a bi " + contents
+    case _ => "Is it something else?"
+  }
+// so now:
+proc(<a>a <em>red</em> apple</a>)  // It's an ej ArrayBuffer(a , <em>red</em>,  apple)
+proc(<a/>)                         // It's an ej Array()
+```
+
+> - XML patterns work very nicely with `for` expressions as a way to iterate through some parts of an XML tree, while ignoring other parts:
+
+```scala
+// if you wished to skip over the white space between records in the following XML:
+val catalog =
+  <catalog>
+    <cctherm>
+      <description>hot dog #5</description>
+      <yearMade>1952</yearMade>
+      <dateObtained>March 14, 2006</dateObtained>
+      <bookPrice>2199</bookPrice>
+      <purchasePrice>500</purchasePrice>
+      <condition>9</condition>
+    </cctherm>
+    <cctherm>
+      <description>Sprite Boy</description>
+      <yearMade>1964</yearMade>
+      <dateObtained>April 28, 2003</dateObtained>
+      <bookPrice>1695</bookPrice>
+      <purchasePrice>595</purchasePrice>
+      <condition>5</condition>
+    </cctherm>
+  </catalog>
+
+catalog match {
+  case <catalog>{therms @ _*}</catalog> =>
+    for (therm <- therms)
+      println("processing: " + (therm \ "description").text)
+}
+// processing: 
+// processing: hot dog #5
+// processing: 
+// processing: Sprite Boy
+// processing: 
+
+// there's actually 5 nodes inside '<catalog>', although it looks as if there were 2
+// there's a whitespace before, after and between two elements
+
+// to ignore the whitespace and process only subnodes inside a '<cctherm>' elem:
+catalog match {
+  case <catalog>{therms @_*}</catalog> =>
+    for (therm @ <cctherm>{_*}</cctherm> <- therms)
+      println("processing: " + (therm \ "description").text)
+}
+// processing: hot dog #5
+// processing: Sprite Boy
+
+// '<cctherm>{_*}</cctherm>' restricts matches only to 'cctherm' elements,
+// ignoring whitespace
+```
+
+
