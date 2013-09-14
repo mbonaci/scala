@@ -6096,3 +6096,22 @@ joe \ "@name"    // scala.xml.NodeSeq = JR
 joe \ "@serial"  // scala.xml.NodeSeq = 8
 ```
 
+### **663 - Deserialization**
+
+```scala
+// with XML deconstruction methods, we can now write a parser from XML back to our
+// internal data structure:
+// To parse back a 'CCTherm' instance:
+def fromXML(node: scala.xml.Node): CCTherm =
+  new CCTherm {
+    val description   = (node \ "description"  ).text
+    val yearMade      = (node \ "yearMade"     ).text.toInt
+    val dateObtained  = (node \ "dateObtained" ).text
+    val bookPrice     = (node \ "bookPrice"    ).text.toInt
+    val purchasePrice = (node \ "purchasePrice").text.toInt
+    val condition     = (node \ "condition"    ).text.toInt
+  }
+
+val th = fromXML (therm.toXML)  // CCTherm = The joy of Clojure
+```
+
