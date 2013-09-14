@@ -6007,3 +6007,45 @@ val yearMade = 1955  // Int = 1955
 // scala.xml.Elem = <a>&lt;/a&gt;potential security hole&lt;a&gt;</a>
 ```
 
+### **659 - Serialization**
+
+```scala
+// writing our own serializer that converts internal data structures to XML:
+abstract class CCTherm {
+  val description: String
+  val yearMade: Int
+  val dateObtained: String
+  val bookPrice: Int      // in cents
+  val purchasePrice: Int  // in cents
+  val condition: Int      // 1 to 10
+
+  override def toString = description
+  def toXML = 
+    <cctherm>
+      <description>{description}</description>
+      <yearMade>{yearMade}</yearMade>
+      <dateObtained>{dateObtained}</dateObtained>
+      <bookPrice>{bookPrice}</bookPrice>
+      <purchasePrice>{purchasePrice}</purchasePrice>
+      <condition>{condition}</condition>
+    </cctherm>
+}
+
+// usage:
+val therm = new CCTherm {  // possible because Scala instantiates anonymous subclass
+  val description = "The joy of Clojure"
+  val yearMade = 2011
+  val dateObtained = "24.08.2013"
+  val bookPrice = 2400
+  val purchasePrice = 2000
+  val condition = 10
+} // therm: CCTherm = The joy of Clojure
+
+therm.toXML
+// scala.xml.Elem = 
+// <cctherm> ...
+
+// to include curly braces in the XML text just double them:
+<a>{{brace yourself!}}</a>  // scala.xml.Elem = <a>{brace yourself!}</a>
+```
+
