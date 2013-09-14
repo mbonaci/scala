@@ -6230,4 +6230,8 @@ catalog match {
 // ignoring whitespace
 ```
 
+## Modular Programming Using Objects
+
+> - packages and access modifiers enable you to organize a large program using packages as _modules_, where a module is a smaller program piece with a well defined interface and a hidden implementation
+> - while packages are quite helpful, they are limited, because they don't provide a way to abstract, i.e. to reconfigure a package two different ways within the same program or to inherit between packages. A package always includes one precise list of contents, which stays the same until you change the code and recompile
 
