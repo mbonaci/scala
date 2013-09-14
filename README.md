@@ -5950,3 +5950,7 @@ _Tailrec_
 > - it is used to make sure that the compiler will perform tail recursion optimization
 > - if the optimization cannot be performed, you will get a warning with an explanation
 
+_Unchecked_
+
+> - **`@unchecked`** is interpreted by the compiler during pattern matching, and it tells the compiler not to worry if the match expression left out some cases
+
