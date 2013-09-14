@@ -5954,3 +5954,13 @@ _Unchecked_
 
 > - **`@unchecked`** is interpreted by the compiler during pattern matching, and it tells the compiler not to worry if the match expression left out some cases
 
+_Native methods_
+
+> - **`@native`** informs the compiler that a method's implementation is supplied by the runtime rather than the Scala code
+> - compiler then toggles the appropriate flags in the output, and it leaves out to the developer to supply the implementation using a mechanism such as _Java Native Interface_ (JNI)
+> - when using this annotation, a method body must be supplied, but it will not be emitted into the output:
+
+```scala
+@native def beginCountDown() {}
+```
+
