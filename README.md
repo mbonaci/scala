@@ -5902,7 +5902,7 @@ _Deprecation_
 
 > - used when there's a need to purge some classes or methods from the specification
 > - lets us gracefully remove a method or a class that turns out to be a mistake
-> - since we cannot simply delete a language element, because clients' code might stop working, we mark a class or a method as deprecated, by simply writing **@deprecated** before its declaration
+> - since we cannot simply delete a language element, because clients' code might stop working, we mark a class or a method as deprecated, by simply writing **`@deprecated`** before its declaration
 > - such an annotation will cause the compiler to emit deprecation warning whenever Scala code accesses the language element
 
 ```scala
@@ -5920,4 +5920,12 @@ $scalac -deprecation Deprecation2.scala
 //     ^
 // one warning found
 ```
+
+_Volatile fields_
+
+> - concurrent programming does not mix well with shared mutable state, and for this reason, the focus of Scala's concurrency support is message passing and a minimum of shared mutable state
+> - the `@volatile` annotation helps in cases when developers use mutable state in their concurrent programs
+> - it informs the compiler that a variable will be used by multiple threads
+> - such variables are implemented so that reads and writes of the variable value is slower, but accesses from multiple threads behave more predictably
+> - we get the same behavior as if we marked the variable with **`volatile`** modifier in Java
 
