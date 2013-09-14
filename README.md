@@ -6049,3 +6049,50 @@ therm.toXML
 <a>{{brace yourself!}}</a>  // scala.xml.Elem = <a>{brace yourself!}</a>
 ```
 
+### **661 - Taking XML apart**
+
+> - there are 3 particularly useful methods, based on _XPath_, that are used to deconstruct XML: `text`, `\` and `\\`, and `@`
+
+_Extracting text_
+
+> - by calling the `text` method on any XML node, you retrieve all the text within that node, minus any element tags:
+
+```scala
+<a>Sounds <tag/> good</a>.text  // String = Sounds  good
+
+// any encoded characters are decoded automatically:
+<a> input ---&gt; output </a>.text  // String =  input ---> output
+```
+
+_Extracting sub-elements_
+
+> - to find a sub-element by tag name, simply call `\` with the name of the tag:
+
+```scala
+<a><b><c>hello</c></b></a> \ "b"  // scala.xml.NodeSeq = <b><c>hello</c></b>
+
+// you can do a deep search and look through sub-sub-elements (searches all levels):
+<a><b><c><d>hello</d></c></b></a>   \ "a"  // NodeSeq =
+<a><b><c><d>hello</d></c></b></a>  \\ "a"  // NodeSeq = <a><b><c><d>hello</d></c></b></a>
+<a><b><c><d>hello</d></c></b></a>   \ "b"  // NodeSeq = <b><c><d>hello</d></c></b>
+<a><b><c><d>hello</d></c></b></a>  \\ "b"  // NodeSeq = <b><c><d>hello</d></c></b>
+<a><b><c><d>hello</d></c></b></a>   \ "c"  // NodeSeq =
+<a><b><c><d>hello</d></c></b></a>  \\ "c"  // NodeSeq = <c><d>hello</d></c>
+<a><b><c><d>hello</d></c></b></a>   \ "d"  // NodeSeq =
+<a><b><c><d>hello</d></c></b></a>  \\ "d" //> NodeSeq = <d>hello</d>
+```
+
+_Extracting attributes_
+
+> - you can extract tag attributes using the same `\` and `\\` methods, by simply putting `@` sign before the attribute name:
+
+```scala
+val joe = <employee
+  name="JR"
+  rank="dev"
+  serial="8"/> // scala.xml.Elem = <employee rank="dev" name="JR" serial="8"></employee>
+
+joe \ "@name"    // scala.xml.NodeSeq = JR
+joe \ "@serial"  // scala.xml.NodeSeq = 8
+```
+
