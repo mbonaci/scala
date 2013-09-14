@@ -5964,3 +5964,46 @@ _Native methods_
 @native def beginCountDown() {}
 ```
 
+## Working with XML
+### **657 - XML literals**
+
+> - Scala lets you type in XML as a literal, anywhere that en expression is valid:
+
+```scala
+scala> <a>
+         This is old stuff.
+         Who needs XML any more? <exclamation/>
+       </a>
+// res0: scala.xml.Elem = 
+// <a>
+//   This is old stuff.
+//   Who needs XML any more? <exclamation></exclamation>
+// </a>
+```
+
+> - the usual XML suspects:
+>   - class `Elem` represents an XML element
+>   - class `Node` is the abstract superclass of all XML node classes
+>   - class `Text` is a node holding just unstructured text, from withing a tag
+>   - class `NodeSeq` holds a sequence of nodes. Many methods in the XML library process node sequences in places you might expect them to process individual nodes (since `Node` extends `NodeSeq`, you can use those methods on individual nodes. You can think of an individual node as a one-element node sequence)
+> - code can be evaluated in the middle of an XML literal, by using curly braces:
+
+```scala
+<a>{"hello" + ", world"}</a>  // scala.xml.Elem = <a>hello, world</a>
+
+// braces can include arbitrary Scala content, e.g. including further XML literals:
+val yearMade = 1955  // Int = 1955
+<a>{ if (yearMade < 2000) <old>{yearMade}</old>
+     else xml.NodeSeq.Empty }
+</a>
+// scala.xml.Elem = <a> <old>1955</old> </a>
+
+// if an expression inside a braces does not evaluate to an XML node (may evaluate to 
+// any Scala value), the result is converted to a string and inserted as a text node:
+<a>{3 + 4}</a>  // scala.xml.Elem = <a>7</a>
+
+// any '<', '>' and '&' characters in the text will be escaped:
+<a>{"</a>potential security hole<a>"}</a>
+// scala.xml.Elem = <a>&lt;/a&gt;potential security hole&lt;a&gt;</a>
+```
+
