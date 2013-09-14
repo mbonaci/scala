@@ -6115,3 +6115,27 @@ def fromXML(node: scala.xml.Node): CCTherm =
 val th = fromXML (therm.toXML)  // CCTherm = The joy of Clojure
 ```
 
+### **664 - Loading and saving**
+
+> - the last part needed to write a data serializer is conversion between XML and stream of bytes
+> - to convert XML to string, all you need is `toString` method
+> - however, it's better to use a library routine and convert all the way to bytes. That way, the resulting XML can include a directive that specifies which character encoding was used. Otherwise, if you encode string to bytes yourself, you must keep track of the character encoding yourself
+> - to convert from XML to a file of bytes, you can use `XML.save` command:
+
+```scala
+val node = therm.toXML
+scala.xml.XML.save("therm1.xml", node)
+
+// to load XML from a file:
+val load = scala.xml.XML.loadFile("therm1.xml")
+// scala.xml.Elem = <cctherm>
+//       <description>The joy of Clojure</description>
+//       <yearMade>2011</yearMade>
+//       <dateObtained>24.08.2013</dateObtained>
+//       <bookPrice>2400</bookPrice>
+//       <purchasePrice>2000</purchasePrice>
+//       <condition>10</condition>
+//     </cctherm>
+val th1 = fromXML(load)  // CCTherm = The joy of Clojure
+```
+
