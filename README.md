@@ -5944,3 +5944,9 @@ _Automatic `get` and `set` methods_
 > - because some platform-specific frameworks do expect get and set methods, Scala provides **`@scala.reflect.BeanProperty`** annotation, which tells the compiler to automatically generate getters and setters 
 > - it conforms to Java Bean standard, which means that a field named `crazy` will be supplemented with `getCrazy` and `setCrazy`, which will be available only after the compilation passes (so you cannot compile code that uses those methods in that same pass)
 
+_Tailrec_
+
+> - annotation **`@tailrec`** is added to a method that needs to be tail recursive (e.g. if you expect that, without tail recursion optimization, it would recurse very deep)
+> - it is used to make sure that the compiler will perform tail recursion optimization
+> - if the optimization cannot be performed, you will get a warning with an explanation
+
