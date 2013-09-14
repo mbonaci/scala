@@ -1,4 +1,4 @@
-package scala2e.chapter28
+//package scala2e.chapter28
 
 object wksChapter28 {
 
@@ -30,7 +30,7 @@ object wksChapter28 {
 	  val bookPrice = 2400
 	  val purchasePrice = 2000
 	  val condition = 10
-	} // therm: CCTherm = The joy of Clojure  //> therm  : scala2e.chapter28.wksChapter28.CCTherm = The joy of Clojure
+	} // therm: CCTherm = The joy of Clojure  //> therm  : wksChapter28.CCTherm = The joy of Clojure
 	
 	therm.toXML                               //> res0: scala.xml.Elem = <cctherm>
                                                   //|       <description>The joy of Clojure</description>
@@ -80,8 +80,28 @@ object wksChapter28 {
 	    val bookPrice     = (node \ "bookPrice"    ).text.toInt
 	    val purchasePrice = (node \ "purchasePrice").text.toInt
 	    val condition     = (node \ "condition"    ).text.toInt
-	  }                                       //> fromXML: (node: scala.xml.Node)scala2e.chapter28.wksChapter28.CCTherm
+	  }                                       //> fromXML: (node: scala.xml.Node)wksChapter28.CCTherm
 	  
 	  
-	val th = fromXML (therm.toXML)            //> th  : scala2e.chapter28.wksChapter28.CCTherm = The joy of Clojure
+	val th = fromXML (therm.toXML)            //> th  : wksChapter28.CCTherm = The joy of Clojure
+
+  val node = therm.toXML                          //> node  : scala.xml.Elem = <cctherm>
+                                                  //|       <description>The joy of Clojure</description>
+                                                  //|       <yearMade>2011</yearMade>
+                                                  //|       <dateObtained>24.08.2013</dateObtained>
+                                                  //|       <bookPrice>2400</bookPrice>
+                                                  //|       <purchasePrice>2000</purchasePrice>
+                                                  //|       <condition>10</condition>
+                                                  //|     </cctherm>
+  scala.xml.XML.save("therm1.xml", node)
+  
+  val load = scala.xml.XML.loadFile("therm1.xml") //> load  : scala.xml.Elem = <cctherm>
+                                                  //|       <description>The joy of Clojure</description>
+                                                  //|       <yearMade>2011</yearMade>
+                                                  //|       <dateObtained>24.08.2013</dateObtained>
+                                                  //|       <bookPrice>2400</bookPrice>
+                                                  //|       <purchasePrice>2000</purchasePrice>
+                                                  //|       <condition>10</condition>
+                                                  //|     </cctherm>
+  val th1 = fromXML(load)                         //> th1  : wksChapter28.CCTherm = The joy of Clojure
 }
