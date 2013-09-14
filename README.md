@@ -6235,3 +6235,15 @@ catalog match {
 > - packages and access modifiers enable you to organize a large program using packages as _modules_, where a module is a smaller program piece with a well defined interface and a hidden implementation
 > - while packages are quite helpful, they are limited, because they don't provide a way to abstract, i.e. to reconfigure a package two different ways within the same program or to inherit between packages. A package always includes one precise list of contents, which stays the same until you change the code and recompile
 
+### **670 - The problem**
+
+> - being able to compile different modules that make up a system separately helps different teams work independently
+> - being able to unplug one implementation of a module and plug in another is useful, because it allows different configurations to be used in different contexts
+> - any technique that aims to provide solutions to these problems should:
+>   - have a module construct that provides clean separation of interface and implementation
+>   - be able to replace one module with another that has the same interface, without changing or recompiling the modules that depend on the replaced one
+>   - be able to wire modules together (can be thought of as _configuring the system_)
+> - one approach of solving this problem is **dependency injection**, a technique supported by Spring and Guice on the Java platform
+> - Spring, for example, essentially allows you to represent the interface of a module as a Java interface and implementation of a module as Java classes, where you can specify dependencies between modules and wire an application together via external XML configuration files
+> - with Scala you have some alternatives provided by the language itself, which enables you to solve "the problem" without using external framework
+
