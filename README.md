@@ -5894,3 +5894,7 @@ class delayed extends Annotation
 @strategy(new delayed) def f(){}  // f: ()Unit
 ```
 
+### **650 - Standard annotations**
+
+> - introduced for features that are used widely enough to alter the language specification, yet not fundamental enough to merit their own syntax  
+
