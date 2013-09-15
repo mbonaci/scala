@@ -1,4 +1,9 @@
-package scala2e.chapter28
+package scala2e.chapter28.recipesApp.tests
+
+import scala2e.chapter28.recipesApp.application.Browser
+import scala2e.chapter28.recipesApp.application.Database
+import scala2e.chapter28.recipesApp.domain.Food
+import scala2e.chapter28.recipesApp.domain.Recipe
 
 object TestStudent{
   def main(args: Array[String]): Unit = {}

@@ -1,4 +1,4 @@
-package scala2e.chapter28
+package scala2e.chapter28.recipesApp.domain
 
 // entity
 class Recipe (
