@@ -6347,3 +6347,22 @@ object GotApples {
 > - _singleton type_ is extremely specific and holds only one object, in this case, whichever object is referred to by `db`
 > - usually such types are to specific to be useful, which is why the compiler is reluctant to insert them automatically
 
+## Object Equality
+### **684 - Equality in Scala**
+
+> - the definition of equality is different in Scala and Java
+> - Java has two equality comparisons, the `==` operator, which is the natural equality for value types and object identity for reference types, and the `equals` method, which is user-defined canonical equality for reference types
+> - this convention is problematic, because the more natural symbol, `==`, does not always correspond to the natural notion of equality
+> - e.g. comparing two strings `x` and `y` using `x == y` might well yield `false` in Java, even if `x` and `y` have exactly the same characters, in the same order
+> - Scala also has object reference equality method, but it's not used much. That kind of equality, written `x eq y`, is true only if `x` and `y` refer to the same object
+> - the `==` equality is reserved in Scala for the _natural_ equality of each type. For value types, it is value comparison, just like in Java, but for reference types, it is the same as `equals`
+> - that means that you can redefine the behavior of `==` for new types by overriding the `equals` method, which is always inherited from class `Any` (where it represents object reference equality)
+> - it is not possible to override `==` directly (final in class `Any`)
+
+```scala
+// Scala treats '==' as if it was defined like this in class 'Any':
+final def == (that: Any): Boolean =
+  if (noll eq this) {null eq that}
+  else {this equals that}
+```
+
