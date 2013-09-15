@@ -6283,5 +6283,30 @@ trait SimpleRecipes {
 // that the 'this.Pear' reference will ever fail
 ```
 
-[See the whole app for the complete picture.](https://github.com/mbonaci/scala/tree/master/scala2e-book/src/scala2e/chapter28/recipesApp)
+[See the whole app for the complete picture.](https://github.com/mbonaci/scala/tree/master/scala2e-book/src/scala2e/chapter29/recipesApp)
+
+### **680 - Runtime linking**
+
+> - modules can be linked together at runtime, and you can decide which modules will link to which depending on runtime computations:
+
+```scala
+// a simple program that chooses a database at runtime:
+object GotApples {
+  def main(args: Array[String]) {
+    val db: Database =
+      if(args(0) == "student")
+        StudentDatabase
+      else
+        SimpleDatabase
+
+    object browser extends Browser {
+      val database = db
+    }
+
+    val apple = SimpleDatabase.foodNamed("Apple").get
+    for (recipe <- browser.recipesUsing(apple))
+      println(recipe)
+  }
+}
+```
 
