@@ -6310,3 +6310,40 @@ object GotApples {
 }
 ```
 
+### **681 - Tracking module instances**
+
+> - despite using the same code, the different browser and database modules really are separate modules, which means that each module has its own contents, including any nested classes. E.g. `FoodCategory` in `SimpleDatabase` is a different class from `FoodCategory` in `StudentDatabase`
+
+```scala
+val category = StudentDatabase.allCategories.head
+// category: StudentDatabase.FoodCategory = FoodCategory(edible,List(FrozenFood))
+
+SimpleBrowser.displayCategory(category)
+// type mismatch:
+// found    : StudentDatabase.FoodCategory
+// required : SimpleDatabase.FoodCategory
+```
+
+> - if you want all `FoodCategory` objects to be the same, move its definition outside of any class or trait
+> - sometimes you can encounter a situation where two types are the same but the compiler can't verify it. In such cases you can often fix the problem using **singleton types**:
+
+```scala
+// the type checker doesn't know that 'db' and 'browser.database' are of the same type:
+object GotApples {
+  // same definitions as before ...
+  for (cat <- db.allCategories)
+    browser.displayCategory(cat)
+  // type mismatch
+  // found    : db.FoodCategory
+  // required : browser.database.FoodCategory
+
+// to circumvent the problem, inform the type checker that they are the same object:
+  object browser extends Browser {
+    val database: db.type = db
+  }
+}
+```
+
+> - _singleton type_ is extremely specific and holds only one object, in this case, whichever object is referred to by `db`
+> - usually such types are to specific to be useful, which is why the compiler is reluctant to insert them automatically
+
