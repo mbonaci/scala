@@ -1,6 +1,6 @@
-package scala2e.chapter28.recipesApp.tests
+package scala2e.chapter29.recipesApp.tests
 
-import scala2e.chapter28.recipesApp.domain.Food
+import scala2e.chapter29.recipesApp.domain.Food
 
 trait SimpleFoods {
   object Pear extends Food("Pear")

@@ -1,7 +1,7 @@
-package scala2e.chapter28.recipesApp.tests
+package scala2e.chapter29.recipesApp.tests
 
-import scala2e.chapter28.recipesApp.application.Database
-import scala2e.chapter28.recipesApp.domain.Recipe
+import scala2e.chapter29.recipesApp.application.Database
+import scala2e.chapter29.recipesApp.domain.Recipe
 
 object SimpleDatabase extends Database {
   override def allFoods = List(Apple, Orange, Cream, Sugar)

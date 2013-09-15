@@ -1,8 +1,7 @@
-package scala2e.chapter28.recipesApp.application
+package scala2e.chapter29.recipesApp.application
 
-import scala2e.chapter28.recipesApp.tests.SimpleDatabase
-import scala2e.chapter28.recipesApp.domain.Food
-import scala2e.chapter28.recipesApp.application.Database
+import scala2e.chapter29.recipesApp.tests.SimpleDatabase
+import scala2e.chapter29.recipesApp.domain.Food
 
 abstract class Browser {
   val database: Database
