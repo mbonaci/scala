@@ -6258,3 +6258,29 @@ catalog match {
 
 > - to avoid using hard link between modules we use abstract classes and then make modules inherit from these classes
 > - that way, we can avoid code duplication by providing all common operations in the abstract classes
+
+### **677 - Splitting modules into traits**
+
+> - when a module becomes too large to fit into a single file, we can use traits to split a module into separate files
+> - **self type** specifies the requirements on any concrete class the trait is mixed into. If you have a trait that is only ever used when mixed in with another trait or traits, then you can specify that those other traits should be assumed:
+
+```scala
+trait SimpleRecipes {
+  this: SimpleFoods =>  // self type
+    // presents a requirement to a class that mixes this trait in:
+    // that it has to always be mixed in together with SimpleFoods
+    // see the huge code bellow for the complete picture
+
+  object FruitSalad extends Recipe(
+    "fruit salad",
+    List(Apple, Pear), // 'this.Pear' is in scope because of self type
+    "Mix it all together."
+  )
+  def allRecipes = List(FruitSalad)
+}
+// this is safe because any concrete class the mixes in 'SimpleRecipes' must also be
+// a subtype of 'SimpleFoods', so 'Pear' will always be a member
+// Since abstract classes and traits cannot be instantiated with 'new', there is no risk
+// that the 'this.Pear' reference will ever fail
+```
+
