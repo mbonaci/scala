@@ -6269,7 +6269,6 @@ trait SimpleRecipes {
   this: SimpleFoods =>  // self type
     // presents a requirement to a class that mixes this trait in:
     // that it has to always be mixed in together with SimpleFoods
-    // see the huge code bellow for the complete picture
 
   object FruitSalad extends Recipe(
     "fruit salad",
@@ -6283,4 +6282,6 @@ trait SimpleRecipes {
 // Since abstract classes and traits cannot be instantiated with 'new', there is no risk
 // that the 'this.Pear' reference will ever fail
 ```
+
+[See the whole app for the complete picture.](https://github.com/mbonaci/scala/tree/master/scala2e-book/src/scala2e/chapter28/recipesApp)
 
