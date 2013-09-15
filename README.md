@@ -6245,5 +6245,12 @@ catalog match {
 >   - be able to wire modules together (can be thought of as _configuring the system_)
 > - one approach of solving this problem is **dependency injection**, a technique supported by Spring and Guice on the Java platform
 > - Spring, for example, essentially allows you to represent the interface of a module as a Java interface and implementation of a module as Java classes, where you can specify dependencies between modules and wire an application together via external XML configuration files
-> - with Scala you have some alternatives provided by the language itself, which enables you to solve "the problem" without using external framework
+> - with Scala you have some alternatives provided by the language itself, which enables you to solve "the problem" without using an external framework
+
+### **671 - Application design**
+
+> - the intention is to partition our application into a **domain layer** and an **application layer**
+> - in the _domain layer_ we'll define **domain objects**, which will capture business concepts and rules, and encapsulate state that will be persisted to a database
+> - in the _application layer_ we'll provide an **API** organized in terms of the services the application offers to clients (including the user interface layer) and implement these services by coordinating tasks and delegating the work to the objects of the _domain layer_
+> - to be able to plug in real and mock versions of certain objects in each of these layers (e.g. to more easily write unit tests) we'll treat objects that we want to mock as modules
 
