@@ -10,7 +10,7 @@ abstract class Browser {
     database.allRecipes.filter(recipe =>
       recipe.ingredients.contains(food))
 
-  def displayCategory(category: SimpleDatabase.FoodCategory) {
+  def displayCategory(category: database.FoodCategory) {
     println(category)
   }
 }

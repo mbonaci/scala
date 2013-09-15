@@ -5,11 +5,6 @@ import scala2e.chapter29.recipesApp.application.Database
 import scala2e.chapter29.recipesApp.domain.Food
 import scala2e.chapter29.recipesApp.domain.Recipe
 
-
-object TestStudent{
-  def main(args: Array[String]): Unit = {}
-}
-
 object StudentDatabase extends Database {
   object FrozenFood extends Food("FrozenFood")
   
