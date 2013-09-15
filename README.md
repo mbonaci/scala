@@ -6254,3 +6254,7 @@ catalog match {
 > - in the _application layer_ we'll provide an **API** organized in terms of the services the application offers to clients (including the user interface layer) and implement these services by coordinating tasks and delegating the work to the objects of the _domain layer_
 > - to be able to plug in real and mock versions of certain objects in each of these layers (e.g. to more easily write unit tests) we'll treat objects that we want to mock as modules
 
+### **674 - Abstraction**
+
+> - to avoid using hard link between modules we use abstract classes and then make modules inherit from these classes
+> - that way, we can avoid code duplication by providing all common operations in the abstract classes
