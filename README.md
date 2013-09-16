@@ -6441,3 +6441,34 @@ class Point(val x: Int, val y: Int) {
 // this 'hashCode' should give reasonable distribution of hash codes at a low cost
 ```
 
+_Defining `equals` in terms of mutable fields_
+
+```scala
+// the slight variation of class Point:
+class Point(var x: Int, var y: Int) {  // notice 'vars'
+  override def hashCode = 41 * (41 + x) + y
+  override def equals(other: Any) = other match {
+    case that: Point => this.x == that.x && this.y == that.y
+    case _ => false
+  }
+}
+```
+
+> - the `equals` and `hashCode` are now defined in terms of these mutable fields, so their results change when fields change, which can have strange effects once you put points in collections:
+
+```scala
+val p = new Point(1, 2)   // Point = Point@3c990add
+val coll = HashSet(p)     // mutable.HashSet[Point] = Set(Point@3c990add)
+coll contains p           // true
+
+// now we change a field:
+p.x += 1
+coll contains p           // false
+coll.iterator contains p  // true
+
+// what happened is that now 'hashCode' evaluates to different value, so 'contains'
+// looks for provided element in a wrong bucket
+```
+
+> - if you need a comparison that takes the current state of an object into account, you should name the method differently, something other than `equals`, e.g. `equalContents`  
+
