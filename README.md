@@ -6418,26 +6418,3 @@ def ==(other: Point): Boolean = /* ... */
 // in this case, the method is treated as an overloaded '==' so it compiles
 ```
 
-_Changing `equals` without also changing `hashCode`_
-
-> - for _hash-based collections_, element of the collection are put in _hash buckets_ determined by their hash code
-> - the `contains` test first determines a hash bucket to look in and then compares the given element with all elements in that bucket, and if element equal to the one provided is not found, the method returns `false`
-> - the original `hashCode`, in `AnyRef`, calculates hash code by some transformation of the address of the object, so hash codes of `p1` and `p2` are different, even though the fields have the same values
-> - different hash codes result, with high probability, with different buckets in the set
-> - the root of the problem can be described with the contract, that the "better equals" violated:  
->   - _If two objects are equal according to the `equals` method, then calling the `hashCode` on each of the two objects must produce the same integer result_
->   - _`hashCode` and `equals` should only be redefined together_
->   - _`hashCode` may only depend on fields the `equals` depends on_
-
-```scala
-// the suitable definition of 'hashCode':
-class Point(val x: Int, val y: Int) {
-  override def hashCode = 41 * (41 + x) + y  // 41 is prime
-  override def equals(other: Any) = other match {
-    case that: Point => this.x == that.x && this.y == that.y
-    case _ => false
-  }
-}
-// this 'hashCode' should give reasonable distribution of hash codes at a low cost
-```
-
