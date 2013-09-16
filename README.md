@@ -6377,3 +6377,67 @@ final def == (that: Any): Boolean =
 >   - defining `equals` in terms of mutable fields
 >   - failing to define `equals` as an equivalence relation  
 
+_Defining `equals` with the wrong signature_
+
+```scala
+class Point(val x: Int, val y: Int){ /*...*/ }
+
+// wrong way to define equals:
+def equals(other: Point): Boolean =
+  this.x == other.x && this.y == other.y
+
+// the problem is that it doesn't match the signature of 'equals' in class 'Any' 
+// simple comparisons work fine, but the trouble starts with Points in collections:
+import scala.collection.mutable._
+val p1, p2 = new Point(1, 2)
+val coll = HashSet(p1)  // mutable.HashSet[Point] = Set(Point@79f23c)
+coll contains p2        // false
+
+// the problem is that our method 'equals' only overloads 'equals' in class 'Any'
+// overloading in Scala and in Java is resolved by the static type of the argument,
+// not the runtime type
+// So as long as the static type of the argument is 'Point', our 'equals' is called
+// but once a static argument is of type 'Any', the 'equals' in 'Any' is called instead
+// And since this method has not been overridden, it still compares object references
+// This is why 'p1 equals p2a' yields 'false', and why the 'contains' method in
+// 'HashSet' returned 'false', since it operates on generic sets, it calls the generic
+// 'equals' method in 'Object' instead of the overloaded one in 'Point'
+
+// a better 'equals' (with correct type, but still not perfect):
+override def equals(other: Any) = other match {
+  case that: Point => this.x == that.x && this.y == that.y
+  case _ => false
+}
+
+// a related pitfall is to define '==' with a wrong signature
+// normally, if you try to override '==' with the correct signature, the compiler will
+// give you an error because '==' is final
+
+// the common error (two errors) is to try to override '==' with a wrong signature:
+def ==(other: Point): Boolean = /* ... */
+// in this case, the method is treated as an overloaded '==' so it compiles
+```
+
+_Changing `equals` without also changing `hashCode`_
+
+> - for _hash-based collections_, element of the collection are put in _hash buckets_ determined by their hash code
+> - the `contains` test first determines a hash bucket to look in and then compares the given element with all elements in that bucket, and if element equal to the one provided is not found, the method returns `false`
+> - the original `hashCode`, in `AnyRef`, calculates hash code by some transformation of the address of the object, so hash codes of `p1` and `p2` are different, even though the fields have the same values
+> - different hash codes result, with high probability, with different buckets in the set
+> - the root of the problem can be described with the contract, that the "better equals" violated:  
+>   - _If two objects are equal according to the `equals` method, then calling the `hashCode` on each of the two objects must produce the same integer result_
+>   - _`hashCode` and `equals` should only be redefined together_
+>   - _`hashCode` may only depend on fields the `equals` depends on_
+
+```scala
+// the suitable definition of 'hashCode':
+class Point(val x: Int, val y: Int) {
+  override def hashCode = 41 * (41 + x) + y  // 41 is prime
+  override def equals(other: Any) = other match {
+    case that: Point => this.x == that.x && this.y == that.y
+    case _ => false
+  }
+}
+// this 'hashCode' should give reasonable distribution of hash codes at a low cost
+```
+
