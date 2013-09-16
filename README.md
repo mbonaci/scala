@@ -6280,8 +6280,8 @@ trait SimpleRecipes {
   )
   def allRecipes = List(FruitSalad)
 }
-// this is safe because any concrete class the mixes in 'SimpleRecipes' must also be
-// a subtype of 'SimpleFoods', so 'Pear' will always be a member
+// this is safe because any concrete class that mixes in 'SimpleRecipes' must also mix 
+// in, i.e. be a subtype of 'SimpleFoods', so 'Pear' will always be a member
 // Since abstract classes and traits cannot be instantiated with 'new', there is no risk
 // that the 'this.Pear' reference will ever fail
 ```
@@ -6471,4 +6471,151 @@ coll.iterator contains p  // true
 ```
 
 > - if you need a comparison that takes the current state of an object into account, you should name the method differently, something other than `equals`, e.g. `equalContents`  
+
+_Failing to define `equals` as an equivalence relation (same as Java)_
+
+> - the contract of the `equals` method in `scala.Any`:  
+>   - **reflexive**: _for any non-null value `x`, the expression `x.equals(x)` should return `true`_
+>   - **symmetric**: _for any non-null values `x` and `y`, the expression `x.equals(y)` should return `true` if and only if `y.equals(x)` returns `true`_
+>   - **transitive**: _for any non-null values `x`, `y` and `z`, if `x.equals(y)` returns `true` and `y.equals(z)` returns `true`, then `x.equals(z)` should return `true`_
+>   - **consistent**: _for any non-null values `x` and `y`, multiple invocations of `x.equals(y)` should consistently return `true` or consistently return `false`, provided no information used in equals comparisons is modified_
+>   - _for any non-null value `x`, the expression `x.equals(null)` should return `false`_
+> 
+>  - the "better equals" definition conforms to _the contract_, but things become more complicated when inheritance is introduced:
+
+```scala
+object Color extends Enumeration {
+  val Red, Orange, Yellow, Green, Blue, Indigo, Violet = Value
+}
+
+// non-symmetric equals:
+class ColoredPoint(x: Int, y: Int, val color: Color.Value) extends Point(x, y) {
+  override def equals(other: Any) = other match {
+    case that: ColoredPoint => this.color == that.color && super.equals(that)
+    case _ => false
+  }
+// doesn't need to override 'hashCode', since this 'equals' is stricter than point's
+// so the contract for 'hashCode' is satisfied
+// If two colored points are equal, they must have the same coordinates, so their hash
+// codes are guaranteed to be equal as well
+}
+
+// the 'equals' contract becomes broken once points and color points are mixed:
+val p = new Point(1, 2)                     // Point = Point@6aeee
+val cp = new ColoredPoint(1, 2, Color.Red)  // ColoredPoint = ColoredPoint@6aeee
+p equals cp    // true  - invokes p's equals (from class 'Point')
+cp equals p    // false - invokes cp's equals (from class 'ColoredPoint')
+
+// so the relation defined by 'equals' is not symmetric, which can have unexpected 
+// consequences for collections:
+HashSet[Point](p) contains cp  // true
+HashSet[Point](cp) contains p  // false
+```
+
+> - to fix the symmetry problem, you can either make the relation more general or more strict
+> - making it more general means that a pair of two objects, `x` and `y`, is taken to be equal if either comparing `x` with `y` or comparing `y` with `x` yields true:
+
+```scala
+class ColoredPoint(x: Int, y: Int, val color: Color.Value) extends Point(x, y) {
+  override def equals(other: Any) = other match {
+    case that: ColoredPoint =>
+      (this.color == that.color) && super.equals(that)
+    case that: Point =>  // special comparison for points
+      that equals this
+    case _ =>
+      false
+  }
+}
+// Now, both 'cp equals p' and 'p equals cp' result in 'true'
+// However, the contract for equals is still broken. Now the problem is that the new
+// relation is no longer transitive:
+val redp = new ColoredPoint(1, 2, Color.Red)
+val blup = new ColoredPoint(1, 2, Color.Blue)
+
+// taken individually:
+redp == p  // true
+p == blup  // true
+
+// but:
+redp == blup  // false - OK, but transitivity is messed up
+```
+
+> - making relation more general seems to lead to a dead end, so we'll try stricter
+> - one way of making `equals` stricter is to always treat object of different classes as not equal:
+
+```scala
+// technically valid, but still not perfect 'equals':
+class Point(val x: Int, val y: Int) {
+  override def hashCode = 41 * (41 + x) + y
+  override def equals(other: Any) = other match {
+    case that: Point =>
+      this.x == that.x && this.y == that.y && this.getClass = that.getClass
+    case _ => false
+  }
+}
+
+// revert back to non-symmetric one (which is, with this version of Point, symmetric)
+class ColoredPoint(x: Int, y: Int, val color: Color.Value) extends Point(x, y) {
+  override def equals(other: Any) = other match {
+    case that: ColoredPoint =>
+      (this.color == that.color) && super.equals(that)
+    case _ => false
+  }
+}
+
+// here, an instance of class 'Point' is equal to some other instance of the same class
+// only if the objects have the same field values and same runtime class
+
+// but still, an anonymous subclass of point, with the same field values:
+val anonP = new Point(1, 1) { override val y = 2 }  // Point = $anon$1@34e0a
+
+// is 'anonP' equal to 'p'? Logically it is, but technically it isn't, which is what we
+// don't want in Scala
+```
+
+> - to redefine equality on several levels of the class hierarchy while keeping its contract, we are required to redefine one more method, `canEqual`:
+
+```scala
+// signature:
+def canEqual(other: Any): Boolean
+```
+
+> - `canEqual` should return `true` if the provided object is an instance of the class in which `canEqual` is (re)defined
+> - as soon as a class redefines `equals`, it should also explicitly state that objects of this class are never equal to objects of some superclass that implements a different equality method
+> - `canEqual` is called from `equals` to make sure that the objects are comparable both ways
+
+```scala
+class Point(val x: Int, val y: Int) {
+  override def hashCode = 41 * (41 + x) + y
+  override def equals(other: Any) = other match {
+    case that: Point =>
+      (that canEqual this) && (this.x == that.x) && (this.y == that.y)
+    case _ =>
+      false
+  }
+  def canEqual(other: Any) = other.isInstanceOf[Point]  // all points can be equal
+}
+
+class ColoredPoint(x: Int, y: Int, val color: Color.Value) extends Point(x, y) {
+  override def hashCode = 41 * super.hashCode + color.hashCode
+  override def equals(other: Any) = other match {
+    case that: ColoredPoint =>
+      (that canEqual this) && super.equals(that) && this.color == that.color
+    case _ =>
+      false
+  }
+  override def canEqual(other: Any) = other isInstanceOf[ColoredPoint]
+}
+
+// now:
+val p = new Point(1, 2)
+val cp = new ColoredPoint(1, 2, Color.Indigo)
+val anonP = new Point(1, 1) { override val y = 2 }
+val coll = List(p)   // List[Point] = List(Point@4aa)
+coll contains p      // true
+coll contains cp     // false
+coll contains anonP  // true
+```
+
+> - if superclass `equals` defines and calls `canEqual`, then programmers who implement subclasses can decide whether or not their subclasses may be equal to instances of the superclass
 
