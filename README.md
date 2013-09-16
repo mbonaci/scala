@@ -76,6 +76,9 @@ for (
 **167 - Nested loops** and **mid-stream variable binding** example with _generators_ and _filters_
 
 ```scala
+def fileLines(file: java.io.File) =
+  scala.io.Source.fromFile(file).getLines().toList
+
 // curly braces may be used instead of parentheses
 // the compiler does not infer semicolons inside regular parentheses
 def grep(pattern: String) =
@@ -6365,4 +6368,12 @@ final def == (that: Any): Boolean =
   if (noll eq this) {null eq that}
   else {this equals that}
 ```
+
+### **685 - Writing an equality method**
+
+> - common pitfalls when overriding `equals`:
+>   - defining `equals` with the wrong signature
+>   - changing `equals` without also changing `hashCode`
+>   - defining `equals` in terms of mutable fields
+>   - failing to define `equals` as an equivalence relation  
 
