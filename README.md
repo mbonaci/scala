@@ -6619,3 +6619,216 @@ coll contains anonP  // true
 
 > - if superclass `equals` defines and calls `canEqual`, then programmers who implement subclasses can decide whether or not their subclasses may be equal to instances of the superclass
 
+### **698 - Defining equality for parameterized types**
+
+> - when classes are parameterized, `equals` pattern matching scheme needs to be adapted
+
+```scala
+// binary tree with two implementations
+trait Tree[+T] {
+  def elem: T
+  def left: Tree[T]
+  def right: Tree[T]
+}
+
+object EmptyTree extends Tree[Nothing] {
+  def elem = throw new NoSuchElementException("EmptyTree.elem")
+  def left = throw new NoSuchElementException("EmptyTree.left")
+  def right = throw new NoSuchElementException("EmptyTree.Right")
+}
+
+class Branch[+T](
+  val elem: T,
+  val left: Tree[T],
+  val right: Tree[T]
+) extends Tree[T]
+
+// implementing 'equals' and 'hashCode':
+// no need for class 'Tree' - subclasses redefine them
+// no need for object 'EmptyTree' - AnyRef's implementations are fine, after all,
+// any empty tree is only equal to itself, so reference equality is just what we need
+
+// a 'Branch' value should only be equal to other 'Branch' values, and only if they
+// have equal 'elem', 'left' and 'right' fields:
+class Branch[+T](
+  val elem: T,
+  val left: Tree[T],
+  val right: Tree[T]
+) extends Tree[T] {
+  override def equals(other: Any) = other match {
+    case that: Branch[T] => 
+      this.elem == that.elem &&
+      this.left == that.left &&
+      this.right == that.right
+    case _ => false
+  }
+}
+// compiling this code gives 'unchecked' warning:
+//   warning: non variable type-argument T in type pattern is unchecked since it is
+//   eliminated by erasure
+
+// we saw this before, compiler can only check that the 'other' reference is some kind
+// of 'Branch'. It cannot check that the element type of the tree is 'T'
+// The reason for this is that element types of parameterized types are eliminated by
+// the compiler's erasure phase, so they are not available for inspection at runtime
+
+// fortunately, we don't even need to check that two branches have the same element
+// types. It's quite possible that, in order to declare two branches as equal, all
+// we need to do is compare their fields:
+val b1 = new Branch[List[String]](Nil, EmptyTree, EmptyTree)
+val b2 = new Branch[List[Int]](Nil, EmptyTree, EmptyTree)
+b1 == b2  // true
+// the result shows that the element types was not compared (otherwise would be 'false')
+```
+
+> - there's only a small change needed in order to formulate `equals` that does not produce `unchecked` warning, instead of element type `T`, use a lower case letter, such as `t`:
+
+```scala
+case that: Branch[t] => 
+  this.elem == that.elem &&
+  this.left == that.left &&
+  this.right == that.right
+
+// the reason this works is that a type parameter in a pattern starting with a lower
+// case letter represents an unknown type, hence the pattern match:
+case that: Branch[t] =>
+// will succeed for 'Branch' of any type
+
+// it can also be replaced with the underscore
+case that: Branch[_] =>  // equivalent to the previous case, with 't'
+```
+
+> - the only thing that remains, for class `Branch`, is to define the other two methods, `hashCode` and `canEqual`
+
+```scala
+// the possible implementation of 'hashCode':
+override def hashCode: Int =
+  41 * (
+    41 * (
+      41 + elem.hashCode
+    ) + left.hashCode
+  ) + right.hashCode
+
+// canEqual implementation:
+def canEqual(other: Any) = other.isInstanceOf[Branch[_]]
+// 'Branch[_]' is a shorthand for so-called 'existential type', which is roughly
+// speaking a type with some unknown parts in it (next chapter)
+// so even though technically the underscore stand for two different things in a match
+// pattern and in a type parameter of a method call, in essence the meaning is the same:
+// it lets you label something that is unknown
+```
+
+### **703 - Recipes for `equals` and `hashCode`**
+
+> **- `equals` recipe:**
+>   - **1.**  if you're going to override equals in a non-final class, you should crate a `canEqual` method. If the inherited definition of `equals` is from `AnyRef` (not redefined higher up the class hierarchy), the definition of `canEqual` will be new, otherwise it will override a previous definition of a method with the same signature. The only exception to this requirement is for final classes that redefine the `equals` method inherited from `AnyRef`. For them, the subclass anomalies cannot arise. Consequently, they need not define `canEqual`. The type of the object passed to `canEqual` should be `Any`:
+
+```scala
+def canEqual(other: Any): Boolean = /* ... */
+```
+
+>   - **2.**  the `canEqual` method should yield `true` if the argument object is an instance of the current class (i.e. the class in which `canEqual` is defined), `false` otherwise:
+
+```scala
+other.isInstanceOf[Rational]
+```
+
+>   - **3.**  in the `equals` method, make sure you declare the type of the object passed as `Any`:
+
+```scala
+override def equals(other: Any): Boolean = /* ... */
+```
+
+>   - **4.**  write the body of the `equals` method as a single `match` expression. The selector of the `match` should be the object passed to `equals`:
+
+```scala
+other match {
+  // ...
+}
+```
+
+>   - **5.**  the `match` expression should have two cases, the first should declare a typed pattern for the type of the class on which you're defining `equals`:
+
+```scala
+case that: Rational =>
+```
+
+>   - **6.**  in the body of this, first _case_, write an expression that logical-ands together the individual expressions that must be `true` for the objects to be equal. If the `equals` you're overriding is not that of `AnyRef`, you'll most likely want to include an invocation of the superclass's `equals`
+
+```scala
+super.equals(that) &&  // ...
+```
+
+> if you're defining `equals` for a class that first introduced `canEqual`, you should invoke `canEqual` on the argument to the equality method, passing `this` as the argument:
+
+```scala
+(that canEqual this) &&  // ...
+```
+
+> overriding definitions of `equals` should also include the `canEqual` invocation, unless they contain a call to `super.equals`. In the latter case, the `canEqual` test will already be done by the superclass call. For each field, relevant to equality, verify that the field in this object is equal to the corresponding field in the passed object:
+
+```scala
+numer == that.numer && denom == that.denom
+```
+
+>   - **7.**  for the second _case_, use a wildcard pattern that yields false:
+
+```scala
+case _ => false
+```
+
+> **- `hashCode` recipe:**
+>   - include in the calculation each field in your object that is used to determine equality in the `equals` method (_the relevant fields_)
+>   - for each relevant field, no matter its type, you can calculate a hash code by invoking `hashCode` on it
+>   - to calculate hash code for the entire object, add **41** to the first field's hash code, multiply that by 41, add the second field's hash code, multiply that by 41, add the third field's hash code, multiply that by 41, and continue until you've done this for all relevant fields:
+
+```scala
+// hash code calculation for object with 5 relevant fields:
+override def hashCode: Int =
+  41 * (
+    41 * (
+      41 * (
+        41 * (
+          41 + a.hashCode
+        ) + b.hashCode
+      ) + c.hashCode
+    ) + d. hashCode
+  ) + e.hashCode
+```
+
+>   - you can leave off the `hashCode` invocation on fields of type `Int`, `Short`, `Byte` and `Char` (their hash codes are their values):
+
+```scala
+override def hashCode: Int =
+  41 * (
+    41 + numer
+  ) + denom
+```
+
+>   - the number 41 was selected because it is an odd prime (you could use another number, but it should be an odd prime to minimize the potential for information loss on overflow).  The reason we add 41 to the innermost value is to reduce the likelihood that the first multiplication will result in zero, under the assumption that it is more likely the first field will be zero than -41 (there, in addition part, it could be any other non-zero integer, 41 was chosen just because of other 41s)
+>   - if the `equals` invokes `super.equals(that)`, you should start your `hashCode` with an invocation of `super.hashCode`. For example, had `Rational`'s `equals` method invoked `super.equals(that)`, its `hashCode` would have been:
+
+```scala
+override def hashCode: Int =
+  41 * (
+    41 * (
+      super.hashCode
+    ) + numer
+  ) + denom
+```
+
+>   - one thing to keep in mind when defining `hashCode` like this is that your hash code will only be as good as the hash codes you build it out of, namely the hash codes you obtain by calling `hashCode` on the relevant fields. Sometimes you may need to do something extra besides just calling `hashCode` on the field to get a useful hash code for that field. For example, if one of your fields is a collection, you probably want a hash code for that field that is base on all the elements contained in the collection. If the field is a `List`, `Set`, `Map` or _tuple_, you can simply call `hashCode` on the field, since `equals` and `hashCode` are overridden in those classes to take into account the contained elements. However, the same is not true for arrays, which do not take their elements into account when calculating `hashCode`. Thus for an array, you should treat each element of the array like an individual field of your object, calling `hashCode` on each element explicitly, or passing the array to one of the `hashCode` methods in singleton object `java.util.Arrays`
+>   - if you find that particular hash code calculation is harming the performance of your program, you can consider caching the hash code. If the object is immutable, you can calculate the hash code when the object is created and store it in a field. You can easily do this by overriding `hashCode` with a `val` instead of a `def`:
+
+```scala
+override val hashCode: Int =
+  41 * (
+    41 + numer
+  ) + denom
+
+// trades off memory for computation time, since now each instance will have one more
+// field to hold
+```
+
+> - given how difficult is to correctly implement an equality method, you might opt out to define your classes of comparable objects as case classes. That way, the Scala compiler will add `equals` and `hashCode` with the right properties automatically
+
