@@ -6832,3 +6832,7 @@ override val hashCode: Int =
 
 > - given how difficult is to correctly implement an equality method, you might opt out to define your classes of comparable objects as case classes. That way, the Scala compiler will add `equals` and `hashCode` with the right properties automatically
 
+## Combining Scala and Java
+
+> - Scala code is often used in tandem with large Java programs and frameworks, which, from time to time, runs into a few common problems
+
