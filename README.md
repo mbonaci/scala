@@ -6844,6 +6844,12 @@ _General rules_
 
 > - Scala is implemented as a translation to standard Java bytecode
 > - as much as possible, Scala features map directly onto the equivalent Java features (e.g. classes, methods, strings, exceptions, method overloading all map directly to Java)
-> - there are Scala features that has its own design. Traits, for example, have no equivalent in Java, generic types are handled completely differently, ...). Scala encodes language features like these using some combination of the structures Java does have
+> - there are Scala features that has its own design. Traits, for example, have no equivalent in Java. Generic types are handled completely differently. Scala encodes language features like these using some combination of structures Java does have
 > - for features that are mapped indirectly, encoding is not fixed and there is an ongoing effort to make translations as simple as possible
+
+_Value types_
+
+> - a value type, like `Int` can be translated in two different ways. Whenever possible, compiler translates a Scala `Int` to a Java `int` to get better performance
+> - sometimes this is not possible, because the compiler is not sure whether it is translating an `Int` or some other data type (e.g. a `List[Any]` might hold only integers, but the compiler cannot be sure that's the case)
+> - in cases like this the compiler uses objects and relies on wrapper classes and autoboxing
 
