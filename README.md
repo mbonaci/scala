@@ -6836,3 +6836,14 @@ override val hashCode: Int =
 
 > - Scala code is often used in tandem with large Java programs and frameworks, which, from time to time, runs into a few common problems
 
+### **710 - Using Scala from Java**
+
+> - if you call Scala code from Java, it's useful to understand how the whole system works and how Scala code looks from a Java point of view
+
+_General rules_
+
+> - Scala is implemented as a translation to standard Java bytecode
+> - as much as possible, Scala features map directly onto the equivalent Java features (e.g. classes, methods, strings, exceptions, method overloading all map directly to Java)
+> - there are Scala features that has its own design. Traits, for example, have no equivalent in Java, generic types are handled completely differently, ...). Scala encodes language features like these using some combination of the structures Java does have
+> - for features that are mapped indirectly, encoding is not fixed and there is an ongoing effort to make translations as simple as possible
+
