@@ -6853,3 +6853,43 @@ _Value types_
 > - sometimes this is not possible, because the compiler is not sure whether it is translating an `Int` or some other data type (e.g. a `List[Any]` might hold only integers, but the compiler cannot be sure that's the case)
 > - in cases like this the compiler uses objects and relies on wrapper classes and autoboxing
 
+_Singleton objects_
+
+> - translation of singleton objects uses a combination of static and instance methods
+> - for every singleton object, the compiler creates a Java class with a dollar sign added to the end (e.g. for singleton `App`, compiler produces `App$`), which has all the methods and fields of the singleton object
+> - the Java class also has a single static field named `MODULE$` which holds the one instance of the class that is created at runtime
+
+```scala
+// for Scala singleton:
+object App {
+  def main(args: Array[String]) {
+    println("Hello, universe!")
+  }
+}
+
+```
+```java
+// compiler generates:
+public final class App$ extends java.lang.Object implements scala.ScalaObject {
+  public static final App$ MODULE$;
+  public static {};
+  public App$();
+  public void main(java.lang.String[]);
+  public int $tag();
+}
+
+// an important special case is if you have a standalone singleton object, one which does
+// not come with a class of the same name
+// in that case, compiler creates a Java class named 'App' that has a static forwarder
+// method for each method of the singleton:
+public final class App extends java.lang.Object{
+  public static final int $tag();
+  public static final void main(java.lang.String[]);
+}
+
+// if you, on the other hand, have a class named 'App', Scala would create a
+// corresponding Java 'App' class to hold the members of the 'App' class you defined
+// It would not add any forwarding methods for the same-named singleton object, and
+// Java code would have to access the singleton via the 'MODULE$' field
+```
+
