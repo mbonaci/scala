@@ -6893,3 +6893,9 @@ public final class App extends java.lang.Object{
 // Java code would have to access the singleton via the 'MODULE$' field
 ```
 
+_Traits as interfaces_
+
+> - compiling any trait creates a Java interface of the same name, which is usable as a Java type, and it lets you call methods on Scala objects through variables of that type
+> - implementing a trait in Java is not practical, with one special case being important:
+> - if you make a Scala trait that includes only abstract methods, then that trait will be translated directly to a Java interface, with no other code to worry about
+
