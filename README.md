@@ -6869,7 +6869,7 @@ object App {
 
 ```
 ```java
-// compiler generates:
+// compiler generates Java code:
 public final class App$ extends java.lang.Object implements scala.ScalaObject {
   public static final App$ MODULE$;
   public static {};
@@ -6972,5 +6972,115 @@ class SetTest {
     assertEquals(3, set.size)
   }
 }
+```
+
+_Writing your own annotations_
+
+> - to make an annotation that is visible by Java reflection, you must use Java notation and compile with `javac`
+> - for this use case, writing the annotation in Scala does not seem helpful, so the standard compiler does not support it. The reason is that Scala support would inevitably fall short of the full possibilities of Java annotations, and further, Scala will probably one day have its own reflection, in which case you would want to access Scala annotations with Scala reflection
+
+```java
+// this is Java
+import java.lang.annotation.*;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ignore{}
+```
+```scala
+// after compiling the above with 'javac', we can use the annotations:
+object Tests {
+  @Ignore  // ignores the method even though its name starts with 'test'
+  def testData = List(0, 1, -1, 5, -5)
+
+  // test methods:
+  def test1 {
+    assert(testData == (testData.head :: testData.tail))
+  }
+  def test2 {
+    assert(testData.contains(testData.head))
+  }
+}
+```
+
+> - to see when these annotations are present you can use the Java reflection API:
+
+```scala
+for {
+  method <- Tests.getClass.getMethods
+  if method.getName.startsWith("test")
+  if method.getAnnotation(classOf[Ignore]) == null
+} {
+  println("found a test method: " + method)
+}
+
+// this code in action:
+$ javac Ignore.java
+$ scalac Tests.scala
+$ scalac FindTests.scala
+$ scala FindTests
+//> found a test method: public void Tests$.test2()
+//> found a test method: public void Tests$.test1()
+```
+
+### **718 - Existential types**
+
+> - all Java types have a Scala equivalent, which is necessary so that Scala code can access any Java class
+> - most of the time the translation is straightforward, `Pattern` in Java is `Pattern` in Scala, `Iterator<Component>` in Java is `Iterator[Component]` in Scala, but for some cases Scala types we mentioned so far are not enough
+> - for example, what can be done with Java wildcard type parameters such as `Iterator<?>` or `Iterator<? extends Component>`?
+> - also, what can be done with raw types like `Iterator`, where the type parameter is omitted?
+> - for wildcard and raw types Scala uses an extra kind of type called **existential type**
+> - existential types are fully supported part of the language, but in practice they are mainly used when accessing Java types from Scala (we are covering this mostly so that you can understand error messages when your Scala code accesses Java code)
+
+```scala
+// the general form of an existential type:
+/* type */ forSome { /* declarations */ }
+
+// the 'type' part is an arbitrary Scala type
+// the 'declarations' part is a list of abstract 'vals' and types
+```
+
+> - the interpretation is that the declared variables and types exist but are unknown, just like abstract members of a class
+> - the 'type' is then allowed to refer to the declared variables and types even though it is unknown what they refer to
+
+```scala
+// Java 'Iterator<?>' would be written in Scala as:
+Iterator[T] forSome { type T }  // an iterator of T's for some type 'T'
+
+// Java 'Iterator<? extends Component>' would be:
+Iterator[T] forSome { type T <: Component }
+// iterator of 'T' for some type 'T' that is a subtype of 'Component'
+
+// there is a shorter way to write this examples with placeholder notation:
+Iterator[_]
+// means the same as 
+Iterator[T] forSome { type T }
+
+// similarly:
+Iterator[T] forSome { type T <: Component }
+// is the same as:
+Iterator[_ <: Component]
+```
+
+> - _placeholder syntax_ is similar to the placeholder syntax for function literals, where, if you use an underscore in place of an expression, then Scala creates a function literal for you. Here, when you use an underscore in place of a type, Scala makes an _existential type_ for you, where each underscore becomes one type parameter in a `forSome` clause
+> - so if you use multiple underscores in the same type, you will get the effect of a `forSome` clause with multiple types in it
+
+```java
+// existential types usage example:
+// Java class with wildcards:
+public class Wild {
+  Collection<?> contents() {
+    Collection<String> stuff = new Vector<String>();
+    stuff.add("a");
+    stuff.add("b");
+    stuff.add("see");
+    return stuff;
+  }
+}
+```
+```scala
+// if you access the above class in Scala:
+val contents = (new Wild).contents
+// java.util.Collection[?0] for Some { type ?0 } = [a, b, see]
+contents.size()  // Int = 3
 ```
 
