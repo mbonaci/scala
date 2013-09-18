@@ -6912,3 +6912,15 @@ _Volatile fields_
 
 > - same as for deprecation, thus volatile fields in Scala behave exactly according to Java's semantics, and accesses to volatile fields are sequenced precisely according to the rules specified for volatile fields in Java memory model
 
+_Serialization_
+
+> - all of the 3 Scala's standard serialization annotations are translated to Java equivalents
+> - a `@serializable` class has Java's `Serializable` interface added to it
+
+```java
+// a '@SerialVersionUID(1234L)' is converted to the following Java definition:
+private final static long SerialVersionUID = 1234L
+```
+
+> - any variable marked `@transient` is given the Java `transient` modifier
+
