@@ -6924,3 +6924,32 @@ private final static long SerialVersionUID = 1234L
 
 > - any variable marked `@transient` is given the Java `transient` modifier
 
+_Exceptions thrown_
+
+> - Scala does not check that thrown exceptions are caught, that is, Scala has no equivalent to Java's `throws` declaration on methods
+> - all Scala methods are translated to Java methods that declare no thrown exceptions
+> - the reason it all still works is that the Java bytecode verifier does not check the declarations anyway. The Java compiler checks, but not the verifier
+> - the reason this feature is omitted from Scala is that the Java experience with it has not been purely positive, because annotating methods with `throws` clauses is a heavy burden for developers
+> - the result is that this often makes code less reliable (programmers often, in order to satisfy the compiler, either throw all they can or catch-and-release exceptions)
+> - sometimes, when interfacing with Java, you may need to write Scala code that has Java-friendly annotations describing which exceptions your methods may throw, e.g. each method in Java RMI is required to mention `java.io.RemoteException` in its `throws` clause, thus, if you wish to write a RMI interface as a Scala trait with abstract methods, you would need to list `RemoteException` in the `throws` clauses for those methods
+> - to accomplish this, all you have to do is mark your methods with `@throws` annotations:
+
+```scala
+// a method marked as throwing 'IOException'
+import java.io._
+class Reader(fname: String) {
+  private val in = new BufferedReader(new FileReader(fname))
+
+  @throws(classOf[IOException])
+  def read() = in.read()
+}
+```
+```java
+// and here is how it looks in Java:
+public class Reader extends java.lang.Object implements
+scala.ScalaObject{
+  public Reader(java.lang.String);
+  public int read() throws java.io.IOException;  // proper Java 'throws'
+  public int $tag();
+}
+```
