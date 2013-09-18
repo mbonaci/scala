@@ -7084,3 +7084,16 @@ val contents = (new Wild).contents
 contents.size()  // Int = 3
 ```
 
+### **722 - Using `synchronized`**
+
+> - for compatibility's sake, Scala provides access to Java's concurrent primitives (`wait`, `notify` and `notifyAll` may all be called in Scala and have the same meaning as in Java)
+> - technically, Scala doesn't have the `synchronized` keyword, instead it has a predefined `synchronized` method that can be called like this:
+
+```scala
+var counter = 0
+synchronized {
+  // one thread at a time
+  counter = counter + 1
+}
+```
+
