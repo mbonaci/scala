@@ -6899,3 +6899,12 @@ _Traits as interfaces_
 > - implementing a trait in Java is not practical, with one special case being important:
 > - if you make a Scala trait that includes only abstract methods, then that trait will be translated directly to a Java interface, with no other code to worry about
 
+### **713 - Annotations**
+
+> - when the compiler sees an annotation, it first processes it according to the general Scala rules, and then it does something extra for Java
+
+_Deprecation_
+
+> - for any method or class marked `@deprecated`, the compiler adds Java's own deprecation annotation
+> - because of this, Java compiler can issue deprecation warnings when Java code accesses deprecated Scala methods
+
