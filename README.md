@@ -6953,3 +6953,24 @@ scala.ScalaObject{
   public int $tag();
 }
 ```
+
+_Java annotations_
+
+> - existing annotations from Java frameworks can be used directly in Scala code
+> - any Java framework will see the annotations you write just as if you were writing Java
+> - a wide variety of Java packages use annotations, e.g. `JUnit`, which, from its version 4, allows you to use annotations to indicate which parts of your code are tests
+
+```scala
+// annotations required in some Java libraries can be used the same way in Scala:
+import org.junit.Test
+import org.junit.Assert.assertEquals
+
+class SetTest {
+  @Test  // this notation may be used instead of '@org.junit.Test', since we did import
+  def testMultiAdd {
+    val set = Set() + 1 + 2 + 3 + 1 + 2 + 3
+    assertEquals(3, set.size)
+  }
+}
+```
+
