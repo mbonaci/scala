@@ -6908,3 +6908,7 @@ _Deprecation_
 > - for any method or class marked `@deprecated`, the compiler adds Java's own deprecation annotation
 > - because of this, Java compiler can issue deprecation warnings when Java code accesses deprecated Scala methods
 
+_Volatile fields_
+
+> - same as for deprecation, thus volatile fields in Scala behave exactly according to Java's semantics, and accesses to volatile fields are sequenced precisely according to the rules specified for volatile fields in Java memory model
+
