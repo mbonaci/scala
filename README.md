@@ -7097,3 +7097,17 @@ synchronized {
 }
 ```
 
+### **722 - Compiling Scala and Java together**
+
+> - usually, when you compile Scala code that depends on Java code, you first build the java code to class files and then you build the Scala code, putting the Java class files on the classpath
+> - this approach doesn't work if the Java code has references back to Scala code. In that case one side will have unsatisfied external references
+> - to support such builds, Scala allows compiling against Java source code as well as Java class files. All you have to do is put the Java source files on the command line as if they were scala files. Then, Scala compiler won't compile those Java files, but it will scan them to see what they contain
+> - so the right sequence is to first compile Scala using Java source files, and then compile Java code using Scala class files:
+
+```scala
+$ scalac -d bin InventoryAnalysis.scala InventoryItem.java Inventory.java
+$ javac -cp bin -d bin Inventory.java InventoryItem.java InventoryManagement.java
+$ scala -cp bin InventoryManagement
+//> Most expensive item = sprocket($4.99)
+```
+
