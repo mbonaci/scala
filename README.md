@@ -7113,7 +7113,15 @@ $ scala -cp bin InventoryManagement
 
 ## Actors and Concurrency
 
-> - Java's native, thread-based (shared data + locks) concurrency support is hard to work with and prone for errors, especially when programs get large and complex
+> - Java's native, thread-based concurrency support is hard to work with and prone for errors, especially when programs get large and complex
 > - Scala augments Java's concurrency by adding **actors**
 > - actors provide a concurrency model that is easier to work with and can help you avoid many of the difficulties of using Java's native concurrency model
+
+## **724 - Java concurrency troubles**
+
+> - Java's built-in threading model is based on shared data and locks
+> - each object is associated with a logical _monitor_, which is used to control multi-threaded access to data. In this model, you decide what data will be shared by multiple threads and enclose those, shared sections of the code with `sinchronized` blocks or methods
+> - the problem with this model is that, in each point in a program, you must reason about what data you're modifying or accessing that might be modified or accessed by other threads. At each method call, you must reason about what locks it will try to hold, and convince yourself that it will not deadlock while trying to obtain those locks
+> - making things even worse, testing is not reliable with multi-threaded code. Since threads are non-deterministic, you might successfully test a program a thousand times, and yet still the program could go wrong
+> - with this model, you must get it right, i.e. avoid deadlocks and race conditions through reason alone
 
