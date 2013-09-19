@@ -7111,3 +7111,9 @@ $ scala -cp bin InventoryManagement
 //> Most expensive item = sprocket($4.99)
 ```
 
+## Actors and Concurrency
+
+> - Java's native, thread-based (shared data + locks) concurrency support is hard to work with and prone for errors, especially when programs get large and complex
+> - Scala augments Java's concurrency by adding **actors**
+> - actors provide a concurrency model that is easier to work with and can help you avoid many of the difficulties of using Java's native concurrency model
+
