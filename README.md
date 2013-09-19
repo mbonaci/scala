@@ -7225,3 +7225,28 @@ intParrot ! math.Pi  // silently ignores it
 intParrot ! 8        // got int: 8
 ```
 
+### **729 - Treating native threads as actors**
+
+> - the actor subsystem manages one or more native threads for its own use. So long as you work with an explicit actor that you define, you don't need to think much about how they map to threads
+> - the other direction is also supported, every native thread is also usable as an actor, however, you cannot use `Thread.currentThread` directly, because it does not have the necessary methods. Instead, you should use `Actor.self` if you want to view the current thread as an actor
+> - this facility is especially useful for debugging actors from the interactive shell:
+
+```scala
+import scala.actors.Actor._
+self ! "hello"
+self.receive { case x => x }  // Any = hello
+// the `receive` method returns the value computed by the partial function passed to it,
+// and in this case, the partial function returns the message itself, so the received
+// message ends up being printed out by the interpreter
+```
+
+> - if you use `receive` in the interpreter, the `receive` will block the shell until a message arrives (in case of `self.receive` this could mean waiting forever), thus, when using this technique, it's better to use a variant called `receiveWithin`, which allows you to specify a timeout in milliseconds:
+
+```scala
+self.receiveWithin(1000) { case x => x }  // wait for 1s
+// Any = TIMEOUT
+
+// 'receiveWithin' processes mailbox message or waits until for new messages for 
+// specified number of millis
+```
+
