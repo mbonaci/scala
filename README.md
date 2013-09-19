@@ -7125,3 +7125,103 @@ $ scala -cp bin InventoryManagement
 > - making things even worse, testing is not reliable with multi-threaded code. Since threads are non-deterministic, you might successfully test a program a thousand times, and yet still the program could go wrong
 > - with this model, you must get it right, i.e. avoid deadlocks and race conditions through reason alone
 
+## **725 - Actors and message passing**
+
+> - Scala's actors library addresses the fundamental problem by providing an alternative, **share-nothing**, message-passing model
+> - an **actor** is a thread-like entity that has a **mailbox** for receiving messages
+> - to implement an actor, you subclass `scala.actors.Actor` and implement the `act` method:
+
+```scala
+import scala.actors._
+object Shakespeare extends Actor {
+  def act() {
+    for (i <- 1 to 2) {
+      println("To be or not to be. Is that a question?")
+      Thread.sleep(3000)
+    }
+  }
+}
+
+// you start an actor by invoking its 'start' method
+Shakespeare.start()
+// To be or not to be. Is that a question?
+// To be or not to be. Is that a question?
+```
+
+> - actors run completely independently from one another:
+
+```scala
+import scala.actors._
+object Hamlet extends Actor {
+  def act() {
+    for (i <- 1 to 2) {
+      println("Yes, that was a question.")
+      Thread.sleep(3000)
+    }
+  }
+}
+
+Shakespeare.start()
+Hamlet.start()
+// To be or not to be. Is that a question?
+// Yes, that was a question.
+// To be or not to be. Is that a question?
+// To be or not to be. Is that a question?
+// Yes, that was a question.
+// Yes, that was a question.
+```
+
+> - you can also create an actor using a utility method named `actor` in object `scala.actors.Actor`:
+
+```scala
+import scala.actors.Actor._
+// this actor starts immediately when it's defined (no need to call 'start()' method)
+val desdemona = actor {
+  for (i <- 1 to 3) {
+    print("I rule! ")
+    Thread.sleep(1000)
+  }  
+}
+
+// I rule! I rule! I rule! 
+```
+
+> - actors communicate by sending each other **messages**
+> - message is sent using `!` method:
+
+```scala
+Hamlet ! "hi there"
+```
+
+> - nothing happens in this case, because `Hamlet` is too busy acting to process its messages, and so the `"hi there"` message sits in its mailbox unread
+> - an actor can wait for new messages in its mailbox:
+
+```scala
+val parrot = actor {
+  while (true) {
+    receive {
+      case msg => println(msg)
+    }
+  }
+}
+```
+
+> - when an actor sends a message, it does not block, and when an actor receives a message, it is not interrupted. The message waits in the receiving actor's mailbox until the actor calls `receive`, passing in a partial function 
+> - remember? _Partial function_  is not a full function, i.e. it might not be defined over all input values. _Partial function literal_ is expressed as a series of `match` cases, so it looks like a `match` expression without the `match` keyword. It is actually an instance of the `PartialFunction` trait)
+> - in addition to `apply` method that takes one argument, a partial function offers `isDefinedAt` method (which also takes one argument) that returns `true` if the partial function can _"handle"_ the passed value, which then means that the value is safe to pass to `apply`. If `isDefinedAt` returns `false` and that value is passed to `apply`, then `apply` throws an exception
+> - an actor will only process messages matching one of the cases in the partial function passed to `receive`
+> - for each message in the mailbox, `receive` first invokes `isDefinedAt` on the passed partial function to determine whether it has a case that will match and handle the message. The `receive` method then chooses the first message in the mailbox for which `isDefinedAt` returns `true`, and pass that message to the partial function's `apply` method, which then handles the message. If the mailbox contains no message for which `isDefinedAt` returns `true`, the actor on which `receive` was invoked will block until a matching message arrives
+
+```scala
+// actor that only handles ints:
+val intParrot = actor {
+  receive {
+    case x: Int => println("got int: " + x)
+  }
+}
+
+intParrot ! "hello"  // silently ignores it
+intParrot ! math.Pi  // silently ignores it
+intParrot ! 8        // got int: 8
+```
+
