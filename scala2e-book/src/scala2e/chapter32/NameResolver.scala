@@ -1,5 +1,5 @@
-//package scala2e.chapter32
-import scala.actors._
+package scala2e.chapter32
+import scala.actors.Actor
 
 
 
