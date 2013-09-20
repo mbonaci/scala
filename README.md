@@ -7365,3 +7365,7 @@ val sillyActor2 = actor {
 }
 ```
 
+_Communicate with actors only via messages_
+
+> - the key way the actors model addresses the difficulties of the shared data and locks is by providing a safe space, the actor's `act` method, where you can think sequentially, i.e. actors allow you to write a multi-threaded program as a bunch of independent single-threaded programs that communicate with each other via asynchronous messages. So, all this works only if you abide by this simple rule, that the messages are the only way you let your actors communicate
+> - nevertheless, Scala actors library gives you the choice of using both message passing and shared data & locks in the same program. A good example is multiple actors to share a reference to `ConcurrentHashMap` (instead of using a single map owner actor and sending async messages to it) and alter the map synchronously - given that CHM is already implemented in Java concurrency library, thus it's safe
