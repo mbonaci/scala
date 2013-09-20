@@ -7250,3 +7250,60 @@ self.receiveWithin(1000) { case x => x }  // wait for 1s
 // specified number of millis
 ```
 
+### **730 - Better performance through thread reuse: `react`**
+
+> - threads are not cheap! They consume enough memory that typical Java VMs, which normally hosts millions of objects, can have only thousands of threads. Moreover, switching threads often takes hundreds if not thousands of processor cycles
+> - to help you conserve threads, Scala provides an alternative the the usual `receive` method called `react`. Like `receive`, `react` takes a partial function, but unlike `receive` it does not return after it finds and processes a message. Its result type is `Nothing`. It evaluates the message handler and that's it (throws an exception that's caught behind the scenes)
+> - since `react` doesn't need to return, the implementation doesn't need to preserve the call stack of the current thread. Instead, the library can reuse the current thread for the next actor that wakes up. This approach is so effective that if every actor in a program used `react`, only a single thread would be used (Scala utilizes all processor cores that it can)
+
+_In practice, programs need at least a few `receive`s, but you should try to use `react` whenever possible_  
+
+> - because `react` does not return, the message handler you pass it must now both, process that message and arrange to do all of the actor's remaining work. A common way to do this is to have a top-level work method (such as `act` itself), that the message handler calls when it finishes
+
+```scala
+object NameResolver extends Actor {
+  import java.net.{InetAddress, UnknownHostException}
+
+  def act() {
+    react {
+      case (name: String, actor: Actor) =>
+        actor ! getIp(name)
+        act()
+      case "EXIT" =>
+        println("Name resolver over and out.")
+        // quit
+      case msg =>
+        println("Unhandled message: " + msg)
+        act()
+    }
+  }
+
+  def getIp(name: String): Option[InetAddress] = {
+    try {
+      Some(InetAddress.getByName(name))
+    } catch {
+      case _: UnknownHostException => None
+    }
+  }
+}
+
+NameResolver.start()  // scala.actors.Actor = NameResolver$@2d325da0
+NameResolver ! ("www.scala-lang.org", self)
+self.receiveWithin(0) { case x => x } // Any = Some(www.google.com/83.139.106.223)
+```
+
+> - this coding pattern is so common with event-base actors, that there's a special support in the library for it. The `Actor.loop` executes a block of code repeatedly, even if the code calls `react`:
+
+```scala
+def act() {
+  loop {
+    react {
+      case (name: String, actor: Actor) =>
+        actor ! getIp(name)
+      case msg =>
+        println("Unhandled message: " + msg)
+    }
+  }
+}
+```
+
