@@ -7318,3 +7318,50 @@ def act() {
 > - the thread that invoked `act` will catch the exception, forget about the actor, and move on to do other things
 > - this explains why, if you want `react` to handle more than the first message, you have to call `act` again from inside your partial function, or use some other means to get `react` invoked again
 
+### **733 - Good actors style**
+
+_Actors should not block_
+
+> - while an actor blocks, some other actor might make a request on it, and since it's blocked, it won't even notice the request. In the worst case, even a deadlock may happen, with multiple actors blocked as they each wait for some other blocked actor to respond
+> - instead of blocking, an actor should arrange for some message to arrive, designating that an action is ready to be taken. This rearrangement will often require help of other actors. E.g. instead of calling `Thread.sleep(time)`, you could create a helper actor that sleeps and then sends a message back when enough time has elapsed:
+
+```scala
+actor {
+  Thread.sleep(time)
+  mainActor ! "wakeup!"
+}
+// this actor blocks, but since it'll never receive a message that's OK
+```
+
+> - the main actor remains available to answer new requests
+> - the `emoteLater` method demonstrates the use of this idiom. It creates a new actor that will do the `sleep` so that the main actor does not block
+> - to ensure that the actor will send the `Emote` message to the correct actor, it is prudent to evaluate `self` in the scope of the main actor instead of the scope of the helper actor
+> - because this actor does not block in `sleep`, it can continue to do other work while waiting for its next time to emote
+
+```scala
+// actor that uses helper actor to avoid blocking itself (echoes messages while waiting)
+val sillyActor2 = actor {
+  def emoteLater() {
+    val mainActor = self
+    actor {
+      Thread.sleep(1000)
+      mainActor ! "Emote"
+    }
+  }
+  var emoted = 0
+  emoteLater()
+
+  loop {
+    react {
+      case "Emote" =>
+        println("I'm really acting!")
+        emoted += 1
+        if (emoted < 5)
+          emoteLater()
+      case msg =>
+        println("Received: " + msg)
+    }
+  }
+}
+```
+
