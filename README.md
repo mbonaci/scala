@@ -7307,3 +7307,14 @@ def act() {
 }
 ```
 
+### **734 - How `react` works**
+
+> - it has a return type of `Nothing` and it never returns normally, i.e. always ends with an exception
+> - conceptually, when you call `start` on an actor, the `start` method will in some way arrange things so that some thread will eventually call `act` on that actor. If the `act` method invokes `react`, the `react` method looks in the actor's mailbox for a message that the passed partial function can handle
+> - `receive` does this the same way, passes candidate messages to the partial function's `isDefinedAt` method
+> - if it finds a message that can be handled, `react` will schedule the handling of that message for later execution and throw an exception
+> - if it doesn't find one, it will place the actor in _cold storage_ to be resurrected if and when it gets more messages in its mailbox, and then throw an exception
+> - in either case, `react` will complete abruptly with this exception and so will `act`
+> - the thread that invoked `act` will catch the exception, forget about the actor, and move on to do other things
+> - this explains why, if you want `react` to handle more than the first message, you have to call `act` again from inside your partial function, or use some other means to get `react` invoked again
+
