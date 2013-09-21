@@ -18,13 +18,18 @@ time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	font-size: 15px;
+	font-size: 85%;
 	font: inherit;
 	vertical-align: baseline;
 }
 
-li {
+li, p {
     font-size: 15px
+}
+
+em {
+    font-weight: bold;
+    font-style: italic;    
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
@@ -213,7 +218,9 @@ pre {
   text-shadow: none;
   overflow: auto;
   border: solid 1px #f2f2f2;
+  border-radius: 8px;
 }
+
 pre code {
   color: #2879d0;
   background-color: #fff;
