@@ -374,7 +374,7 @@ class ArrayElement(
 
 ```scala
 class LineElement(s: String) extends ArrayElement(Array(s)) {
-  override def width = s.length  // 'override' mandatory for overrides of concrete members
+  override def width = s.length  // 'override' mandatory for concrete member overrides
   override def height = 1
 }
 ```
@@ -391,7 +391,7 @@ Array((1, "a"), (2, "b"))
 def beside(that: Element): Element =
   new ArrayElement(
     for(
-      (line1, line2) <- this.contents zip that.contents  // new Tuple2 for each iteration
+      (line1, line2) <- this.contents zip that.contents  // new Tuple2 in each iteration
     ) yield line1 + line2
   )
 ```
@@ -725,7 +725,7 @@ case class Number(num: Double) extends Expr
 case class UnOp(operator: String, arg: Expr) extends Expr
 case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
 val op = BinOp("+", Number(1), Var("x"))
-op: BinOp = BinOp(+,Number(1.0),Var(x))
+// op: BinOp = BinOp(+,Number(1.0),Var(x))
 
 // copy method example
 op.copy(operator = "-")
@@ -853,15 +853,15 @@ expr match {
 > - used for convenient type checks and type casts
 
 ```scala
-  def generalSize(x: Any) = x match {
-    case s: String => s.length  // type check + type cast - 's' can only be a 'String'
-    case m: Map[_, _] => m.size
-    case _ => -1
-  }                                               //> generalSize: (x: Any)Int
+def generalSize(x: Any) = x match {
+  case s: String => s.length  // type check + type cast - 's' can only be a 'String'
+  case m: Map[_, _] => m.size
+  case _ => -1
+}                                               //> generalSize: (x: Any)Int
 
-  generalSize("aeiou")                            //> Int = 5
-  generalSize(Map(1 -> 'a', 2 -> 'b'))            //> Int = 2
-  generalSize(math.Pi)                            //> Int = -1
+generalSize("aeiou")                            //> Int = 5
+generalSize(Map(1 -> 'a', 2 -> 'b'))            //> Int = 2
+generalSize(math.Pi)                            //> Int = -1
 
 // generally, to test whether expression is an instance of a type:
 expr.isInstanceOf[String]  // member of class 'Any'
@@ -1348,7 +1348,8 @@ val res = msort((x: Int, y: Int) => x < y)(9 :: 1 :: 8 :: 3 :: 2 :: Nil)
 >   - _currying_ helps us to create specialized functions, predetermined for a particular comparison operation:
 
 ```scala
-// reverse sort (underscore stands for missing arguments list, in this case, a list that should be sorted)
+// reverse sort (underscore stands for missing arguments list, in this case, 
+// a list that should be sorted)
 val reverseIntSort = msort((x: Int, y: Int) => x > y) _
 // reverseIntSort: (List[Int]) => List[Int] = <function>
 
@@ -1550,7 +1551,6 @@ val multiplication = List.tabulate(3, 4)(_ * _)  // 3 lists with 4 elements
 // List[List[Int]] = List(List(0, 0, 0, 0), List(0, 1, 2, 3), List(0, 2, 4, 6))
 /*
     0  1  2  3
-
 0   0  0  0  0
 1   0  1  2  3
 2   0  2  4  6
@@ -7368,4 +7368,13 @@ val sillyActor2 = actor {
 _Communicate with actors only via messages_
 
 > - the key way the actors model addresses the difficulties of the shared data and locks is by providing a safe space, the actor's `act` method, where you can think sequentially, i.e. actors allow you to write a multi-threaded program as a bunch of independent single-threaded programs that communicate with each other via asynchronous messages. So, all this works only if you abide by this simple rule, that the messages are the only way you let your actors communicate
-> - nevertheless, Scala actors library gives you the choice of using both message passing and shared data & locks in the same program. A good example is multiple actors to share a reference to `ConcurrentHashMap` (instead of using a single map owner actor and sending async messages to it) and alter the map synchronously - given that CHM is already implemented in Java concurrency library, thus it's safe
+> - nevertheless, Scala actors library gives you the choice of using both message passing and shared data & locks in the same program. A good example is multiple actors sharing a reference to a `ConcurrentHashMap` (instead of using a single map owner actor and sending async messages to it) and alter the map synchronously - given that CHM is already implemented in Java concurrency library, thus it's guaranteed to be safe
+
+_Prefer immutable messages_
+
+> - since actors model provides a single-threaded environment inside each actor's `act` method, we don't need to worry about whether the objects are thread-safe
+> - this is why the actors model is called _share-nothing_ model
+> - there's one exception in the _share-nothing_ rule: the data inside objects used to send messages between actors is _shared_ by multiple actors. As a result, you _do_ have to worry about whether message object are thread safe, and in general, they should be
+> - the best way to ensure that message objects are thread-safe is to only use immutable objects for messages (reminder: object is immutable if it's an instance of any class that has only `val` fields, which themselves refer only to immutable objects)
+> - the easy way to define such message classes is to use _case classes_ (so long as you don't explicitly add `var` field to it and ensure `val` fields are all immutable types)
+> - of course, for message objects
