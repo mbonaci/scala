@@ -134,7 +134,7 @@ aside#sidebar {
   min-height: 504px;
   float: right;
   background: transparent url(../images/sidebar-bg.jpg) 0 0 no-repeat;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.3;
 }
 
@@ -157,6 +157,7 @@ aside#sidebar p.page-built a,
 aside#sidebar p.index-title,
 aside#sidebar p.index a {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 12px;
 }
 
 aside#sidebar p.index-title {
@@ -168,6 +169,34 @@ aside#sidebar p.index-title {
 #downloads {
   margin-bottom: 40px;
 }
+
+div.highlight-custom {
+    width: 215px;
+    height: 20px;
+    
+    overflow: none;
+}
+
+pre.highlight-custom {
+    display: inline;
+    padding-bottom: 3px;
+    padding-top: 5px;
+    padding-left: 15px;
+    font-size: 12px;
+    margin: 0px;
+    overflow: hidden;
+    width: 212px;
+    height: 21px;
+    position: absolute;
+    border-radius: 5px;
+       
+}
+
+pre.highlight-custom a {
+    color: #C3C3C3; 
+}
+
+
 
 a.button {
   width: 134px;
@@ -504,6 +533,7 @@ footer a:hover {
   aside#sidebar a.button {
     display: none;
   }
+
   #main-content h1:before,
   #main-content h2:before,
   #main-content h3:before,
