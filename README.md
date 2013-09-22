@@ -7431,7 +7431,7 @@ object NameResolver2 extends Actor {
   def act() {
     loop {
       react {
-        case LookupIp(name, actor) =>
+        case LookupIP(name, actor) =>
           actor ! LookupResult(name, getIp(name))
       }
     }
@@ -7446,5 +7446,58 @@ object NameResolver2 extends Actor {
     }
   }
 }
+
+NameResolver2.start()  // scala.actors.Actor = NameResolver2$@7aa9a046
+NameResolver2 ! LookupIP("www.gmail.com", self)
+self.receiveWithin(0) { case x => x }
+// Any = LookupResult(www.gmail.com,Some(www.gmail.com/173.194.70.17))
+```
+
+### **740 - Actors in action: Parallel discrete event simulation**
+
+> - example of actors model on discrete event simulation code from chapter 18, changed so that events run in parallel
+> - the key idea is to make each simulated object an actor
+> - it is likely that there will be some common behavior between different simulated objects, so it makes sense to define a trait that can be mixed in any class to make it a simulated object:
+
+```scala
+trait Simulant extends Actor
+class Wire extends Simulant
+```
+
+> - we must decide how to make the simulation participants synchronized with the simulated time. E.g. participant A should not race ahead and process an event at time tick 100 until all other actors have finished with time tick 99
+> - we'll make such that no simulant should process events for time `n` until all other simulants are finished with time `n - 1`
+> - but how does a simulant know when it's safe to move forward? We'll use a "clock" actor that will keep track of the current time and tell simulants when it's time to move forward. To keep the clock from moving forward before all simulants are ready, the clock will ping actors at carefully chosen time to make sure they have received and processed all messages for the current time tick. Clock will send `Ping` and simulants will respond with `Pong` message stating they are ready for the clock to move forward:
+
+```scala
+case class Ping(time: Int)  // sender is always the "clock"
+case class Pong(time: Int, from: Actor)  // 'time' and 'from' add redundancy 
+```
+
+> - simulants should not respond to a `Ping` until they have finished all the work for that tick, but how do they know their work is done?
+> - we'll add two more constraints. First, that simulants never send each other messages directly, but only schedule events on one another using 'simulation agenda'. Second, they never post events for the current time tick, only for times at least one tick into the future
+> - there will be a single agenda of work items, which will be held by the clock actor. That way, the clock can wait to send out pings until it has sent out requests for all work items of the current tick. Actors then know that, whenever they receive a `Ping`, they have already received from the clock all work items that need to happen at the current tick, thus it's safe that, when an actor receives a `Ping` to immediately send back a `Pong`, because no more work will be arriving during the current tick
+
+```scala
+class Clock extends Actor {
+  private var running = false
+  private var currentTime = 0
+  private var agenda: List[WorkItem] = List()
+}
+```
+
+> - the final design issue is how a simulation is set up to begin with. A natural approach is to create the simulation with the clock stopped, add all the simulants, connect them all together, and then start the clock
+> - how do we know when the simulation is fully assembled so we can start the clock? We'll avoid sending messages to actors while setting the simulation up. The resulting code pattern will be that we use regular method calls to set up simulation, and actor messages while the simulation is running
+
+```scala
+// WorkItem will be designed slightly differently than in chapter 18:
+case class WorkItem(time: Int, msg: Any, target: Actor)
+// action is now comprised of a message and an actor that message is sent
+
+// afterDelay method becomes AfterDelay message that is sent to the clock:
+case class AfterDelay(delay: Int, msg: Any, target: Actor)
+
+// messages requesting simulation start and stop:
+case object Start
+case object Stop
 ```
 
