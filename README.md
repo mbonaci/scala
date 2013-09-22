@@ -7384,3 +7384,67 @@ _Prefer immutable messages_
 > - if you happen to have a mutable object that you have to to send to another actor, you should make and send a copy of it instead 
 > - but while you're at it, you may want to make it immutable. For example, arrays are mutable and unsynchronized. Any array you use should be accessed by one actor at a time. If you want to continue using it, as well as send it to another actor, you should send a copy. If the array holds only immutable objects, you can make a copy with `arr.clone`, but you should consider using `arr.toList` and send the resulting immutable list instead
 
+_Make messages self-contained_
+
+> - when you return a value from a method, the caller is in a good position to remember what it was doing before it called the method. It can take the response value and then continue doing whatever it was doing
+> - with actors, things are little trickier. When one actor makes a request to another, the response might not come for a long time. The calling actor should not block, but should continue to do any other work it can while it waits for the response. A difficulty then, is interpreting the response when it finally does come back. How can actor remember what it was doing when it made the request?
+> - one way to simplify the logic of an actors program is to include redundant information in the messages. If the request is an immutable object, you can cheaply include a reference to the request in the return value. For example, the IP-lookup actor would be better if it returned the host name in addition to the IP address. It would make this actor slightly longer, but it should simplify the logic of any actor making requests on it:
+
+```scala
+def act() {
+  loop {
+    react {
+      case (name: String, actor: Actor) =>
+        actor ! (name, getIp(name))
+    }
+  }
+}
+```
+
+> - another way to increase redundancy in the messages is to make a case class for each kind of message. That makes an actors program much easier to understand. Imagine a programmer looking as a send of a string, for example:
+
+```scala
+lookerUpper ! ("www.scala-lang.org", self)
+```
+
+> - it can be difficult to figure out which actors in the code might respond. It is much easier if the code looks like this:
+
+```scala
+case class LookupIP(hostname: String, requester: Actor)
+lookerUpper ! LookupIP("www.scala-lang.org", self)
+// now the programmer can search for 'LookupIP' in the source, probably finding
+// very few possible responders
+```
+
+```scala
+// updated name-resolving actor that uses case classes instead of tuples as messages:
+import scala.actors.Actor._
+import java.net.{InetAddress, UnknownHostException}
+
+case class LookupIP(name: String, respondTo: Actor)
+case class LookupResult(
+  name: String,
+  address: Option[InetAddress]
+)
+
+object NameResolver2 extends Actor {
+  def act() {
+    loop {
+      react {
+        case LookupIp(name, actor) =>
+          actor ! LookupResult(name, getIp(name))
+      }
+    }
+  }
+
+  def getIp(name: String): Option[InetAddress] = {
+    // same as before
+    try {
+      Some(InetAddress.getByName(name))
+    } catch {
+      case _: UnknownHostException => None
+    }
+  }
+}
+```
+
