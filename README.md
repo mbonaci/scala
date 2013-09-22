@@ -7117,7 +7117,7 @@ $ scala -cp bin InventoryManagement
 > - Scala augments Java's concurrency by adding **actors**
 > - actors provide a concurrency model that is easier to work with and can help you avoid many of the difficulties of using Java's native concurrency model
 
-## **724 - Java concurrency troubles**
+### **724 - Java concurrency troubles**
 
 > - Java's built-in threading model is based on shared data and locks
 > - each object is associated with a logical _monitor_, which is used to control multi-threaded access to data. In this model, you decide what data will be shared by multiple threads and enclose those, shared sections of the code with `sinchronized` blocks or methods
@@ -7125,7 +7125,7 @@ $ scala -cp bin InventoryManagement
 > - making things even worse, testing is not reliable with multi-threaded code. Since threads are non-deterministic, you might successfully test a program a thousand times, and yet still the program could go wrong
 > - with this model, you must get it right, i.e. avoid deadlocks and race conditions through reason alone
 
-## **725 - Actors and message passing**
+### **725 - Actors and message passing**
 
 > - Scala's actors library addresses the fundamental problem by providing an alternative, **share-nothing**, message-passing model
 > - an **actor** is a thread-like entity that has a **mailbox** for receiving messages
@@ -7375,6 +7375,12 @@ _Prefer immutable messages_
 > - since actors model provides a single-threaded environment inside each actor's `act` method, we don't need to worry about whether the objects are thread-safe
 > - this is why the actors model is called _share-nothing_ model
 > - there's one exception in the _share-nothing_ rule: the data inside objects used to send messages between actors is _shared_ by multiple actors. As a result, you _do_ have to worry about whether message object are thread safe, and in general, they should be
-> - the best way to ensure that message objects are thread-safe is to only use immutable objects for messages (reminder: object is immutable if it's an instance of any class that has only `val` fields, which themselves refer only to immutable objects)
+> - the best way to ensure that message objects are thread-safe is to only use immutable objects for messages (remember, object is immutable if it's an instance of any class that has only `val` fields, which themselves refer only to immutable objects)
 > - the easy way to define such message classes is to use _case classes_ (so long as you don't explicitly add `var` field to it and ensure `val` fields are all immutable types)
-> - of course, for message objects
+> - of course, for message instances you can also use a regular immutable class you define, or instances of many immutable classes provided by the Scala API, such as tuples, strings, lists, immutable sets and maps, and so on
+> - if an actor sends a mutable, unsynchronized object as a message, and never reads or writes that object thereafter, it would work, but it's just asking for trouble
+> - in general, it's recommended that you arrange your data such that every unsynchronized, mutable object is _owned_, and therefore accessed by only one actor. You can arrange for objects to be transferred from one actor to another, but you need to make sure that, at any given time, it's clear which actor owns the object
+> - i.e. when you design an actor-based system, you need to decide which parts of _mutable_ memory are assigned to which actor. All other actors should use this object through its owner actor, by passing messages to it
+> - if you happen to have a mutable object that you have to to send to another actor, you should make and send a copy of it instead 
+> - but while you're at it, you may want to make it immutable. For example, arrays are mutable and unsynchronized. Any array you use should be accessed by one actor at a time. If you want to continue using it, as well as send it to another actor, you should send a copy. If the array holds only immutable objects, you can make a copy with `arr.clone`, but you should consider using `arr.toList` and send the resulting immutable list instead
+
