@@ -7754,3 +7754,48 @@ class Circuit {
 > - whatever the reason, because you need to convert the input language into some data structure your software can process, you're going to need a _parser_
 > - instead of using a standalone _domain specific language_, we'll use an _internal DSL_, which will consist of a library of **parser combinators**, i.e. functions and operators defined in Scala that will server as building blocks for parser, which will map one to one to the constructions of a context-free grammar, to make them easy to understand
 
+### **760 - Example: Arithmetic expressions**
+
+> - if you wanted to construct a parser for arithmetic expressions consisting of floating-point numbers, parentheses and the binary operators `+`, `-`, `*` and `/`, the first step would be to write down a grammar for the language to be parsed:
+
+```scala
+expr   ::= term {"+" term | "-" term}
+term   ::= factor {"*" factor | "/" factor}
+factor ::= floatingPointNumber | "(" expr ")"
+
+// | denotes alternative productions, and {} denote repetition (zero or more times)
+// [] denote an optional occurrence (not mentioned in grammar above)
+
+/*
+  - every expression is a term, which can be followed by a sequence of + or - operators
+    and further terms
+  - a term is a factor, possibly followed by a sequence of * or / operators and further
+    factors
+  - a factor is either a numeric literal or an expression in parentheses
+*/
+
+// actual code of 'Arith' class that consists of 3 parsers specified above in grammar:
+import scala.util.parsing.combinator._
+
+class Arith extends JavaTokenParsers {
+  def expr: Parser[Any] = term~rep("+"~term | "-"~term)
+  def term: Parser[Any] = factor~rep("*"~factor | "/"~factor)
+  def factor: Parser[Any] = floatingPointNumber | "("~expr~")"
+}
+
+// 'JavaTokenParsers' is a trait that provides basics for writing a parser and also
+// provides some primitive parsers that recognize some word classes: identifiers, string
+// literals and numbers
+// 'floatingPointNumber' is a primitive parser inherited from the trait
+
+/*
+  In order to translate grammar into source code:
+   - every production becomes a method, so you need to prefix it with 'def'
+   - the result type of each method is 'Parser[Any]' so you need to change ::= to 
+     ': Parser[Any]'
+   - insert explicit operator ~ between every two consecutive symbols
+   - repetition is expressed with 'rep()' instead of {}. Option is 'opt()' instead of []
+   - the period at the end of each production is omitted (use a semicolon if you want)
+*/
+```
+
