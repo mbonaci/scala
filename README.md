@@ -356,9 +356,9 @@ def myAssert(predicate: => Boolean) =     // with by-name parameter
 **229 -** Fields and methods belong to the same *namespace*, which makes possible for a
 field to override a parameterless method, but it forbids defining a field and a method with the same name  
 **230 -** *Java* has four namespaces: fields, methods, types and packages  
-        *Scala* has two namespaces:  
-          **values** (fields, methods, packages and singleton objects)  
-          **types** (classes and traits)  
+- *Scala* has two namespaces:  
+  - **values** (fields, methods, packages and singleton objects)  
+  - **types** (classes and traits)  
 
 ### **231 - Parametric field**
 
@@ -7748,4 +7748,9 @@ class Circuit {
 }
 ```
 
+## Combinator Parsing
+
+> - occasionally, you may need to process a small, special purpose language, e.g. read configuration files and make them easier to modify by hand than XML. Or e.g. you want to support an input language in your program, such as search terms with boolean operators
+> - whatever the reason, because you need to convert the input language into some data structure your software can process, you're going to need a _parser_
+> - instead of using a standalone _domain specific language_, we'll use an _internal DSL_, which will consist of a library of **parser combinators**, i.e. functions and operators defined in Scala that will server as building blocks for parser, which will map one to one to the constructions of a context-free grammar, to make them easy to understand
 
