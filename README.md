@@ -7759,8 +7759,8 @@ class Circuit {
 > - if you wanted to construct a parser for arithmetic expressions consisting of floating-point numbers, parentheses and the binary operators `+`, `-`, `*` and `/`, the first step would be to write down a grammar for the language to be parsed:
 
 ```scala
-expr   ::= term {"+" term | "-" term}
-term   ::= factor {"*" factor | "/" factor}
+  expr ::= term {"+" term | "-" term}
+  term ::= factor {"*" factor | "/" factor}
 factor ::= floatingPointNumber | "(" expr ")"
 
 // | denotes alternative productions, and {} denote repetition (zero or more times)
@@ -7778,9 +7778,9 @@ factor ::= floatingPointNumber | "(" expr ")"
 import scala.util.parsing.combinator._
 
 class Arith extends JavaTokenParsers {
-  def expr: Parser[Any] = term~rep("+"~term | "-"~term)
-  def term: Parser[Any] = factor~rep("*"~factor | "/"~factor)
-  def factor: Parser[Any] = floatingPointNumber | "("~expr~")"
+  def expr: Parser[Any] = term~rep("+"~term | "-"~term).
+  def term: Parser[Any] = factor~rep("*"~factor | "/"~factor).
+  def factor: Parser[Any] = floatingPointNumber | "("~expr~")".
 }
 
 // 'JavaTokenParsers' is a trait that provides basics for writing a parser and also
@@ -7843,4 +7843,68 @@ object MyParsers extends RegexParsers {  // trait
 > - the top level trait is `Parsers`, which defines a very general parsing framework
 > - one level bellow is trait `RegexParsers`, which requires that the input is a sequence of characters and provides a framework for regex parsing
 > - more specialized is trait `JavaTokenParsers`, which implements parsers for basic classes of tokens as they are defined in Java
+
+### **764 - JSON parser**
+
+```scala
+// the grammar that describes the syntax of JSON:
+  value ::= obj | arr | stringLiteral | floatingPointNumber | "null" | "true" | "false".
+    obj ::= "{" [members] "}".
+    arr ::= "[" [values] "]".
+members ::= member {"," member}.
+ member ::= stringLiteral ":" value.
+ values ::= value {"," value}.
+
+/*
+  value  - an object, array, string, number or one of reserved words: null, true, false
+  object - possibly empty sequence of members separated by commas and enclosed in braces
+  member - a string-value pair, where string and value are separated by colon
+  array  - a sequence of values separated by commas, enclosed in square brackets
+*/
+
+// grammar translated to source code:
+import scala.util.parsing.combinator._
+class JSON extends JavaTokenParsers {
+  def value:   Parser[Any] = obj | arr | stringLiteral | 
+                             floatingPointNumber | "null" | "true" | "false"
+  def obj:     Parser[Any] = "{"~repsep(member, ",")~"}"
+  def arr:     Parser[Any] = "["~repsep(value, ",")~"]"
+  def member:  Parser[Any] = stringLiteral~":"~value
+}
+
+// 'repsep' - combinator that parses a possibly empty sequence of terms, separated by 
+//            a given separator string
+
+// we'll read from a file:
+import java.io.FileReader
+object ParseJSON extends JSON {
+  def main(args: Array[String]) {
+    val reader = new FileReader(args(0))
+    // parseAll is overloaded: takes sequence or input reader as a second argument
+    println(parseAll(value, reader))
+  }
+}
+
+// example JSON in a file:
+{
+  "address book": {
+    "name": "John Smith",
+    "address": {
+      "street": "10 Market Street",
+      "city"  : "San Francisco, CA",
+      "zip"   : 94111
+    },
+    "phone numbers": [
+      "408 338-4238",
+      "408 111-6892"
+    ]
+  }
+}
+
+// output:
+// [14.2] parsed: (({~List((("address book"~:)~(({~List((("name"~:)~"John Smith"),
+// (("address"~:)~(({~List((("street"~:)~"10 Market Street"), (("city"~:)~
+// "San Francisco, CA"), (("zip"~:)~94111)))~})), (("phone numbers"~:)~(([~List(
+// "408 338-4238", "408 111-6892"))~]))))~}))))~})
+```
 
