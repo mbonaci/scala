@@ -7826,3 +7826,21 @@ val arg = "2 * (3 + 7))"
 // [1.12] failure: string matching regex `\z' expected but `)' found
 ```
 
+### **763 - Basic regular expression parsers**
+
+> - `floatingPointNumber` parser recognizes a floating point number in the Java format
+> - if you need to parse numbers in a format that's different from Java's, you can use a _regular expression parser_
+> - you can use any regular expression as a parser. It parses all strings it matches. Its result is the parsed string, e.g:
+
+```scala
+// regex that describes all Java identifiers:
+object MyParsers extends RegexParsers {  // trait
+  val ident: Parser[String] = """[a-zA-Z_]\w*""".r
+}
+```
+
+> - Scala's parsing combinators are arranged in a hierarchy of traits, which are all contained in package `scala.util.parsing.combinator`
+> - the top level trait is `Parsers`, which defines a very general parsing framework
+> - one level bellow is trait `RegexParsers`, which requires that the input is a sequence of characters and provides a framework for regex parsing
+> - more specialized is trait `JavaTokenParsers`, which implements parsers for basic classes of tokens as they are defined in Java
+
