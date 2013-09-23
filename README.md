@@ -7799,3 +7799,30 @@ class Arith extends JavaTokenParsers {
 */
 ```
 
+### **762 - Running the parser**
+
+> - you can exercise the parser with the following small program:
+
+```scala
+object ParseExpr extends Arith {
+  def main(args: Array[String]) {
+    val arg = "2 * (3 + 7)"
+    println("input: " + arg)
+    println(parseAll(expr, arg))
+  }
+}
+// 'parseAll(expr, input)' applies the parser 'expr' to the given 'input'
+// there's also a method 'parse', which parses an input prefix
+
+// input: 2 * (3 + 7)
+// [1.12] parsed: ((2~List((*~(((~((3~List())~List((+~(7~List())))))~)))))~List())
+
+// the output tells you that parser successfully analyzed the input string up to
+// position [1.12], first row, 12th column (the whole input string)
+
+// trying to parse an illegal expression:
+val arg = "2 * (3 + 7))"
+// input: 2 * (3 + 7))
+// [1.12] failure: string matching regex `\z' expected but `)' found
+```
+
