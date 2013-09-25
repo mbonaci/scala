@@ -8046,3 +8046,21 @@ _Guidelines for choosing between symbolic and alphabetic names_
 type Parser[T] = Input => ParserResult[T]
 ```
 
+_Parser input_
+
+> - sometimes, a parser reads a stream of tokens instead of a raw sequence of characters. Then, a separate lexical analyzer is used to convert a stream of raw characters into a stream of tokens
+> - the type of parser inputs is defined:
+
+```scala
+type Input = Reader[Elem]
+```
+
+> - the class `Reader` comes from the package `scala.util.parsing.input` and is similar to a `Stream`, but also keeps track of the position of all the elements it reads
+> - the type `Elem` represents individual input elements. It's an abstract type member of the `Parsers` trait:
+
+```scala
+type Elem
+```
+
+> - this means that subclasses and subtraits of `Parsers` need to instantiate class `Elem` to the type of input elements that are being parsed. E.g. `RegexParsers` and `JavaTokenParsers` fix `Elem` to be equal to `Char`. It would also be possible to set `Elem` to some other type, such as the type of tokens returned from a separate lexer
+
