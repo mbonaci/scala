@@ -7959,5 +7959,53 @@ case class ~[+A, +B](x: A, y: B) {
 ```scala
 def obj: Parser[Map[String, Any]] =
   "{" ~> repsep(member, ",") <~ "}" ^^ (Map() ++ _)
+
+// final version of JSON parser:
+class JSON1 extends JavaTokenParsers {
+  def obj: Parser[Map[String, Any]] =
+    "{" ~> repsep(member, ",") <~ "}" ^^ (Map() ++ _)
+  def arr: Parser[List[Any]] =
+    "[" ~> repsep(value, ",") <~ "]"
+  def member: Parser[(String, Any)] =
+    stringLiteral~":"~value ^^ { case name~":"~value => (name, value) }
+  def value: Parser[Any] = (
+    obj
+    | arr
+    | stringLiteral
+    | floatingPointNumber ^^ (_.toDouble)
+    | "null"  ^^ (x => null)
+    | "true"  ^^ (x => true)
+    | "false" ^^ (x => false)
+  )
+}
+
+// output:
+[14.2] parsed:  Map(
+  "address book" -> Map(
+    "name" -> "John Smith", 
+    "address" -> Map(
+      "street" -> "10 Market Street", 
+      "city" -> "San Francisco, CA", 
+      "zip" -> 94111.0), 
+    "phone numbers" -> List("408 338-4238", "408 111-6892")
+  )
+)
 ```
+
+_Symbolic versus alphanumeric names_
+
+```scala
+/* Summary of parser combinators */
+"..."         // literal
+"...".r       // regular expression
+P~Q           // sequential composition
+P<~Q, P~>Q    // sequential composition; keep left/right only
+P | Q         // alternative
+opt(P)        // option
+rep(P)        // repetition
+repsep(P, Q)  // interleaved repetition
+P ^^ f        // result conversion
+```
+
+> - many of the parser combinators in the above table use symbolic names, which has its advantages (symbolic names are short and can be chosen to have the right precedences and associativities) and disadvantages (symbolic names take time to learn)
 
