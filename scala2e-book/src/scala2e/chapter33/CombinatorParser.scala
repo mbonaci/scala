@@ -21,6 +21,10 @@ class JSON extends JavaTokenParsers {
   def value:   Parser[Any] = obj | arr | stringLiteral | 
                              floatingPointNumber | "null" | "true" | "false"
   def obj:     Parser[Any] = "{"~repsep(member, ",")~"}"
+//  def obj: Parser[Map[String, Any]] = // Can be improved
+//    "{"~repsep(member, ",")~"}" ^^ { case "{"~ms~"}" => Map() ++ ms }
+//  def obj: Parser[Map[String, Any]] =
+//    "{" ~> repsep(member, ",") <~ "}" ^^ (Map() ++ _)
   def arr:     Parser[Any] = "["~repsep(value, ",")~"]"
   def member:  Parser[Any] = stringLiteral~":"~value
 }
@@ -33,3 +37,6 @@ object ParseJSON extends JSON {
     println(parseAll(value, reader))
   }
 }
+
+
+
