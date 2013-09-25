@@ -8009,3 +8009,24 @@ P ^^ f        // result conversion
 
 > - many of the parser combinators in the above table use symbolic names, which has its advantages (symbolic names are short and can be chosen to have the right precedences and associativities) and disadvantages (symbolic names take time to learn)
 
+_Turning off semicolon inference_
+
+> - note that the body of the `value` parser in the example above is enclosed in parentheses. This is a little trick to disable semicolon inference in parser expressions
+> - semicolons are inserted between any two lines that can be separate statements syntactically, unless the first line ends in an infix operator or the two lines are enclosed in parentheses or square brackets
+
+```scala
+// we could have written 'value' like this:
+def value: Parser[Any] =
+  obj |
+  arr |
+  stringLiteral |
+  // ...
+
+// and then, semicolon insertion would have worked correctly
+// but most developers prefer to see the | operator at the beginning of the second
+// alternative, rather than the end of the first, which would lead to incorrect
+// semicolon insertion:
+  obj;     // semicolon implicitly inserted
+  | arr;
+```
+
