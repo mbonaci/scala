@@ -8100,3 +8100,25 @@ abstract class Parser[+T] extends (Input => ParseResult[T]) {
 > - since parsers inherit from functions, they need to define `apply` method
 > - the abstract `apply` method in class `Parser` needs to be implemented in the individual parsers that inherit from `Parser`
 
+_Aliasing `this`_
+
+> - the body of the `Parser` class starts with:
+
+```scala
+abstract class Parser[+T] extends ... { p =>  // alias
+```
+
+> - a clause such as `id =>` immediately after the opening brace of a class template defines the identifier `id` as an **alias** for `this` inside the class. It's as if we had written `val id = this` in the class body, except that the compiler knows that `id` is an alias for `this`
+> - so `id.m` is completely equivalent to `this.m` , except that the first expression would not compile if `id` was just defined as a `val`, because then, the compiler would treat `id` as a normal identifier
+> - _aliasing_ can also be a good abbreviation when you need to access `this` of an outer class:
+
+```scala
+class Outer { outer =>
+  class Inner {
+    println(Outer.this eq outer)  // true
+  }
+}
+// in Java, you'd use 'Outer.this'
+// in Scala, we use alias 'outer'
+```
+
