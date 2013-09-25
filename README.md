@@ -8030,3 +8030,19 @@ def value: Parser[Any] =
   | arr;
 ```
 
+### **772 - Implementing combinator parsers**
+
+_Guidelines for choosing between symbolic and alphabetic names_
+
+> - use symbolic names in cases where they already have a universally established meaning. For example, nobody would recommend writing `add` instead of `+` for addition
+> - otherwise, give preference to alphabetic names if you want your code to be understandable to casual readers
+> - you can still choose symbolic names for DSL libraries, if this gives clear advantage in legibility and you don't expect, anyway, that a casual reader, without a firm grounding in the domain, would be able to understand the code immediately
+
+> - the core of Scala's combinator parsing framework is contained in the trait `scala.util.parsing.combinator.Parsers`. This trait defines the `Parser` type, as well as all fundamental combinators
+> - a `Parser` is in essence just a function from some input type to a parse result
+> - as a first approximation, the type could be written like this:
+
+```scala
+type Parser[T] = Input => ParserResult[T]
+```
+
