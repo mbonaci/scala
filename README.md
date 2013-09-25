@@ -8043,7 +8043,7 @@ _Guidelines for choosing between symbolic and alphabetic names_
 > - as a first approximation, the type could be written like this:
 
 ```scala
-type Parser[T] = Input => ParserResult[T]
+type Parser[T] = Input => ParseResult[T]
 ```
 
 _Parser input_
@@ -8063,4 +8063,22 @@ type Elem
 ```
 
 > - this means that subclasses and subtraits of `Parsers` need to instantiate class `Elem` to the type of input elements that are being parsed. E.g. `RegexParsers` and `JavaTokenParsers` fix `Elem` to be equal to `Char`. It would also be possible to set `Elem` to some other type, such as the type of tokens returned from a separate lexer
+
+_Parser results_
+
+> - a parser might either succeed or fail on some given input. Consequently, class `ParseResult` has two subclasses for representing success and failure:
+
+```scala
+sealed abstract class ParseResult[+T]
+case class Success[T](result: T, in: Input) extends ParseResult[T]
+case class Failure[T](msg: String, in: Input) extends ParseResult[Nothing]
+```
+
+> - `Success` carries the result returned from the parser in its `result` parameter
+> - the type of parser results is arbitrary. That is why `ParseResult`, `Success` and `Parser` are all parameterized with a type parameter `T`, which represents the kinds of results returned by a given parser
+> - `Success` also takes a second parameter, `in`, which refers to the input immediately following the part that the parser consumed. This field is needed for chaining parsers, so that one parser can operate on result of another
+> - note that this is purely functional approach to parsing. Input is not read as a side effect, but is kept in a stream. A parser analyzes some part of the input stream and then returns the remaining part in its result
+> - the other subclass of `ParseResult` is `Failure`, which takes as a parameter a message that describes why the parser failed
+> - `Failure` also takes a second parameter, but it's not needed for chaining (parser doesn't continue), but to position the error message at the correct place in the input stream
+> - parse results are defined to be covariant in the type parameter `T`, i.e. a parser returning `String` as result is compatible with a parser returning `AnyRef`
 
