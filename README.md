@@ -7979,7 +7979,7 @@ class JSON1 extends JavaTokenParsers {
   )
 }
 
-// output:
+/* output:
 [14.2] parsed:  Map(
   "address book" -> Map(
     "name" -> "John Smith", 
@@ -7989,7 +7989,7 @@ class JSON1 extends JavaTokenParsers {
       "zip" -> 94111.0), 
     "phone numbers" -> List("408 338-4238", "408 111-6892")
   )
-)
+)*/
 ```
 
 _Symbolic versus alphanumeric names_
@@ -8081,4 +8081,22 @@ case class Failure[T](msg: String, in: Input) extends ParseResult[Nothing]
 > - the other subclass of `ParseResult` is `Failure`, which takes as a parameter a message that describes why the parser failed
 > - `Failure` also takes a second parameter, but it's not needed for chaining (parser doesn't continue), but to position the error message at the correct place in the input stream
 > - parse results are defined to be covariant in the type parameter `T`, i.e. a parser returning `String` as result is compatible with a parser returning `AnyRef`
+
+_The `Parser` class_
+
+> - `Parser` is in reality a class that inherits from the function type `Input => ParseResult[T]` and additionally defines methods:
+
+```scala
+abstract class Parser[+T] extends (Input => ParseResult[T]) {
+  p =>
+    // unspecified method that defines the behavior of this parser
+    def apply(in: Input): ParseResult[T]
+    def ~ // ...
+    def | // ...
+    // ...
+}
+```
+
+> - since parsers inherit from functions, they need to define `apply` method
+> - the abstract `apply` method in class `Parser` needs to be implemented in the individual parsers that inherit from `Parser`
 
