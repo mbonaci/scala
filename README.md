@@ -7908,3 +7908,56 @@ object ParseJSON extends JSON {
 // "408 338-4238", "408 111-6892"))~]))))~}))))~})
 ```
 
+### **766 - Parser output**
+
+> - in order to customize the parser output, we first need to know what the individual parsers and combinator frameworks return as a result:
+>   - each parser written as a string returns the parsed string itself
+>   - regex parsers also return parsed string
+>   - a sequential composition P~Q returns the results of both P and Q in an instance of a case class that is also written as ~. So if P returns "true" and Q returns "?", then P~Q returns `~("true", "?")`, which prints as `(true~?)`
+>   - an alternative composition P | Q returns the result of either P or Q, whichever one succeeds
+>   - the repetition `rep(P)` or `repsep(P, separator)` returns a list of the results of all runs of P
+>   - an option `opt(P)` returns an instance of `Option` type, thus returning `Some(R)` if P succeeds with result R or `None` if P fails
+> - a better output of the JSON parser would be to map a JSON object into an internal Scala representation:
+>   - JSON object is represented as a map of type `Map[String, Any]`
+>   - JSON array is represented as a list of type `List[Any]`
+>   - JSON string is represented as Scala `String`
+>   - JSON numeric literal is represented as a `Double`
+>   - values `true`, `false` and `null` are represented as corresponding Scala values
+> - to produce this representation, you need to make use of one more combination form for parsers: `^^` operator, which transforms the result of a parser
+> - in `P ^^ f`, where `P` is a parser and `f` is a function, whenever `P` returns with some result `R`, the result of `P ^^ f` is `f(R)`:
+
+```scala
+// parser that parses floating point number and converts it to Double:
+floatingPointNumber ^^ (_.toDouble)
+
+// parser that parses the string "true" and returns Scala's boolean 'true' value:
+"true" ^^ (x => true)
+
+// a new version of a JSON parser that returns a map:
+def obj: Parser[Map[String, Any]] =  // may be improved
+  "{"~repsep(member, ",")~"}" ^^ { case "{"~ms~"}" => Map() ++ ms }
+
+// as we mentioned, the '~' operator produces an instance of a case class with that name
+// here's the definition of that class, which is an inner class of trait 'Parsers':
+case class ~[+A, +B](x: A, y: B) {
+  override def toString = "(" + x + "~" + y + ")"
+}
+
+// since the name of the class is the same as the name of the sequence combinator method
+// we can match parser results with patterns that follow the same structure as the
+// parsers themselves
+// e.g. the pattern "{"~ms~"}" matches a result string "{" followed by a result variable
+// 'ms', which is followed by a result string "}"
+// the purpose of the "{"~ms~"}" pattern is to strip off the braces so that you can get
+// at the list of members resulting from the 'repsep(member, ",")' parser
+```
+
+> - in cases like the previous code, there is also an alternative that avoids producing unnecessary parser results that are immediately discarded by the pattern match
+> - the alternative makes use of `~>` and `<~` parser combinators, which express sequential composition like `~`, but `~>` keeps only the result of its right operand, whereas `<~` keeps only the result of its left operand
+> - using these combinators, the JSON parser can be expressed more succinctly:
+
+```scala
+def obj: Parser[Map[String, Any]] =
+  "{" ~> repsep(member, ",") <~ "}" ^^ (Map() ++ _)
+```
+
