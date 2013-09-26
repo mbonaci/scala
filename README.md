@@ -8204,3 +8204,15 @@ def | (q: => Parser[T]) = new Parser[T] {
 
 > - if `P` and `Q` both fails, the failure message is determined by `Q`
 
+_Dealing with recursion_
+
+> - `q` parameter in methods `~` and `|` is by-name (its type is preceded by `=>`)
+> - this means that the actual parser argument will be evaluated only when `q` is needed, which should only be the case after `p` has run. This makes possible to write recursive parsers:
+
+```scala
+// a recursive parser that parses a number enclosed in arbitrarily many parentheses:
+def parens = floatingPointNumber | "(" ~ parens ~ ")"
+```
+
+> - if `|` and `~` took _by-value parameters_ this definition would immediately cause a stack overflow without reading anything, because the value of `parens` occurs in the middle of its right-hand side
+
