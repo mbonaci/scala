@@ -8247,3 +8247,24 @@ def failure(msg: String) = new Parser[Nothing] {
 }
 ```
 
+_Option and repetition_
+
+> - option and repetition combinators `opt`, `rep` and `repsep` are also defined in trait `Parsers`. They are all implemented in terms of sequential composition, alternative and result conversion:
+
+```scala
+def opt[T](p: => Parser[T]): Parser[Option[T]] = (
+  p ^^ Some(_)
+  | success(None)
+)
+
+def rep[T](p: => Parser[T]): Parser[List[T]] = (
+  p~rep(p) ^^ { case x~xs => x :: xs }
+  | success(List())
+)
+
+def repsep[T](p: => Parser[T], q: => Parser[Any]): Parser[List[T]] = (
+  p~rep(q ~> p) ^^ { case r~rs => r :: rs}
+  | success(List())
+)
+```
+
