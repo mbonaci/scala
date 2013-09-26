@@ -8122,3 +8122,26 @@ class Outer { outer =>
 // in Scala, we use alias 'outer'
 ```
 
+_Single-token parsers_
+
+> - trait Parser defines a generic parser `elem` that can be used to parse any single token:
+
+```scala
+def elem(kind: String, p: Elem => Boolean) =>
+  new Parser[Elem] {
+    def apply(in: Input) =
+      if (p(in.first)) Success(in.first, in.rest)
+      else Failure(kind + " expected", in)
+  }
+
+// 'kind' describes what kind of token should be parsed
+// 'p'    a predicate on 'Elems', which indicates whether an element fits the class
+//        of tokens to be parsed
+// When applying the parser 'elem(kind, p)' to some input 'in', the first element of the
+// input stream is tested with predicate. If 'p' returns 'true', the parser succeeds
+// Its result is the element itself, and its remaining input is the input stream starting
+// just after the element that was parsed
+// If 'p' returns 'false', the parser fails with an error message that indicates what
+// kind of token was expected
+```
+
