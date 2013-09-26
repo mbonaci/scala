@@ -8268,3 +8268,40 @@ def repsep[T](p: => Parser[T], q: => Parser[Any]): Parser[List[T]] = (
 )
 ```
 
+### **781 - String literals and regular expressions**
+
+> - the parsers we used so far made use of string literals and regular expressions to parse single words. The support for these comes from `RegexParsers`, a subtrait of `Parsers`:
+
+```scala
+trait RegexParsers extends Parsers {  // ...
+```
+
+> - the `RegexParsers` trait is more specialized than trait `Parsers` in that it only works for inputs that are sequences of characters:
+
+```scala
+type Elem = Char
+```
+
+> - it defines two methods, `literal` and `regex`:
+
+```scala
+implicit def literal(s: String): Parser[String] =  // ...
+implicit def regex(r: Regex): Parser[String] =  // ...
+```
+
+> - both methods have an `implicit` modifier, so they are automatically applied whenever a `String` or `Regex` is given in a place where a `Parser` is expected
+> - this is why we can write string literals and regexes directly in a grammar, without having to wrap them with one of these methods
+> - e.g. the parser `"("~expr~")"` will be automatically expanded to `literal("(")~expr~literal(")")`
+> - the `RegexParsers` trait also takes care of handling white space between symbols, by calling a method named `handleWhiteSpace` before running a `literal` or `regex` parser
+> - `handleWhiteSpace` method skips the longest input sequence that conforms to the `whiteSpace` regular expression, which is defined like this:
+
+```scala
+protected val whiteSpace = """\s+""".r
+// you can override it if you want to treat whitespace differently
+// e.g. if you want white space not to be skipped at all:
+object MyParsers extends RegexParsers {
+  override val whiteSpace = "".r
+  // ...
+}
+```
+
