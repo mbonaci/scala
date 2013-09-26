@@ -8321,3 +8321,62 @@ scala.util.parsing.combinator.syntactical
 
 > - if you want to split your parser into a separate lexer and syntactical analyzer, you should consult the _Scaladoc_ for these packages. For simple pairs, the regex expression based approach shown previously is usually sufficient
 
+### **782 - Error reporting**
+
+> - how does the parser issue an error message? One problem is that, when a parser rejects some input, it generally has encountered many different failures. Each alternative parse must have failed (possibly recursively, at each choice point). How to decide which of these should be emitted to the user?
+> - Scala's parsing library implements a simple heuristic: among all failures, the one that occurred at the latest position in the input is chosen. I.e. the parser picks the longest prefix that is still valid and issues an error message that describes why parsing the prefix could not be continued further. If there are several failure points at that latest position, the one that was visited last is chosen
+
+```scala
+// consider running the JSON parser on a faulty address book which starts with:
+{ "name": John, 
+
+// the longest legal prefix of this phrase is ' { "name": ', so the JSON parser will flag
+// the word 'John' as an error
+// The JSON parser expects a value at this point, but 'John' is an identifier
+
+// [1.13] failure: "false" expected but identifier John found
+//     { "name": John,
+//               ^
+
+// the message stated that "false" was expected. This comes from the fact that "false"
+// is the last alternative of the production for value in the JSON grammar
+
+// a better error message can be produced by adding a "catch-all" failure point:
+def value: Parser[Any] =
+  obj | arr | stringLit | floatingPointNumber | "null" 
+  | "true" | "false" | failure("illegal start of value")
+
+// this addition does not change the set of valid inputs, it only improves error msg
+```
+
+> - the implementation of the _last possible_ scheme of error reporting uses a field named `lastFailure` in `Parsers` trait to mark the failure that occurred at the latest position in the input:
+
+```scala
+var lastFailure: Option[Failure] = None
+
+// the field is initialized to 'None'. It's updated in the constructor of class 'Failure'
+case class Failure(msg: String, in: Input) extends ParseResult[Nothing] {
+  if (lastFailure.isDefined && lastFailure.get.in.pos <= in.pos)
+    lastFailure = Some(this)
+}
+
+// the field is read by the 'phrase' method (implemented in the 'Parsers' trait), 
+// which emits the final error message if the parser fails:
+def phrase[T](p: Parser[T]) = new Parser[T] {
+  lastFailure = None
+  def apply(in: Input) = p(in) match {
+    case s @ Success(out, in1) =>
+      if (in1.atEnd) s
+      else Failure("end of input expected", in1)
+    case f: Failure =>
+      lastFailure
+  }
+}
+// 'lastFailure' is updated as a side-effect of the constructor of 'Failure' and by the
+// 'phrase' method itself
+```
+
+> - the `phrase` method runs its argument parser `p` and if `p` succeeds with a completely consumed input, the success result of `p` is returned
+> - if `p` succeeds but the input is not read completely, a failure with message "end of input expected" is returned
+> - if `p` fails, the failure or error stored in `lastFailure` is returned
+
