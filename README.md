@@ -8145,3 +8145,44 @@ def elem(kind: String, p: Elem => Boolean) =>
 // kind of token was expected
 ```
 
+_Sequential composition_
+
+> - the `elem` parser only consumes a single element. To parse more interesting phrases, you can string parsers together with the sequential composition operator `~`
+> - `P~Q` applies first the parser `P` to a given input string, and then, if `P` succeeds, the `Q` parser is applied to the input that's left after `P` did its job
+> - `~` is implemented as a method in class `Parser`:
+
+```scala
+// method ~
+abstract class Parser[+T] /* ... */ { p =>
+  // ...
+  def ~ [U](q: => Parser[U]) = new Parser[T~U] {
+    def apply(in: Input) = p(in) match {
+      case Success(x, in1) =>
+        // if 'p' succeeds, 'q' is run on remainder of input 'in1'
+        q(in1) match {
+          // if 'q' also succeeds, the whole parser succeeds
+          case Success(y, in2) => Success(new ~(x, y), in2)
+          case failure => failure
+        }
+      case failure => failure
+    }
+  }
+```
+
+> - inside `Parser` class, `p` is specified by `p =>` part as an alias of `this`, so `p` designates the left operand (or _receiver_) of `~`
+> - its right operand is represented by parameter `q`
+> - the parser's result is a `~` object containing both the result of `p` (i.e. `x`) and the result of `q` (i.e. `y`)
+> - if either `p` or `q` fails, the result of `p~q` is the `Failure` object returned by `p` or `q`
+> - the result type of `~` is a parser that returns an instance of the case class `~` with elements of types `T` and `U`
+> - the type expression `T~U` is just a more legible shorthand for the parameterized type `~[T, U]`
+> - generally, Scala always interprets a binary type operation such as `A op B` as the parameterized type `op[A, B]`, which is analogous to the situation for patterns, where a binary pattern `P op Q` is also interpreted as an application, i.e. `op(P, Q)`
+> - the other two sequential composition operators, `<~` and `~>`, could be defined just like `~`, only with some small adjustment in how the result is computed
+> - a more legible technique is to define them in terms of `~`:
+
+```scala
+def <~ [U](q: => Parser[U]): Parser[T] =
+  (p~q) ^^ { case x~y => x }
+def ~> [U](q: => Parser[U]): Parser[U] =
+  (p~q) ^^ { case x~y => y }
+```
+
