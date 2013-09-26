@@ -8216,3 +8216,18 @@ def parens = floatingPointNumber | "(" ~ parens ~ ")"
 
 > - if `|` and `~` took _by-value parameters_ this definition would immediately cause a stack overflow without reading anything, because the value of `parens` occurs in the middle of its right-hand side
 
+_Result conversion_
+
+> - the last method of class `Parser`, `^^` converts a parser's result
+> - the parser `P ^^ f` succeeds exactly when `P` succeeds. In that case it returns `P`'s result converted using the function `f`:
+
+```scala
+// implementation of the method ^^
+def ^^ [U](f: T => U): Parser[U] = new Parser[U] {
+  def apply(in: Input) = p(in) match {
+    case Success(x, in1) => Success(f(x), in1)
+    case failure => failure
+  }
+}
+```
+
