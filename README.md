@@ -8186,3 +8186,21 @@ def ~> [U](q: => Parser[U]): Parser[U] =
   (p~q) ^^ { case x~y => y }
 ```
 
+_Alternative composition_
+
+> - alternative composition `P | Q` applies either `P` or `Q` to a given input
+> - it first tries `P`, and if it succeeds, the whole parser succeeds with the result of `P`
+> - if `P` fails, then `Q` is tried **on the same input** as `P`. The result of `Q` is then the result of the whole parser
+
+```scala
+// definition of | method of class 'Parser':
+def | (q: => Parser[T]) = new Parser[T] {
+  def apply(in: Input) = p(in) match {
+    case s1 @ Success(_, _) => s1
+    case failure => q(in)
+  }
+}
+```
+
+> - if `P` and `Q` both fails, the failure message is determined by `Q`
+
