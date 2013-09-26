@@ -8124,7 +8124,7 @@ class Outer { outer =>
 
 _Single-token parsers_
 
-> - trait Parser defines a generic parser `elem` that can be used to parse any single token:
+> - trait `Parsers` defines a generic parser `elem` that can be used to parse any single token:
 
 ```scala
 def elem(kind: String, p: Elem => Boolean) =>
@@ -8228,6 +8228,22 @@ def ^^ [U](f: T => U): Parser[U] = new Parser[U] {
     case Success(x, in1) => Success(f(x), in1)
     case failure => failure
   }
+}
+```
+
+_Parsers that don't read any input_
+
+> - there are also two parsers that do not consume any input: `success` and `failure`
+> - parser `success(result)` always succeeds with the given `result`
+> - parser `failure(msg)` always fails with error message `msg`
+> - both are implemented as methods in trait `Parsers`, the outer trait that also contains class `Parser`:
+
+```scala
+def success[T](v: T) = new Parser[T] {
+  def apply(in: Input) = Success(v, in)
+}
+def failure(msg: String) = new Parser[Nothing] {
+  def apply(in: Input) = Failure(msg, in)
 }
 ```
 
