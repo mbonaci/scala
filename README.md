@@ -8423,3 +8423,7 @@ def factor: Parser[Any] =
   "(" ~! expr ~! ")" | floatingPointNumber
 ```
 
+## GUI Programming
+
+> - Scala library provides access to Java's Swing framework of GUI classes
+
