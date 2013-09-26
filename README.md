@@ -8380,3 +8380,46 @@ def phrase[T](p: Parser[T]) = new Parser[T] {
 > - if `p` succeeds but the input is not read completely, a failure with message "end of input expected" is returned
 > - if `p` fails, the failure or error stored in `lastFailure` is returned
 
+### **784 - Backtracking versus LL(1)**
+
+> - parser combinators employ **backtracking** to choose between different parsers
+> - in expression `P | Q`, if `P` fails, then `Q` is run on the same input as `P`. This happens even if `P` has parsed some tokens before failing. In this case, the same tokens will be parsed again by `Q`
+> - _backtracking_ imposes only a few restrictions on how to formulate a grammar so that it can be parsed. You just need to avoid left-recursive productions, such as:
+
+```scala
+expr ::= expr "+" term | term
+// this always fails, because 'expr' immediately calls itself and thus never progresses
+// any further
+```
+
+> - _backtracking_ is potentially costly, because the same input can be parsed several times. Consider for instance:
+
+```scala
+expr ::= term "+" expr | term
+// what happens if the 'expr' parser is applied to an input such as:
+(1 + 2) * 3
+// the first alternative would be tried, and would fail when matching the + sign
+// then the second alternative would be tried on the same term, and it would succeed
+// the point is that the term ended up being parsed twice
+
+// it's often possible to modify the grammar to avoid backtracking, e.g. in the case of
+// arithmetic expressions, either one of the following productions would work:
+expr ::= term ["+" expr]
+expr ::= term {"+" term}
+```
+
+> - many languages admit so-called **LL(1) grammars**
+> - when a combinator parser is formed from such a grammar, it will never backtrack, i.e. the input position will never be reset to the earlier value
+> - the combinator parsing framework allows you to express the expectation that a grammar is _LL(1)_ explicitly, using a new operator `~!`
+> - this operator is like sequential composition `~` but it will never backtrack to input elements that have already been parsed
+> - using this operator, the productions in the arithmetic expression parser could alternatively be written as:
+
+```scala
+def expr: Parser[Any] =
+  term ~! rep("+" ~! term | "-" ~! term)
+def term: Parser[Any] =
+  factor ~! rep("*" ~! factor | "/" ~! factor)
+def factor: Parser[Any] =
+  "(" ~! expr ~! ")" | floatingPointNumber
+```
+
