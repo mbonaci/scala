@@ -8305,3 +8305,19 @@ object MyParsers extends RegexParsers {
 }
 ```
 
+### **782 - Lexing and parsing**
+
+> - syntax analysis is often split in two phases, the **lexer** phase recognizes individual words in the input and classifies them into some `token` classes. This phase is also called **lexical analysis**
+> - it is followed by a **syntactical analysis** phase that analyzes sequences of tokens
+> - the `Parsers` trait can be used for either phase, because its input elements are of the abstract type `Elem`
+> - for lexical analysis, `Elem` would be instantiated to `Char` (individual characters that make up a word are being parsed)
+> - syntactical analyzer would instantiate `Elem` to the type of token returned by the lexer
+> - Scala's parsing combinators provide several utility classes for lexical and syntactical analysis. These are contained in two sub-packages:
+
+```scala
+scala.util.parsing.combinator.lexical
+scala.util.parsing.combinator.syntactical
+```
+
+> - if you want to split your parser into a separate lexer and syntactical analyzer, you should consult the _Scaladoc_ for these packages. For simple pairs, the regex expression based approach shown previously is usually sufficient
+
