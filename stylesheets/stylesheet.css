@@ -141,6 +141,8 @@ aside#sidebar {
 aside#sidebar p.repo-owner,
 aside#sidebar p.repo-owner a {
   font-weight: bold;
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 12px;
   margin-bottom: 5px;
 }
 
@@ -174,7 +176,7 @@ div.highlight-custom {
     width: 215px;
     height: 20px;
     
-    overflow: none;
+    overflow: hidden;
 }
 
 pre.highlight-custom {
