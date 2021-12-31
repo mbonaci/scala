@@ -4,7 +4,8 @@ If you, by any incredible chance, find any of this useful, please do buy the boo
 
 **Before you start flipping out:**
 - _this is not a tutorial, nor is it pleasant to read_
-- _It's just a quick reference card_
+- _it's just a quick reference card_
+- _images look terrible in GitHub's dark theme, so you might prefer [GH pages format](http://mbonaci.github.io/scala/)_
 
 ## Scala type hierarchy
 ![Scala class hierarchy image](https://github.com/mbonaci/scala/blob/master/resources/Scala-class-hierarchy.gif?raw=true)
